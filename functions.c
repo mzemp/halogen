@@ -232,12 +232,12 @@ DOUBLE lininterpolate(INT n, const DOUBLE *gridx, const DOUBLE *gridy, DOUBLE x)
     }
 
 /*
-** Function for generating random numbers between [0,1] 
+** Function for generating random numbers between [0,1) 
 */
 
 DOUBLE rand01() {
 
-    return ( ((DOUBLE) rand()) / ((DOUBLE) RAND_MAX) );
+    return (((DOUBLE) rand()) / ((DOUBLE) (RAND_MAX + 1.0)));
     }
 
 /* 
@@ -403,7 +403,7 @@ DOUBLE tau(DOUBLE r, const SI *si) {
 ** Integrand of I_M integral 
 */
 
-DOUBLE integrandIc(DOUBLE r, const SI *si) {
+DOUBLE integrandIM(DOUBLE r, const SI *si) {
     
     DOUBLE exp1, exp2, exp3;
     DOUBLE fac1, fac2, fac3;

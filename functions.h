@@ -20,7 +20,7 @@ DOUBLE dlrhodlr(DOUBLE, const SI (*));
 DOUBLE eta(DOUBLE, const SI (*));
 DOUBLE detadr(DOUBLE, const SI (*));
 DOUBLE tau(DOUBLE, const SI (*));
-DOUBLE integrandIc(DOUBLE, const SI (*));
+DOUBLE integrandIM(DOUBLE, const SI (*));
 DOUBLE integrandMenc(DOUBLE, const SI (*));
 DOUBLE integrandPot(DOUBLE, const SI (*));
 INT split(INT, DOUBLE, const SI (*));

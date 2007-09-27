@@ -199,7 +199,7 @@ void calculate_parameters(const GI *gi, SI *si) {
 	    si->sp->rcutoff = si->sp->rvir;
 	    }
 	I_M = pow(1e-6,3-si->sp->gamma)/(3-si->sp->gamma); /* approximate inner integral */
-	I_M += integral(integrandIc,1e-6,si->sp->rcutoff/si->sp->rs,si);
+	I_M += integral(integrandIM,1e-6,si->sp->rcutoff/si->sp->rs,si);
 	si->sp->rho0 = si->sp->M/(4*M_PI*(si->sp->rs*si->sp->rs*si->sp->rs)*I_M);
 	si->sp->rdecay = CutoffFac*si->sp->rcutoff;
 	si->sp->delta = si->sp->rcutoff/si->sp->rdecay + dlrhodlr(si->sp->rcutoff,si);
@@ -931,45 +931,6 @@ void double_particles(SI *si) {
 	si->shell[j].Nnew = 2*si->shell[j].Nnew;
 	si->shell[j].N = 2*si->shell[j].N;
 	si->shell[j].p = p;
-	}
-    }
-
-/*
-** Routine for correcting center of mass velocity
-*/
-
-void correct_cm_velocity(SI *si) {
-
-    INT i, j, N;
-    DOUBLE mass, mtot, cmv[4];
-    PARTICLE *p;
-
-    mtot = 0;
-    for(j = 0; j < 4; j++) {
-	cmv[j] = 0;
-	}
-    for(j = 0; j < (si->Nshell+2); j++) {
-	N = si->shell[j].N;
-	p = si->shell[j].p;
-	for (i = 0; i < N; i++) {
-	    mass = p[i].mass;
-	    cmv[1] += mass*p[i].v[1];
-	    cmv[2] += mass*p[i].v[2];
-	    cmv[3] += mass*p[i].v[3];
-	    mtot += mass;
-	    }
-	}
-    cmv[1] /= mtot;
-    cmv[2] /= mtot;
-    cmv[3] /= mtot;
-    for(j = 0; j < (si->Nshell+2); j++) {
-	N = si->shell[j].N;
-	p = si->shell[j].p;
-	for (i = 0; i < N; i++) {
-	    p[i].v[1] -= cmv[1];
-	    p[i].v[2] -= cmv[2];
-	    p[i].v[3] -= cmv[3];
-	    }
 	}
     }
 

@@ -575,7 +575,6 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Done in "OFD1" seconds\nCalculating a few things and correct center of mass position and velocity... \n",t7-t6);
 
     double_particles(halo);
-/*     correct_cm_velocity(halo); */
     calculate_stuff(gi,bh,halo);
 
     /*
