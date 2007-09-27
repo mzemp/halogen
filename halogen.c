@@ -34,9 +34,9 @@ int main(int argc, char **argv) {
     */
 
     INT i, k;
-    INT outputgridr, outputgriddf;
-    INT outputtipsyascii, outputtipsybinary, outputtipsystandard;
-    INT outputgadgetbinary;
+    INT output_gridr, output_griddf;
+    INT output_tipsy_ascii, output_tipsy_binary, output_tipsy_standard;
+    INT output_gadget_binary;
     INT positionsonly;
     DOUBLE randomseed, OmegaMz;
     DOUBLE t0, t1, t2, t3, t4, t5, t6, t7, t8, t9;
@@ -87,12 +87,12 @@ int main(int argc, char **argv) {
     gi->rhocritz = -1;
     gi->Deltavirz = -1;
 
-    outputgridr = 0;
-    outputgriddf = 0;
-    outputtipsyascii = 0;
-    outputtipsybinary = 0;
-    outputtipsystandard = 0;
-    outputgadgetbinary = 0;
+    output_gridr = 0;
+    output_griddf = 0;
+    output_tipsy_ascii = 0;
+    output_tipsy_binary = 0;
+    output_tipsy_standard = 0;
+    output_gadget_binary = 0;
     positionsonly = 0;
 
     sprintf(INPUTNAME,"none");
@@ -320,27 +320,27 @@ int main(int argc, char **argv) {
 	** Output parameters
 	*/
 	else if (strcmp(argv[i],"-ogr") == 0) {
-	    outputgridr = 1;
+	    output_gridr = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-ogdf") == 0) {
-	    outputgriddf = 1;
+	    output_griddf = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-ota") == 0) {
-	    outputtipsyascii = 1;
+	    output_tipsy_ascii = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-otb") == 0) {
-	    outputtipsybinary = 1;
+	    output_tipsy_binary = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-ots") == 0) {
-	    outputtipsystandard = 1;
+	    output_tipsy_standard = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-ogb") == 0) {
-	    outputgadgetbinary = 1;
+	    output_gadget_binary = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-po") == 0) {
@@ -473,7 +473,7 @@ int main(int argc, char **argv) {
 
     initialise_gridr(gi,bh,halo);
     
-    if (outputgridr == 1) {
+    if (output_gridr == 1) {
 	sprintf(FILENAME,"%s.gridr.dat",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
@@ -508,7 +508,7 @@ int main(int argc, char **argv) {
 
     if (positionsonly == 0) {
 	initialise_griddf(gi,halo);
-	if (outputgriddf == 1) {
+	if (output_griddf == 1) {
 	    sprintf(FILENAME,"%s.griddf.halo.dat",INPUTNAME);
 	    file = fopen(FILENAME,"w");
 	    assert(file != NULL);
@@ -587,28 +587,28 @@ int main(int argc, char **argv) {
 
     transfer_particles(bh,halo,ts);
     
-    if (outputtipsyascii == 1) {
+    if (output_tipsy_ascii == 1) {
 	sprintf(FILENAME,"%s.tipsy.ascii",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
 	write_tipsy_ascii(file,ts);
 	fclose(file);
 	}
-    if (outputtipsybinary == 1) {
+    if (output_tipsy_binary == 1) {
 	sprintf(FILENAME,"%s.tipsy.bin",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
 	write_tipsy_binary(file,ts);
 	fclose(file);
 	}
-    if (outputtipsystandard == 1) {
+    if (output_tipsy_standard == 1) {
 	sprintf(FILENAME,"%s.tipsy.std",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
 	write_tipsy_standard(file,ts);
 	fclose(file);
 	}
-    if (outputgadgetbinary == 1) {
+    if (output_gadget_binary == 1) {
 	sprintf(FILENAME,"%s.gadget.bin",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
