@@ -1,18 +1,16 @@
 /* halogen.c
 **
-** Program written in order to generate multi-mass haloes
+** Program written in order to generate multi-mass spherical structures
 **
-** written by Marcel Zemp
-**
-** beta 2 version
+** written by Marcel Zemp (mzemp@ucolick.org)
 **
 ** This program works in units where
 ** 
-** [G] = kpc^3 Gyr^-2 MU^-1
+** [G] = 1 [L]^3 [T]^-2 [M]^-1
 ** [L] = kpc
 ** [T] = Gyr 
-** [M] = MU
 ** [V] = kpc Gyr^-1
+** [M] = MU
 */
 
 #include <stdio.h>
@@ -622,7 +620,7 @@ int main(int argc, char **argv) {
     sprintf(FILENAME,"%s.out",INPUTNAME);
     file = fopen(FILENAME,"w");
     assert(file != NULL);
-    fprintf(file,"HALOGEN beta2 24. July 2007 version by Marcel Zemp\n\n");
+    fprintf(file,"HALOGEN "VERSION" by Marcel Zemp\n");
     fprintf(file,"This version works in units where [G] = 1 [L]^3 [T]^-2 [M]^-1.\n");
     fprintf(file,"[L] = kpc / [T] = Gyr / [V] = kpc Gyr^-1 / [M] = MU = %e Mo\n\n",MU);
     fprintf(file,"Command line\n\n");
@@ -736,9 +734,9 @@ int main(int argc, char **argv) {
     if (halo->sp->beta <= 3) {
 	fprintf(file,"Neff within rcutoff = "OFD1"\n",Menc(halo->sp->rcutoff,gi)/halo->shell[0].mass);
 	}
-    fprintf(file,"Ninitial,tot        = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ninitialtot,gi->stuff->Ninitialtot);
-    fprintf(file,"Nnosplit,tot        = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnosplittot,gi->stuff->Nnosplittot);
-    fprintf(file,"Nnew,tot            = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnewtot,gi->stuff->Nnewtot);
+    fprintf(file,"Ninitialtot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ninitialtot,gi->stuff->Ninitialtot);
+    fprintf(file,"Nnosplittot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnosplittot,gi->stuff->Nnosplittot);
+    fprintf(file,"Nnewtot             = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnewtot,gi->stuff->Nnewtot);
     fprintf(file,"rimp                = "OFD3" kpc\n",halo->rimp);
     fprintf(file,"r1                  = "OFD3" kpc\n",halo->r1);
     fprintf(file,"r100                = "OFD3" kpc\n",halo->r100);
