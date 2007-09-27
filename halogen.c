@@ -241,16 +241,16 @@ int main(int argc, char **argv) {
 		usage();
 		}
 	    if (strcmp("rs",argv[i]) == 0) {
-		halo->setrshellinnerrs = 1;
+		halo->set_rsi_to_rs = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->setrshellinnerrvir = 1;
+		halo->set_rsi_to_rvir = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->setrshellinnerrcutoff = 1;
+		halo->set_rsi_to_rcutoff = 1;
 		}
 	    else {
-		halo->rshellinner = atof(argv[i]);
+		halo->rsi = atof(argv[i]);
 		}
 	    i++;
 	    }
@@ -260,16 +260,16 @@ int main(int argc, char **argv) {
 		usage();
 		}
 	    if (strcmp("rs",argv[i]) == 0) {
-		halo->setrshellouterrs = 1;
+		halo->set_rso_to_rs = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->setrshellouterrvir = 1;
+		halo->set_rso_to_rvir = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->setrshellouterrcutoff = 1;
+		halo->set_rso_to_rcutoff = 1;
 		}
 	    else {
-		halo->rshellouter = atof(argv[i]);
+		halo->rso = atof(argv[i]);
 		}
 	    i++;
 	    }
@@ -303,16 +303,16 @@ int main(int argc, char **argv) {
 		usage();
 		}
 	    if (strcmp("rs",argv[i]) == 0) {
-		halo->setrmaxrefiners = 1;
+		halo->set_rmor_to_rs = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->setrmaxrefinervir = 1;
+		halo->set_rmor_to_rvir = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->setrmaxrefinercutoff = 1;
+		halo->set_rmor_to_rcutoff = 1;
 		}
 	    else {
-		halo->rmaxrefine = atof(argv[i]);
+		halo->rmor = atof(argv[i]);
 		}
 	    i++;
 	    }
@@ -665,9 +665,9 @@ int main(int argc, char **argv) {
     fprintf(file,"rvir    = "OFD3" kpc\n",halo->sp->rvir);
     fprintf(file,"rinner  = "OFD3" kpc\n",gi->rinner);
     fprintf(file,"router  = "OFD3" kpc\n",gi->router);
-    fprintf(file,"rsi     = "OFD3" kpc\n",halo->rshellinner);
-    fprintf(file,"rso     = "OFD3" kpc\n",halo->rshellouter);
-    fprintf(file,"rmor    = "OFD3" kpc\n",halo->rmaxrefine);
+    fprintf(file,"rsi     = "OFD3" kpc\n",halo->rsi);
+    fprintf(file,"rso     = "OFD3" kpc\n",halo->rso);
+    fprintf(file,"rmor    = "OFD3" kpc\n",halo->rmor);
     fprintf(file,"rdecay  = "OFD3" kpc\n",halo->sp->rdecay);
     fprintf(file,"\n");
     fprintf(file,"Tdyn(rs)      = "OFD3" Gyr\n",Tdyn(halo->sp->rs,gi));
@@ -681,10 +681,10 @@ int main(int argc, char **argv) {
     fprintf(file,"Tdyn(rvir)    = "OFD3" Gyr\n",Tdyn(halo->sp->rvir,gi));
     fprintf(file,"Tdyn(rinner)  = "OFD3" Gyr\n",Tdyn(gi->rinner,gi));
     fprintf(file,"Tdyn(router)  = "OFD3" Gyr\n",Tdyn(gi->router,gi));
-    fprintf(file,"Tdyn(rsi)     = "OFD3" Gyr\n",Tdyn(halo->rshellinner,gi));
-    fprintf(file,"Tdyn(rso)     = "OFD3" Gyr\n",Tdyn(halo->rshellouter,gi));
-    if (halo->rmaxrefine != 0) {
-	fprintf(file,"Tdyn(rmor)    = "OFD3" Gyr\n",Tdyn(halo->rmaxrefine,gi));
+    fprintf(file,"Tdyn(rsi)     = "OFD3" Gyr\n",Tdyn(halo->rsi,gi));
+    fprintf(file,"Tdyn(rso)     = "OFD3" Gyr\n",Tdyn(halo->rso,gi));
+    if (halo->rmor != 0) {
+	fprintf(file,"Tdyn(rmor)    = "OFD3" Gyr\n",Tdyn(halo->rmor,gi));
 	}
     fprintf(file,"\n");
     fprintf(file,"M(rs)      = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rs,gi)*MU,Menc(halo->sp->rs,gi));
@@ -698,19 +698,19 @@ int main(int argc, char **argv) {
     fprintf(file,"M(rvir)    = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rvir,gi)*MU,Menc(halo->sp->rvir,gi));
     fprintf(file,"M(rinner)  = "OFD3" Mo = "OFD3" MU\n",Menc(gi->rinner,gi)*MU,Menc(gi->rinner,gi));
     fprintf(file,"M(router)  = "OFD3" Mo = "OFD3" MU\n",Menc(gi->router,gi)*MU,Menc(gi->router,gi));
-    fprintf(file,"M(rsi)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rshellinner,gi)*MU,Menc(halo->rshellinner,gi));
-    fprintf(file,"M(rso)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rshellouter,gi)*MU,Menc(halo->rshellouter,gi));
-    if (halo->rmaxrefine != 0) {
-	fprintf(file,"M(rmor)    = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rmaxrefine,gi)*MU,Menc(halo->rmaxrefine,gi));
+    fprintf(file,"M(rsi)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rsi,gi)*MU,Menc(halo->rsi,gi));
+    fprintf(file,"M(rso)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rso,gi)*MU,Menc(halo->rso,gi));
+    if (halo->rmor != 0) {
+	fprintf(file,"M(rmor)    = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rmor,gi)*MU,Menc(halo->rmor,gi));
 	}
     fprintf(file,"\n");
     fprintf(file,"Sampling properties\n\n");
     fprintf(file,"|Cr|      = "OFD3" kpc             Cr = ("OFD4", "OFD4", "OFD4") kpc\n",gi->stuff->Cr[0],gi->stuff->Cr[1],gi->stuff->Cr[2],gi->stuff->Cr[3]);
     fprintf(file,"|Cv|      = "OFD3" kpc Gyr^-1      Cv = ("OFD4", "OFD4", "OFD4") kpc Gyr^-1\n",gi->stuff->Cv[0],gi->stuff->Cv[1],gi->stuff->Cv[2],gi->stuff->Cv[3]);
-    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",gi->stuff->L[0]*MU,gi->stuff->L[1]*MU,gi->stuff->L[2]*MU,gi->stuff->L[3]*MU);
-    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",gi->stuff->L[0],gi->stuff->L[1],gi->stuff->L[2],gi->stuff->L[3]);
+    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",gi->stuff->Ltot[0]*MU,gi->stuff->Ltot[1]*MU,gi->stuff->Ltot[2]*MU,gi->stuff->Ltot[3]*MU);
+    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",gi->stuff->Ltot[0],gi->stuff->Ltot[1],gi->stuff->Ltot[2],gi->stuff->Ltot[3]);
     fprintf(file,"|L|/Msamp = "OFD3" kpc^2 Gyr^-1    L  = ("OFD4", "OFD4", "OFD4") kpc^2 Gyr^-1\n",
-	    gi->stuff->L[0]/gi->stuff->Mp,gi->stuff->L[1]/gi->stuff->Mp,gi->stuff->L[2]/gi->stuff->Mp,gi->stuff->L[3]/gi->stuff->Mp);
+	    gi->stuff->Ltot[0]/gi->stuff->Mp,gi->stuff->Ltot[1]/gi->stuff->Mp,gi->stuff->Ltot[2]/gi->stuff->Mp,gi->stuff->Ltot[3]/gi->stuff->Mp);
     fprintf(file,"\n");
     fprintf(file,"Etot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Etot*MU,gi->stuff->Etot);
     fprintf(file,"Ekin = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Ekin*MU,gi->stuff->Ekin);
@@ -718,7 +718,7 @@ int main(int argc, char **argv) {
     fprintf(file,"Rvir = |2*Ekin/Epot| = %g\n",fabs(2*gi->stuff->Ekin/gi->stuff->Epot));
     fprintf(file,"\n");
     fprintf(file,"i   rshelli [kpc] rshello [kpc] N          Ninitial   Nnosplit   Nnew       Mtheo [MU]    Msamp [MU]    massmax [MU]  softmax [kpc]\n");
-    if ((halo->sp->beta > 3) && (halo->rshellinner == gi->router)) {
+    if ((halo->sp->beta > 3) && (halo->rsi == gi->router)) {
 	k = halo->Nshell+1;
 	}
     else {
@@ -732,7 +732,7 @@ int main(int argc, char **argv) {
     fprintf(file,"Nshell              = "OFI1"\n",halo->Nshell);
     fprintf(file,"Ismor               = "OFI1"\n",halo->Ismor);
     fprintf(file,"DRMmax              = "OFI1"\n",halo->DRMmax);
-    fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->N,gi->stuff->N);
+    fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ntot,gi->stuff->Ntot);
     fprintf(file,"Neff                = "OFD3"\n",Menc(gi->router,gi)/halo->shell[0].mass);
     if (halo->sp->beta <= 3) {
 	fprintf(file,"Neff within rcutoff = "OFD1"\n",Menc(halo->sp->rcutoff,gi)/halo->shell[0].mass);

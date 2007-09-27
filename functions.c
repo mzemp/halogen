@@ -443,25 +443,24 @@ DOUBLE integrandPot(DOUBLE r, const SI *si) {
 
 INT split(INT i, DOUBLE rperi, const SI *si) {
 
-    DOUBLE massfac, router, rinner, rshellinner, rshellouter, rmaxrefine;
+    DOUBLE massfac, router, rinner, rsi, rmor;
 
     massfac = si->shell[i].massfac;
     rinner = si->shell[i].rinner;
     router = si->shell[i].router;
-    rshellinner = si->rshellinner;
-    rshellouter = si->rshellouter;
-    rmaxrefine = si->rmaxrefine;
-    if (rperi <= rshellinner) {
+    rsi = si->rsi;
+    rmor = si->rmor;
+    if (rperi <= rsi) {
 	return massfac;
 	}
-    else if (rperi >= rmaxrefine) {
+    else if (rperi >= rmor) {
 	return 1;
 	}
-    else if (router < rmaxrefine) {
-	return (INT)((massfac+(log(rperi)-log(rshellinner))*(1-massfac)/(log(router)-log(rshellinner)))+0.5);
+    else if (router < rmor) {
+	return (INT)((massfac+(log(rperi)-log(rsi))*(1-massfac)/(log(router)-log(rsi)))+0.5);
 	}
     else {
-	return (INT)((massfac+(log(rperi)-log(rshellinner))*(1-massfac)/(log(rmaxrefine)-log(rshellinner)))+0.5);
+	return (INT)((massfac+(log(rperi)-log(rsi))*(1-massfac)/(log(rmor)-log(rsi)))+0.5);
 	}
     }
 

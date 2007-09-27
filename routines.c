@@ -21,41 +21,47 @@
 
 void initialise_parameters(SI *si) {
 
-    si->setrshellinnerrs = 0;
-    si->setrshellinnerrvir = 0;
-    si->setrshellinnerrcutoff = 0;
-    si->setrshellouterrs = 0;
-    si->setrshellouterrvir = 0;
-    si->setrshellouterrcutoff = 0;
-    si->setrmaxrefiners = 0;
-    si->setrmaxrefinervir = 0;
-    si->setrmaxrefinercutoff = 0;
+    /*
+    ** General stuff
+    */
+    si->set_rsi_to_rs = 0;
+    si->set_rsi_to_rvir = 0;
+    si->set_rsi_to_rcutoff = 0;
+    si->set_rso_to_rs = 0;
+    si->set_rso_to_rvir = 0;
+    si->set_rso_to_rcutoff = 0;
+    si->set_rmor_to_rs = 0;
+    si->set_rmor_to_rvir = 0;
+    si->set_rmor_to_rcutoff = 0;
+    si->Nshell = 0;
+    si->Ismor = -1;
+    si->N0 = -1;
+    si->DRMmax = 1;
+    si->soft0 = -1;
+    si->rsi = -1;
+    si->rso = -1;
+    si->rmor = -1;
+    si->rimp = SBI;
+    si->r1 = -1;
+    si->r100 = -1;
+    /*
+    ** Particle stuff
+    */
     si->sp->alpha = -1;
     si->sp->beta = -1;
     si->sp->gamma = -1;
     si->sp->delta = -1;
-    si->sp->M = -1;
-    si->sp->rs = -1;
-    si->sp->rhalf = -1;
-    si->sp->rcutoff = -1;
     si->sp->rho0 = -1;
+    si->sp->rs = -1;
+    si->sp->rcutoff = -1;
+    si->sp->rdecay = -1;
+    si->sp->M = -1;
     si->sp->cvir = -1;
     si->sp->rvir = -1;
     si->sp->vvir = -1;
+    si->sp->rhalf = -1;
     si->sp->rvcmax = -1;
     si->sp->vcmax = -1;
-    si->sp->rdecay = -1;
-    si->N0 = -1;
-    si->soft0 = -1;
-    si->Nshell = 0;
-    si->Ismor = -1;
-    si->DRMmax = 1;
-    si->rshellinner = -1;
-    si->rshellouter = -1;
-    si->rmaxrefine = -1;
-    si->rimp = SBI;
-    si->r1 = -1;
-    si->r100 = -1;
     }
 
 /*
@@ -324,58 +330,73 @@ void calculate_virial_stuff(const GI *gi, SI *si) {
 
 void set_remaining_parameters(const GI *gi, SI *si) {
 
-    if (si->setrshellinnerrs == 1) {
-	si->rshellinner = si->sp->rs;
+    /*
+    ** Set rsi
+    */
+    if (si->set_rsi_to_rs == 1) {
+	si->rsi = si->sp->rs;
 	}
-    else if (si->setrshellinnerrvir == 1) {
-	si->rshellinner = si->sp->rvir;
+    else if (si->set_rsi_to_rvir == 1) {
+	si->rsi = si->sp->rvir;
 	}
-    else if (si->setrshellinnerrcutoff == 1) {
-	si->rshellinner = si->sp->rcutoff;
+    else if (si->set_rsi_to_rcutoff == 1) {
+	si->rsi = si->sp->rcutoff;
 	}
-    if (si->rshellinner == -1) {
+    if (si->rsi == -1) {
 	/*
 	** Default values
 	*/
 	if (si->sp->beta > 3) {
-	    si->rshellinner = gi->router;
+	    si->rsi = gi->router;
 	    }
 	else {
-	    si->rshellinner = si->sp->rcutoff;
+	    si->rsi = si->sp->rcutoff;
 	    }
 	}
-    if (si->setrshellouterrs == 1) {
-	si->rshellouter = si->sp->rs;
+    /*
+    ** Set rso
+    */
+    if (si->set_rso_to_rs == 1) {
+	si->rso = si->sp->rs;
 	}
-    else if (si->setrshellouterrvir == 1) {
-	si->rshellouter = si->sp->rvir;
+    else if (si->set_rso_to_rvir == 1) {
+	si->rso = si->sp->rvir;
 	}
-    else if (si->setrshellouterrcutoff == 1) {
-	si->rshellouter = si->sp->rcutoff;
+    else if (si->set_rso_to_rcutoff == 1) {
+	si->rso = si->sp->rcutoff;
 	}
-    if (si->rshellouter == -1) {
+    if (si->rso == -1) {
 	/*
 	** Default values
 	*/
 	if (si->sp->beta > 3) {
-	    si->rshellouter = gi->router;
+	    si->rso = gi->router;
 	    }
 	else {
-	    si->rshellouter = si->sp->rcutoff;
+	    si->rso = si->sp->rcutoff;
 	    }
 	}
-    if (si->setrmaxrefiners == 1) {
-	si->rmaxrefine = si->sp->rs;
+    /*
+    ** Ser rmor
+    */
+    if (si->set_rmor_to_rs == 1) {
+	si->rmor = si->sp->rs;
 	}
-    else if (si->setrmaxrefinervir == 1) {
-	si->rmaxrefine = si->sp->rvir;
+    else if (si->set_rmor_to_rvir == 1) {
+	si->rmor = si->sp->rvir;
 	}
-    else if (si->setrmaxrefinercutoff == 1) {
-	si->rmaxrefine = si->sp->rcutoff;
+    else if (si->set_rmor_to_rcutoff == 1) {
+	si->rmor = si->sp->rcutoff;
 	}
-    if (si->rmaxrefine == -1) {
-	si->rmaxrefine = 0;
+    if (si->rmor == -1) {
+	/*
+	** Default value
+	*/
+	si->rmor = 0;
 	}
+    /*
+    ** Set Ismor
+    */
     if (si->Ismor == -1) {
 	si->Ismor = si->Nshell+1;
 	}
@@ -383,39 +404,39 @@ void set_remaining_parameters(const GI *gi, SI *si) {
 
 void check_more_parameters(const GI *gi, const SI *si) {
 
-    if (si->rshellinner < 0) {
+    if (si->rsi < 0) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rsi (= "OFD1" kpc) is negative!\n",si->rshellinner);
+	fprintf(stderr,"Your choice of rsi (= "OFD1" kpc) is negative!\n",si->rsi);
 	fprintf(stderr,"Please choose rsi positive.\n");
 	usage();
 	}
-    if (si->rshellouter < 0) {
+    if (si->rso < 0) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is negative!\n",si->rshellouter);
+	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is negative!\n",si->rso);
 	fprintf(stderr,"Please choose rso positive.\n");
 	usage();
 	}
-    if (si->rmaxrefine < 0) {
+    if (si->rmor < 0) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rmor (= "OFD1" kpc) is negative!\n",si->rmaxrefine);
+	fprintf(stderr,"Your choice of rmor (= "OFD1" kpc) is negative!\n",si->rmor);
 	fprintf(stderr,"Please choose rmor positive.\n");
 	usage();
 	}
-    if (si->rshellinner < 10*gi->rinner) {
+    if (si->rsi < 10*gi->rinner) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rsi (= "OFD1" kpc) is smaller than 10*rinner (= "OFD1" kpc).\n",si->rshellinner,10*gi->rinner);
+	fprintf(stderr,"Your choice of rsi (= "OFD1" kpc) is smaller than 10*rinner (= "OFD1" kpc).\n",si->rsi,10*gi->rinner);
 	fprintf(stderr,"Please choose rsi larger.\n");
 	usage();
 	}
-    if (si->rshellouter > gi->router) {
+    if (si->rso > gi->router) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is larger than router (= "OFD1" kpc).\n",si->rshellouter,gi->router);
+	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is larger than router (= "OFD1" kpc).\n",si->rso,gi->router);
 	fprintf(stderr,"Please choose rso smaller.\n");
 	usage();
 	}
-    if (si->rshellouter < si->rshellinner) {
+    if (si->rso < si->rsi) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
-	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is smaller than rsi (= "OFD1" kpc).\n",si->rshellouter,si->rshellinner);
+	fprintf(stderr,"Your choice of rso (= "OFD1" kpc) is smaller than rsi (= "OFD1" kpc).\n",si->rso,si->rsi);
 	fprintf(stderr,"Please choose different values.\n");
 	usage();
 	}
@@ -425,17 +446,17 @@ void check_more_parameters(const GI *gi, const SI *si) {
 	fprintf(stderr,"Please choose a positive value for Nshell.\n");
 	usage();
 	}
-    if (si->Nshell == 0 && si->rshellouter != si->rshellinner) {
+    if (si->Nshell == 0 && si->rso != si->rsi) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
 	fprintf(stderr,"You have chosen Nshell = "OFI1".\n",si->Nshell);
-	fprintf(stderr,"You have chosen rsi (= "OFD1" kpc) not equal to rso (= "OFD1" kpc)!\n",si->rshellinner,si->rshellouter);
+	fprintf(stderr,"You have chosen rsi (= "OFD1" kpc) not equal to rso (= "OFD1" kpc)!\n",si->rsi,si->rso);
 	fprintf(stderr,"Please set them equal.\n");
 	usage();
 	}
-    if (si->Nshell > 0 && si->rshellouter == si->rshellinner) {
+    if (si->Nshell > 0 && si->rso == si->rsi) {
 	fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
 	fprintf(stderr,"You have chosen Nshell = "OFI1".\n",si->Nshell);
-	fprintf(stderr,"You have chosen rsi (= "OFD1" kpc) equal to rso (= "OFD1" kpc)!\n",si->rshellinner,si->rshellouter);
+	fprintf(stderr,"You have chosen rsi (= "OFD1" kpc) equal to rso (= "OFD1" kpc)!\n",si->rsi,si->rso);
 	fprintf(stderr,"Please set them unequal.\n");
 	usage();
 	}
@@ -445,9 +466,9 @@ void check_more_parameters(const GI *gi, const SI *si) {
 	fprintf(stderr,"Please choose a different value.\n");
 	usage();
 	}
-    if ((si->DRMmax != 1) && (si->rmaxrefine < si->rshellinner)) {
+    if ((si->DRMmax != 1) && (si->rmor < si->rsi)) {
 	fprintf(stderr,"Warning for %s!\n",si->systemname);
-	fprintf(stderr,"You have chosen rmor (= "OFD1" kpc) smaller than rsi (= "OFD1" kpc)!\n",si->rmaxrefine,si->rshellinner);
+	fprintf(stderr,"You have chosen rmor (= "OFD1" kpc) smaller than rsi (= "OFD1" kpc)!\n",si->rmor,si->rsi);
 	fprintf(stderr,"Are you sure about that? All particles with rperi < rsi will be\n");
 	fprintf(stderr,"refined by default if 0 kpc < rmor < rsi.\n");
 	fprintf(stderr,"Info: if you choose to set rmor = 0 kpc then no refinement will be done.\n");
@@ -504,14 +525,14 @@ void initialise_shell(SI *si) {
     shell = malloc((Nshell+3)*sizeof(SHELL));
     assert(shell != NULL);
     if (Nshell > 0) {
-	dlogr = (log(si->rshellouter)-log(si->rshellinner))/Nshell;
+	dlogr = (log(si->rso)-log(si->rsi))/Nshell;
 	}
     else {
 	dlogr = 0;
 	}
     shell[0].rinner = exp(si->logr[0]);
     for (i = 1; i < (Nshell+2); i++) {
-	logr = log(si->rshellinner) + (i-1)*dlogr;
+	logr = log(si->rsi) + (i-1)*dlogr;
 	shell[i].rinner = exp(logr);
 	shell[i-1].router = shell[i].rinner;
 	}
@@ -699,7 +720,7 @@ void refine(const GI *gi, SI *si) {
     PARTICLE *p;
 
     gridr = gi->gridr;
-    if((si->DRMmax > 1) && (si->rmaxrefine > 0)) {
+    if((si->DRMmax > 1) && (si->rmor > 0)) {
 	for (k = 1; k < (si->Ismor+1); k++) {
 	    N = si->shell[k].N;
 	    p = si->shell[k].p;
@@ -964,7 +985,7 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
     PARTICLE *p;
 
     stuff = gi->stuff;
-    stuff->N = 0;
+    stuff->Ntot = 0;
     stuff->Ninitialtot = 0;
     stuff->Nnosplittot = 0;
     stuff->Nnewtot = 0;
@@ -974,16 +995,16 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
     for(i = 0; i < 4; i++) {
 	stuff->Cr[i] = 0;
 	stuff->Cv[i] = 0;
-	stuff->L[i] = 0;
+	stuff->Ltot[i] = 0;
 	}
     if (bh->mass > 0) {
-	stuff->N++;
+	stuff->Ntot++;
 	stuff->Mp += bh->mass;
 	}
     for(j = 0; j < (halo->Nshell+2); j++) {
 	N = halo->shell[j].N;
 	p = halo->shell[j].p;
-	stuff->N += halo->shell[j].N;
+	stuff->Ntot += halo->shell[j].N;
 	stuff->Ninitialtot += halo->shell[j].Ninitial;
 	stuff->Nnosplittot += halo->shell[j].Nnosplit;
 	stuff->Nnewtot += halo->shell[j].Nnew;
@@ -1000,9 +1021,9 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
 	    stuff->Cv[1] += mass*p[i].v[1];
 	    stuff->Cv[2] += mass*p[i].v[2];
 	    stuff->Cv[3] += mass*p[i].v[3];
-	    stuff->L[1] += mass*p[i].L[1];
-	    stuff->L[2] += mass*p[i].L[2];
-	    stuff->L[3] += mass*p[i].L[3];
+	    stuff->Ltot[1] += mass*p[i].L[1];
+	    stuff->Ltot[2] += mass*p[i].L[2];
+	    stuff->Ltot[3] += mass*p[i].L[3];
 	    stuff->Ekin += mass*p[i].Ekin;
 	    stuff->Epot += mass*p[i].Epot;
 	    }
@@ -1013,7 +1034,7 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
 	}
     stuff->Cr[0] = sqrt(stuff->Cr[1]*stuff->Cr[1]+stuff->Cr[2]*stuff->Cr[2]+stuff->Cr[3]*stuff->Cr[3]);
     stuff->Cv[0] = sqrt(stuff->Cv[1]*stuff->Cv[1]+stuff->Cv[2]*stuff->Cv[2]+stuff->Cv[3]*stuff->Cv[3]);
-    stuff->L[0] = sqrt(stuff->L[1]*stuff->L[1]+stuff->L[2]*stuff->L[2]+stuff->L[3]*stuff->L[3]);
+    stuff->Ltot[0] = sqrt(stuff->Ltot[1]*stuff->Ltot[1]+stuff->Ltot[2]*stuff->Ltot[2]+stuff->Ltot[3]*stuff->Ltot[3]);
     stuff->Epot = stuff->Epot/2.0;
     stuff->Etot = stuff->Ekin + stuff->Epot;
     if (gi->gridr->eqrvcmax[0] < 0) {

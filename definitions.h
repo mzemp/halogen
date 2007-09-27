@@ -72,11 +72,11 @@ typedef struct systemparameters {
     DOUBLE beta;
     DOUBLE gamma;
     DOUBLE delta;
-    DOUBLE M;
     DOUBLE rho0;
     DOUBLE rs;
     DOUBLE rcutoff;
     DOUBLE rdecay;
+    DOUBLE M;
     DOUBLE cvir;
     DOUBLE rvir;
     DOUBLE vvir;
@@ -102,10 +102,10 @@ typedef struct particle {
 
 typedef struct shell {
 
+    INT N;
     INT Ninitial;
     INT Nnosplit;
     INT Nnew;
-    INT N;
     INT massfac;
     DOUBLE rinner;
     DOUBLE router;
@@ -114,11 +114,11 @@ typedef struct shell {
     DOUBLE mass;
     DOUBLE soft;
     PARTICLE *p;
-    } SHELL; 
+    } SHELL;
 
 typedef struct stuff {
 
-    INT N;
+    INT Ntot;
     INT Ninitialtot;
     INT Nnosplittot;
     INT Nnewtot;
@@ -128,28 +128,28 @@ typedef struct stuff {
     DOUBLE Etot;
     DOUBLE Cr[4];
     DOUBLE Cv[4];
-    DOUBLE L[4];
+    DOUBLE Ltot[4];
     } STUFF;
 
 typedef struct systeminfo {
 
-    INT setrshellinnerrs;
-    INT setrshellinnerrvir;
-    INT setrshellinnerrcutoff;
-    INT setrshellouterrs;
-    INT setrshellouterrvir;
-    INT setrshellouterrcutoff;
-    INT setrmaxrefiners;
-    INT setrmaxrefinervir;
-    INT setrmaxrefinercutoff;
+    INT set_rsi_to_rs;
+    INT set_rsi_to_rvir;
+    INT set_rsi_to_rcutoff;
+    INT set_rso_to_rs;
+    INT set_rso_to_rvir;
+    INT set_rso_to_rcutoff;
+    INT set_rmor_to_rs;
+    INT set_rmor_to_rvir;
+    INT set_rmor_to_rcutoff;
     INT Nshell;
     INT Ismor;
     INT N0;
     INT DRMmax;
     DOUBLE soft0;
-    DOUBLE rshellouter;
-    DOUBLE rshellinner;
-    DOUBLE rmaxrefine;
+    DOUBLE rsi;
+    DOUBLE rso;
+    DOUBLE rmor;
     DOUBLE rimp;
     DOUBLE r1;
     DOUBLE r100;
