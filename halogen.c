@@ -702,11 +702,11 @@ int main(int argc, char **argv) {
 	}
     fprintf(file,"\n");
     fprintf(file,"Sampling properties\n\n");
-    fprintf(file,"|Cr|      = "OFD3" kpc             Cr = ("OFD4", "OFD4", "OFD4") kpc\n",gi->stuff->Cr[0],gi->stuff->Cr[1],gi->stuff->Cr[2],gi->stuff->Cr[3]);
-    fprintf(file,"|Cv|      = "OFD3" kpc Gyr^-1      Cv = ("OFD4", "OFD4", "OFD4") kpc Gyr^-1\n",gi->stuff->Cv[0],gi->stuff->Cv[1],gi->stuff->Cv[2],gi->stuff->Cv[3]);
-    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",gi->stuff->Ltot[0]*MU,gi->stuff->Ltot[1]*MU,gi->stuff->Ltot[2]*MU,gi->stuff->Ltot[3]*MU);
-    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L  = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",gi->stuff->Ltot[0],gi->stuff->Ltot[1],gi->stuff->Ltot[2],gi->stuff->Ltot[3]);
-    fprintf(file,"|L|/Msamp = "OFD3" kpc^2 Gyr^-1    L  = ("OFD4", "OFD4", "OFD4") kpc^2 Gyr^-1\n",
+    fprintf(file,"|Cr|      = "OFD3" kpc             Cr      = ("OFD4", "OFD4", "OFD4") kpc\n",gi->stuff->Cr[0],gi->stuff->Cr[1],gi->stuff->Cr[2],gi->stuff->Cr[3]);
+    fprintf(file,"|Cv|      = "OFD3" kpc Gyr^-1      Cv      = ("OFD4", "OFD4", "OFD4") kpc Gyr^-1\n",gi->stuff->Cv[0],gi->stuff->Cv[1],gi->stuff->Cv[2],gi->stuff->Cv[3]);
+    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",gi->stuff->Ltot[0]*MU,gi->stuff->Ltot[1]*MU,gi->stuff->Ltot[2]*MU,gi->stuff->Ltot[3]*MU);
+    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",gi->stuff->Ltot[0],gi->stuff->Ltot[1],gi->stuff->Ltot[2],gi->stuff->Ltot[3]);
+    fprintf(file,"|L|/Msamp = "OFD3" kpc^2 Gyr^-1    L/Msamp = ("OFD4", "OFD4", "OFD4") kpc^2 Gyr^-1\n",
 	    gi->stuff->Ltot[0]/gi->stuff->Mp,gi->stuff->Ltot[1]/gi->stuff->Mp,gi->stuff->Ltot[2]/gi->stuff->Mp,gi->stuff->Ltot[3]/gi->stuff->Mp);
     fprintf(file,"\n");
     fprintf(file,"Etot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Etot*MU,gi->stuff->Etot);
