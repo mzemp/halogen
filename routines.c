@@ -230,7 +230,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
     r3 = r*r*r;
     rhoHalor = rho(r,halo);
     rhor = rhoHalor;
-    DeltaMencHalor = 4*M_PI*rhor*r3/(3-hp->gamma); /* approximate inner gridpoint by analytical calculation */
+    DeltaMencHalor = 4*M_PI*rhoHalor*r3/(3-hp->gamma); /* approximate inner gridpoint by analytical calculation */
     MencHalor = DeltaMencHalor;
     Mencr = bh->mass + DeltaMencHalor;
     rhoencHalor = MencHalor/(4*M_PI*r3/3.0);
