@@ -4,7 +4,7 @@
 ** Some definitions for halogen
 */
 
-#define VERSION "0.9"
+#define VERSION "1.0"
 #define NGRIDR 2001
 #define NGRIDDF 101
 #define NINTMIN 5
