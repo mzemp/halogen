@@ -154,6 +154,7 @@ typedef struct systeminfo {
     DOUBLE rimp;
     DOUBLE r1;
     DOUBLE r100;
+    DOUBLE dfsf;
     DOUBLE logr[NGRIDR];
     DOUBLE logMenc[NGRIDR];
     DOUBLE logrhoenc[NGRIDR];

@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
     i = 1;
     while (i < argc) {
 	/*
-	** Halo parameters
+	** Model parameters
 	*/
 	if (strcmp(argv[i],"-a") == 0) {
 	    i++;
@@ -191,46 +191,6 @@ int main(int argc, char **argv) {
 	    i++;
 	    }
 	/*
-	** Black hole parameters
-	*/
-	else if (strcmp(argv[i],"-MBH") == 0) {
-	    i++;
-	    if (i >= argc) {
-		usage();
-		}
-	    bh->mass = atof(argv[i]);
-	    i++;
-	    if (strcmp("Mo",argv[i]) == 0) {
-		bh->mass /= MU;
-		i++;
-		}
-	    else if (strcmp("MU",argv[i]) == 0) {
-		i++;
-		}
-	    else {
-		bh->mass /= MU;
-		}
-	    }
-	else if (strcmp(argv[i],"-softBH") == 0) {
-	    i++;
-	    if (i >= argc) {
-		usage();
-		}
-	    bh->soft = atof(argv[i]);
-	    i++;
-	    }
-	/*
-	** Model name
-	*/
-	else if (strcmp(argv[i],"-name") == 0) {
-	    i++;
-	    if (i >= argc) {
-		usage();
-		}
-	    sprintf(INPUTNAME,"%s",argv[i]);
-	    i++;
-	    }
-	/*
 	** Multi-mass parameters
 	*/
 	else if (strcmp(argv[i],"-rsi") == 0) {
@@ -312,6 +272,57 @@ int main(int argc, char **argv) {
 	    else {
 		halo->rmor = atof(argv[i]);
 		}
+	    i++;
+	    }
+	/*
+	** Special parameters
+	*/
+	else if (strcmp(argv[i],"-dfsf") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    halo->dfsf = atof(argv[i]);
+	    i++;
+	    }
+	/*
+	** Black hole parameters
+	*/
+	else if (strcmp(argv[i],"-MBH") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    bh->mass = atof(argv[i]);
+	    i++;
+	    if (strcmp("Mo",argv[i]) == 0) {
+		bh->mass /= MU;
+		i++;
+		}
+	    else if (strcmp("MU",argv[i]) == 0) {
+		i++;
+		}
+	    else {
+		bh->mass /= MU;
+		}
+	    }
+	else if (strcmp(argv[i],"-softBH") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    bh->soft = atof(argv[i]);
+	    i++;
+	    }
+	/*
+	** Model name
+	*/
+	else if (strcmp(argv[i],"-name") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    sprintf(INPUTNAME,"%s",argv[i]);
 	    i++;
 	    }
 	/*
@@ -746,6 +757,7 @@ int main(int argc, char **argv) {
     fprintf(file,"Mtheo               = "OFD3" Mo = "OFD3" MU\n",Menc(gi->router,gi)*MU,Menc(gi->router,gi));
     fprintf(file,"Msamp               = "OFD3" Mo = "OFD3" MU\n",gi->stuff->Mp*MU,gi->stuff->Mp);
     fprintf(file,"(Msamp-Mtheo)/Mtheo = "OFD3"\n",gi->stuff->Mp/Menc(gi->router,gi)-1.0);
+    fprintf(file,"DF split factor     = "OFD3"\n",halo->dfsf);
     fprintf(file,"Random seed         = "OFD3"\n",randomseed);
     fprintf(file,"\n");
     fprintf(file,"Times for individual steps\n\n");

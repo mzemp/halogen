@@ -44,6 +44,7 @@ void initialise_parameters(SI *si) {
     si->rimp = SBI;
     si->r1 = -1;
     si->r100 = -1;
+    si->dfsf = 0.01;
     /*
     ** Particle stuff
     */
@@ -605,10 +606,11 @@ void set_positions(SI *si) {
 
 void set_velocities(const GI *gi, SI *si) {
     
-    INT i, j, N;
-    DOUBLE r, Erand, Potr;
-    DOUBLE fEmax, fErand, fEcheck;
-    DOUBLE vesc, vrand;
+    INT i, j, N, isplit;
+    DOUBLE r, Potr, Esplit, Erand;
+    DOUBLE fEmax, fEsplit, fErand, fEcheck;
+    DOUBLE Compmax, Compsplit, Comprand;
+    DOUBLE vesc, vsplit, vrand;
     DOUBLE theta, phi;
     GRIDR *gridr;
     GRIDDF *griddf;
@@ -624,15 +626,59 @@ void set_velocities(const GI *gi, SI *si) {
 	    Potr = Pot(r,gi);
 	    vesc = vescape(r,gi);
 	    fEmax = f2(r,si);
+	    if (si->dfsf == 0 || si->dfsf == 1) {
+		/*
+		** No splitting
+		*/
+		isplit = NGRIDDF-1;
+		}
+	    else {
+		isplit = locate(NGRIDDF,griddf->fE,si->dfsf*fEmax);
+		}
+	    if (griddf->fE[isplit] > fEmax) {
+		isplit += 1;
+		}
+	    assert(isplit < NGRIDDF);
+	    Esplit = griddf->E[isplit];
+	    vsplit = sqrt(2*(Esplit-Potr));
+	    fEsplit = griddf->fE[isplit];
+	    Compsplit = fEmax*vsplit*vsplit*vsplit/3.0;
+	    Compmax = Compsplit + (fEsplit/3.0)*(vesc*vesc*vesc-vsplit*vsplit*vsplit);
 	    vrand = 0;
 	    Erand = 0;
 	    fErand = 0;
 	    fEcheck = 1;
 	    while (fEcheck > fErand) {
-		vrand = pow(rand01(),1.0/3.0)*vesc;
+		/*
+		** Get random value of comparison function
+		** and calculate the according velocity vrand
+		*/
+		Comprand = rand01()*Compmax;
+		if (Comprand <= Compsplit) {
+		    vrand = (3.0/fEmax)*Comprand;
+		    vrand = pow(vrand,1.0/3.0);
+		    }
+		else {
+		    vrand = Comprand - Compsplit + (fEsplit/3.0)*vsplit*vsplit*vsplit;
+		    vrand *= 3.0/fEsplit;
+		    vrand = pow(vrand,1.0/3.0);
+		    }
+		/*
+		** Calculate the value of the distribution
+		** function at vrand
+		*/
 		Erand = 0.5*vrand*vrand + Potr;
 		fErand = f1(Erand,si);
-		fEcheck = rand01()*fEmax;
+		/*
+		** Generate random value fEcheck for
+		** acceptance/rejection criterion
+		*/
+		if (Comprand <= Compsplit) {
+		    fEcheck = rand01()*fEmax;
+		    }
+		else {
+		    fEcheck = rand01()*fEsplit;
+		    }
 		}
 	    theta = acos(2.0*rand01() - 1.0);
 	    phi = rand01()*2.0*M_PI;
@@ -1117,6 +1163,7 @@ void usage() {
     fprintf(stderr,"-DRMmax <value>     : maximum mass ratio between two neighbouring shells (default: 1)\n");
     fprintf(stderr,"-rmor <value>       : maximum orbital refinement radius - rcutoff, rvir, rs or numerical value [kpc] (default: 0 kpc)\n");
     fprintf(stderr,"-Ismor <value>      : maximum index of shell where orbital refinement is done (default: Nshell+1)\n");
+    fprintf(stderr,"-dfsf <value>       : distribution function split factor (default: 0.01)\n");
     fprintf(stderr,"-MBH <value> <unit> : mass of black hole, <unit> = Mo or MU (optional - default: Mo)\n");
     fprintf(stderr,"-softBH <value>     : softening of black hole [kpc]\n");
     fprintf(stderr,"-name <value>       : name of the output file\n");
