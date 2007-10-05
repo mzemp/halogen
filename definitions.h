@@ -15,7 +15,7 @@
 #define TOLDF 1e-3
 #define TOLLININT 1e-10
 #define DFFAILUREMAX 1e20
-#define FACTORRINNER 1e-6
+#define FACTORRINNER 1e-8
 #define FACTORROUTER 1e20
 #define SBI 1e100
 #define CutoffFac 0.3

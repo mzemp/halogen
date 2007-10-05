@@ -591,7 +591,7 @@ int main(int argc, char **argv) {
     */
 
     t8 = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
-    fprintf(stderr,"Done in "OFD1" seconds\nWriting Output... \n",t8-t7);
+    fprintf(stderr,"Done in "OFD1" seconds\nWriting output... \n",t8-t7);
 
     transfer_particles(bh,halo,ts);
     
@@ -743,7 +743,7 @@ int main(int argc, char **argv) {
     fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ntot,gi->stuff->Ntot);
     fprintf(file,"Neff                = "OFD3"\n",Menc(gi->router,gi)/halo->shell[0].mass);
     if (halo->sp->beta <= 3) {
-	fprintf(file,"Neff within rcutoff = "OFD1"\n",Menc(halo->sp->rcutoff,gi)/halo->shell[0].mass);
+	fprintf(file,"Neff within rcutoff = "OFD3"\n",Menc(halo->sp->rcutoff,gi)/halo->shell[0].mass);
 	}
     fprintf(file,"Ninitialtot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ninitialtot,gi->stuff->Ninitialtot);
     fprintf(file,"Nnosplittot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnosplittot,gi->stuff->Nnosplittot);
