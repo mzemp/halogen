@@ -3,12 +3,13 @@
 # Executable
 
 BASE    = halogen
+VERSION = 1.1
 EXT     = 64
 EXE     = $(BASE)$(EXT)
 
 # Compiler stuff
 
-CC	= gcc
+CC	= gcc -DDPP
 CFLAGS	= -O3 -Wall
 LIBS	= -lm
 
@@ -25,7 +26,7 @@ clean:
 	-rm -f *.o *~ $(EXE)
 
 tar:
-	cd ..; tar cvf - $(BASE)/*.c $(BASE)/*.h $(BASE)/Makefile > $(BASE).tar
+	cd ..; tar cvf - $(BASE)/*.c $(BASE)/*.h $(BASE)/Makefile > $(BASE)-$(VERSION).tar
 
 # Dependencies
 
