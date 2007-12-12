@@ -593,36 +593,36 @@ int main(int argc, char **argv) {
     t8 = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds\nWriting output... \n",t8-t7);
 
-    transfer_particles(bh,halo,ts);
+/*     transfer_particles(bh,halo,ts); */
     
-    if (output_tipsy_ascii == 1) {
-	sprintf(FILENAME,"%s.tipsy.ascii",INPUTNAME);
-	file = fopen(FILENAME,"w");
-	assert(file != NULL);
-	write_tipsy_ascii(file,ts);
-	fclose(file);
-	}
-    if (output_tipsy_binary == 1) {
-	sprintf(FILENAME,"%s.tipsy.bin",INPUTNAME);
-	file = fopen(FILENAME,"w");
-	assert(file != NULL);
-	write_tipsy_binary(file,ts);
-	fclose(file);
-	}
+/*     if (output_tipsy_ascii == 1) { */
+/* 	sprintf(FILENAME,"%s.tipsy.ascii",INPUTNAME); */
+/* 	file = fopen(FILENAME,"w"); */
+/* 	assert(file != NULL); */
+/* 	write_tipsy_ascii(file,ts); */
+/* 	fclose(file); */
+/* 	} */
+/*     if (output_tipsy_binary == 1) { */
+/* 	sprintf(FILENAME,"%s.tipsy.bin",INPUTNAME); */
+/* 	file = fopen(FILENAME,"w"); */
+/* 	assert(file != NULL); */
+/* 	write_tipsy_binary(file,ts); */
+/* 	fclose(file); */
+/* 	} */
     if (output_tipsy_standard == 1) {
 	sprintf(FILENAME,"%s.tipsy.std",INPUTNAME);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
-	write_tipsy_standard(file,ts);
+	write_tipsy_standard_2(file,bh,halo);
 	fclose(file);
 	}
-    if (output_gadget_binary == 1) {
-	sprintf(FILENAME,"%s.gadget.bin",INPUTNAME);
-	file = fopen(FILENAME,"w");
-	assert(file != NULL);
-	write_gadget_binary(file,ts,1,0,0,0,3,1,1000.0/VelConvertFac);
-	fclose(file);
-	}
+/*     if (output_gadget_binary == 1) { */
+/* 	sprintf(FILENAME,"%s.gadget.bin",INPUTNAME); */
+/* 	file = fopen(FILENAME,"w"); */
+/* 	assert(file != NULL); */
+/* 	write_gadget_binary(file,ts,1,0,0,0,3,1,1000.0/VelConvertFac); */
+/* 	fclose(file); */
+/* 	} */
 
     /* 
     ** Print some output in file

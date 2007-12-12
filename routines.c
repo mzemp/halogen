@@ -1114,6 +1114,65 @@ void transfer_particles(const PARTICLE *bh, const SI *halo, TIPSY_STRUCTURE *ts)
     }
 
 /*
+** Routine for writing tipsy standard format memory efficient
+*/
+
+void write_tipsy_standard_2(FILE *fp, const PARTICLE *bh, const SI *halo) {
+
+    INT i, j, k, Ntotal;
+    TIPSY_HEADER th;
+    DARK_PARTICLE dp;
+    PARTICLE *p;
+    XDR xdrs;
+
+    xdrstdio_create(&xdrs,fp,XDR_DECODE);
+    /*
+    ** Write out header
+    */
+    Ntotal = 0;
+    if (bh->mass != 0) {
+	Ntotal++;
+	}
+    for (j = 0; j < (halo->Nshell+2); j++) {
+	Ntotal = Ntotal + halo->shell[j].N;
+	}
+    th.time = 0;
+    th.ntotal = Ntotal;
+    th.ndim = 3;
+    th.ngas = 0;
+    th.ndark = Ntotal;
+    th.nstar = 0;
+    write_tipsy_standard_header(&xdrs,&th);
+    /*
+    ** Write out dark matter particles
+    */
+    if (bh->mass != 0) {
+	for (k = 0; k < 3; k++) {
+	    dp.pos[k] = bh->r[k+1];
+	    dp.vel[k] = bh->v[k+1];
+	    }
+	dp.mass = bh->mass;
+	dp.eps = bh->soft;
+	dp.phi = bh->Epot;
+	write_tipsy_standard_dark(&xdrs,&dp);
+	}
+    for (j = 0; j < (halo->Nshell+2); j++) {
+	p = halo->shell[j].p;
+	for (i = 0; i < halo->shell[j].N; i++) {
+	    for (k = 0; k < 3; k++) {
+		dp.pos[k] = p[i].r[k+1];
+		dp.vel[k] = p[i].v[k+1];
+		}
+	    dp.mass = p[i].mass;
+	    dp.eps = p[i].soft;
+	    dp.phi = p[i].Epot;
+	    write_tipsy_standard_dark(&xdrs,&dp);
+	    }
+	}
+    xdr_destroy(&xdrs);
+    }
+
+/*
 ** Routines for writing out grids
 */
 

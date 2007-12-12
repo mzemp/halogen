@@ -9,8 +9,8 @@ EXE     = $(BASE)$(EXT)
 
 # Compiler stuff
 
-CC	= gcc -DDPP
-CFLAGS	= -O3 -Wall
+CC	= gcc
+CFLAGS	= -O3 -Wall #-DDPP
 LIBS	= -lm
 
 # Object definition
