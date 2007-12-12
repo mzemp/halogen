@@ -1125,7 +1125,7 @@ void write_tipsy_standard_2(FILE *fp, const PARTICLE *bh, const SI *halo) {
     PARTICLE *p;
     XDR xdrs;
 
-    xdrstdio_create(&xdrs,fp,XDR_DECODE);
+    xdrstdio_create(&xdrs,fp,XDR_ENCODE);
     /*
     ** Write out header
     */
