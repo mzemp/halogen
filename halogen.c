@@ -748,6 +748,9 @@ int main(int argc, char **argv) {
     fprintf(file,"Ninitialtot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ninitialtot,gi->stuff->Ninitialtot);
     fprintf(file,"Nnosplittot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnosplittot,gi->stuff->Nnosplittot);
     fprintf(file,"Nnewtot             = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnewtot,gi->stuff->Nnewtot);
+    fprintf(file,"Nfesm               = "OFD3" Gyr^-1\n",gi->stuff->Nfesm);
+    fprintf(file,"Nfemm               = "OFD3" Gyr^-1\n",gi->stuff->Nfemm);
+    fprintf(file,"fsth                = "OFD3"\n",gi->stuff->Nfesm/gi->stuff->Nfemm);
     fprintf(file,"rimp                = "OFD3" kpc\n",halo->rimp);
     fprintf(file,"r1                  = "OFD3" kpc\n",halo->r1);
     fprintf(file,"r100                = "OFD3" kpc\n",halo->r100);

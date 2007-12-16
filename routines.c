@@ -987,7 +987,7 @@ void double_particles(SI *si) {
 void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
 
     INT i, j, N;
-    DOUBLE mass;
+    DOUBLE temp;
     STUFF *stuff;
     PARTICLE *p;
 
@@ -999,6 +999,8 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
     stuff->Mp = 0;
     stuff->Ekin = 0;
     stuff->Epot = 0;
+    stuff->Nfemm = 0;
+    stuff->Nfesm = 0;
     for(i = 0; i < 4; i++) {
 	stuff->Cr[i] = 0;
 	stuff->Cv[i] = 0;
@@ -1019,20 +1021,23 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
 	    if((j == 0) && (p[i].r[0] < halo->rimp)) {
 		halo->rimp = p[i].r[0];
 		}
-	    mass = p[i].mass;
-	    halo->shell[j].Mp += mass;
-	    stuff->Mp += mass;
-	    stuff->Cr[1] += mass*p[i].r[1];
-	    stuff->Cr[2] += mass*p[i].r[2];
-	    stuff->Cr[3] += mass*p[i].r[3];
-	    stuff->Cv[1] += mass*p[i].v[1];
-	    stuff->Cv[2] += mass*p[i].v[2];
-	    stuff->Cv[3] += mass*p[i].v[3];
-	    stuff->Ltot[1] += mass*p[i].L[1];
-	    stuff->Ltot[2] += mass*p[i].L[2];
-	    stuff->Ltot[3] += mass*p[i].L[3];
-	    stuff->Ekin += mass*p[i].Ekin;
-	    stuff->Epot += mass*p[i].Epot;
+	    temp = p[i].mass;
+	    halo->shell[j].Mp += temp;
+	    stuff->Mp += temp;
+	    stuff->Cr[1] += temp*p[i].r[1];
+	    stuff->Cr[2] += temp*p[i].r[2];
+	    stuff->Cr[3] += temp*p[i].r[3];
+	    stuff->Cv[1] += temp*p[i].v[1];
+	    stuff->Cv[2] += temp*p[i].v[2];
+	    stuff->Cv[3] += temp*p[i].v[3];
+	    stuff->Ltot[1] += temp*p[i].L[1];
+	    stuff->Ltot[2] += temp*p[i].L[2];
+	    stuff->Ltot[3] += temp*p[i].L[3];
+	    stuff->Ekin += temp*p[i].Ekin;
+	    stuff->Epot += temp*p[i].Epot;
+	    temp = (2*M_PI)/(0.03*Tdyn(p[i].r[0],gi));
+	    stuff->Nfemm += temp;
+	    stuff->Nfesm += temp*p[i].mass/halo->shell[0].mass;
 	    }
 	}
     for(i = 1; i < 4; i++) {

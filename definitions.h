@@ -130,6 +130,8 @@ typedef struct stuff {
     DOUBLE Cr[4];
     DOUBLE Cv[4];
     DOUBLE Ltot[4];
+    DOUBLE Nfemm;
+    DOUBLE Nfesm;
     } STUFF;
 
 typedef struct systeminfo {
