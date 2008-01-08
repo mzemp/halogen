@@ -16,10 +16,27 @@
 #include "routines.h"
 
 /*
-** Routine for initialising systems
+** Routine for initialising general info structure
 */
 
-void initialise_parameters(SI *si) {
+void initialise_general_info(GI *gi) {
+
+    gi->Ngridr = 2001;
+    gi->Ngriddf = 101;
+    gi->OmegaM0 = 0.3;
+    gi->OmegaK0 = 0;
+    gi->OmegaL0 = 0.7;
+    gi->h0 = 0.7;
+    gi->z = 0;
+    gi->rhocritz = -1;
+    gi->Deltavirz = -1;
+    }
+
+/*
+** Routine for initialising a system
+*/
+
+void initialise_system(SI *si) {
 
     /*
     ** General stuff
@@ -66,10 +83,10 @@ void initialise_parameters(SI *si) {
     }
 
 /*
-** Routine for initialising black hole
+** Routine for initialising a particle
 */
 
-void initialise_black_hole(PARTICLE *p) {
+void initialise_particle(PARTICLE *p) {
 
     INT i;
 
@@ -131,6 +148,55 @@ void check_main_parameters(const SI *si) {
 	fprintf(stderr,"You have not set a value for the softening of the particles soft0.\n");
 	usage();
 	}
+    }
+
+/*
+** Routine for allocating memory for general info structure
+*/
+
+void allocate_general_info(GI *gi) {
+
+    gi->stuff = malloc(sizeof(STUFF));
+    assert(gi->stuff != NULL);
+    gi->gridr = malloc(sizeof(GRIDR));
+    assert(gi->gridr != NULL);
+    gi->gridr->r = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logr = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->rho = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logrho = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->rhoHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logrhoHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->rhoenc = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logrhoenc = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->rhoencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logrhoencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->Menc = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logMenc = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->MencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logMencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->Pot = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->logPot = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->Potoutr = malloc(gi->Ngridr*sizeof(DOUBLE));
+    gi->gridr->eqrvcmax = malloc(gi->Ngridr*sizeof(DOUBLE));
+    }
+
+/*
+** Routine for allocating memory for a system
+*/
+
+void allocate_system(const GI *gi, SI *si) {
+
+    si->shell = malloc(sizeof(SHELL));
+    si->griddf = malloc(sizeof(GRIDDF));
+    si->griddf->r = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->griddf->logr = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->griddf->E = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->griddf->logE = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->griddf->fE = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->griddf->logfE = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->logr = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->logMenc = malloc(gi->Ngridr*sizeof(DOUBLE));
+    si->logrhoenc = malloc(gi->Ngridr*sizeof(DOUBLE));
     }
 
 /*
@@ -224,7 +290,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
 
     gridr = gi->gridr;
     hp = halo->sp;
-    dlogr = (log(gi->router)-log(gi->rinner))/(NGRIDR-1);
+    dlogr = (log(gi->router)-log(gi->rinner))/(gi->Ngridr-1);
     i = 0;
     logr = log(gi->rinner);
     r = exp(logr);
@@ -254,7 +320,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
     gridr->logMencHalo[i] = log(MencHalor);
     halo->logMenc[i] = log(MencHalor);
     gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
-    for (i = 1; i < NGRIDR; i++) {
+    for (i = 1; i < gi->Ngridr; i++) {
 	logr = log(gi->rinner) + i*dlogr;
 	r = exp(logr);
 	r3 = r*r*r;
@@ -284,13 +350,13 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
 	halo->logMenc[i] = log(MencHalor);
 	gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
 	}
-    i = NGRIDR-1;
+    i = gi->Ngridr-1;
     Potoutr = 0; /* approximate outer gridpoint by 0 */
     Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
     gridr->Pot[i] = Potr;
     gridr->logPot[i] = log(-Potr);
     gridr->Potoutr[i] = Potoutr;
-    for (i = (NGRIDR-2); i >= 0; i--) {
+    for (i = (gi->Ngridr-2); i >= 0; i--) {
 	Potoutr = integral(integrandPot,gridr->r[i],gridr->r[i+1],halo)+gridr->Potoutr[i+1];
 	Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
 	gridr->Pot[i] = Potr;
@@ -309,7 +375,7 @@ void calculate_virial_stuff(const GI *gi, SI *si) {
 	/*
 	** Finite mass models
 	*/
-	si->sp->rvir = exp(lininterpolate(NGRIDR,si->logrhoenc,si->logr,log(gi->Deltavirz*gi->rhocritz)));
+	si->sp->rvir = exp(lininterpolate(gi->Ngridr,si->logrhoenc,si->logr,log(gi->Deltavirz*gi->rhocritz)));
 	si->sp->cvir = si->sp->rvir/si->sp->rs;
 	si->sp->vvir = sqrt(G*si->sp->M/si->sp->rvir);
 	}
@@ -318,7 +384,7 @@ void calculate_virial_stuff(const GI *gi, SI *si) {
 	** Cutoff models
 	*/
 	if (si->sp->rvir == -1) {
-	    si->sp->rvir = exp(lininterpolate(NGRIDR,si->logrhoenc,si->logr,log(gi->Deltavirz*gi->rhocritz)));
+	    si->sp->rvir = exp(lininterpolate(gi->Ngridr,si->logrhoenc,si->logr,log(gi->Deltavirz*gi->rhocritz)));
 	    si->sp->cvir = si->sp->rvir/si->sp->rs;
 	    si->sp->vvir = sqrt(G*si->sp->M/si->sp->rvir);
 	    }
@@ -494,8 +560,8 @@ void initialise_griddf(const GI *gi, SI *si) {
 
     gridr = gi->gridr;
     griddf = si->griddf;
-    dj = (NGRIDR-1) / (NGRIDDF-1);
-    for (i = (NGRIDDF-1), j = (NGRIDR-1); i >= 0; i--, j = j-dj) {
+    dj = (gi->Ngridr-1) / (gi->Ngriddf-1);
+    for (i = (gi->Ngriddf-1), j = (gi->Ngridr-1); i >= 0; i--, j = j-dj) {
 	fE = integraldf(j,gi,si);
 	if (fE < 0) {
 	    fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
@@ -537,11 +603,11 @@ void initialise_shell(SI *si) {
 	shell[i].rinner = exp(logr);
 	shell[i-1].router = shell[i].rinner;
 	}
-    shell[Nshell+2].rinner = exp(si->logr[NGRIDR-1]);
+    shell[Nshell+2].rinner = exp(si->logr[gi->Ngridr-1]);
     shell[Nshell+1].router = shell[Nshell+2].rinner;
     shell[Nshell+2].router = shell[Nshell+2].rinner;
     for (i = 0; i < (Nshell+3); i++) {
-	shell[i].Menc = exp(lininterpolate(NGRIDR,si->logr,si->logMenc,log(shell[i].rinner)));
+	shell[i].Menc = exp(lininterpolate(gi->Ngridr,si->logr,si->logMenc,log(shell[i].rinner)));
 	}
     mass0 = (shell[1].Menc-shell[0].Menc)/(2.0*(si->N0/2));
     for (i = 0; i < (Nshell+2); i++) {
@@ -588,7 +654,7 @@ void set_positions(SI *si) {
 	for (i = 0; i < N; i++) {
 	    Mrand = Mmin + rand01()*(Mmax - Mmin);
 	    logMrand = log(Mrand);
-	    logrrand = lininterpolate(NGRIDR,si->logMenc,si->logr,logMrand);
+	    logrrand = lininterpolate(gi->Ngridr,si->logMenc,si->logr,logMrand);
 	    rrand = exp(logrrand);
 	    costheta = 2.0*rand01() - 1.0;
 	    sintheta = sqrt(1-costheta*costheta);
@@ -628,20 +694,20 @@ void set_velocities(const GI *gi, SI *si) {
 	    r = p[i].r[0];
 	    Potr = Pot(r,gi);
 	    vesc = vescape(r,gi);
-	    fEmax = f2(r,si);
+	    fEmax = f2(r,gi,si);
 	    if (si->dfsf == 0 || si->dfsf == 1) {
 		/*
 		** No splitting
 		*/
-		isplit = NGRIDDF-1;
+		isplit = gi->ngriddf-1;
 		}
 	    else {
-		isplit = locate(NGRIDDF,griddf->fE,si->dfsf*fEmax);
+		isplit = locate(gi->ngriddf,griddf->fE,si->dfsf*fEmax);
 		}
 	    if (griddf->fE[isplit] > fEmax) {
 		isplit += 1;
 		}
-	    assert(isplit < NGRIDDF);
+	    assert(isplit < gi->ngriddf);
 	    Esplit = griddf->E[isplit];
 	    vsplit = sqrt(2*(Esplit-Potr));
 	    fEsplit = griddf->fE[isplit];
@@ -671,7 +737,7 @@ void set_velocities(const GI *gi, SI *si) {
 		** function at vrand
 		*/
 		Erand = 0.5*vrand*vrand + Potr;
-		fErand = f1(Erand,si);
+		fErand = f1(Erand,gi,si);
 		/*
 		** Generate random value fEcheck for
 		** acceptance/rejection criterion
@@ -769,7 +835,7 @@ void refine(const GI *gi, SI *si) {
     DOUBLE etheta1, etheta2, etheta3;
     DOUBLE v1, v2, v3;
     DOUBLE vrad, vtan;
-    DOUBLE rootfunc[NGRIDR];
+    DOUBLE rootfunc[gi->Ngridr];
     GRIDR *gridr;
     PARTICLE *p;
 
@@ -785,15 +851,15 @@ void refine(const GI *gi, SI *si) {
 	    for (i = 0; i < N; i++) {
 		Etot = p[i].Etot;
 		L2 = p[i].L[0]*p[i].L[0];
-		for(j = 0; j < NGRIDR; j++) {
+		for(j = 0; j < gi->Ngridr; j++) {
 		    rootfunc[j] = 1.0/(gridr->r[j]*gridr->r[j]) + 2.0*(gridr->Pot[j]-Etot)/L2;
 		    }
 		if(rootfunc[0] < 0) {
 		    p[i].rperi = 0;
-		    index[0] = NGRIDR;
-		    index[1] = NGRIDR;
+		    index[0] = gi->Ngridr;
+		    index[1] = gi->Ngridr;
 		    searchroot(index,rootfunc);
-		    if(index[0] == NGRIDR) {
+		    if(index[0] == gi->Ngridr) {
 			fprintf(stderr,"Something strange happened! You should never get here!\n");
 			fprintf(stderr,"N = "OFI1" i = "OFI1" r = "OFD3" E = "OFD3" L2 = "OFD3"\n",N,i,p[i].r[0],Etot,L2);
 			}
@@ -804,10 +870,10 @@ void refine(const GI *gi, SI *si) {
 		    p[i].rapo = exp(gridr->logr[index[0]] + dx*m);
 		    }
 		else {
-		    index[0] = NGRIDR;
-		    index[1] = NGRIDR;
+		    index[0] = gi->Ngridr;
+		    index[1] = gi->Ngridr;
 		    searchroot(index,rootfunc);
-		    if(index[0] == NGRIDR || index[1] == NGRIDR) {
+		    if(index[0] == gi->Ngridr || index[1] == gi->Ngridr) {
 			searchmin(index,rootfunc);
 			p[i].rperi = exp(gridr->logr[index[0]]);
 			p[i].rapo = p[i].rperi;
@@ -919,7 +985,7 @@ void searchroot(INT *index, DOUBLE *grid) {
     INT i, j;
 
     j = 0;
-    for(i = 0; i < (NGRIDR-2); i++) {
+    for(i = 0; i < (gi->Ngridr-2); i++) {
 	if(grid[i]*grid[i+1] < 0) {
 	    index[j] = i;
 	    j ++;
@@ -940,7 +1006,7 @@ void searchmin(INT *index, DOUBLE *grid) {
     DOUBLE min;
 
     min = grid[0];
-    for(i = 1; i < (NGRIDR-1); i++) {
+    for(i = 1; i < (gi->Ngridr-1); i++) {
 	if(grid[i] < min) {
 	    min = grid[i];
 	    index[0] = i;
@@ -1064,10 +1130,10 @@ void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
     stuff->Epot = stuff->Epot/2.0;
     stuff->Etot = stuff->Ekin + stuff->Epot;
     if (gi->gridr->eqrvcmax[0] < 0) {
-	halo->sp->rvcmax = exp(lininterpolate(NGRIDR,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
+	halo->sp->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
 	halo->sp->vcmax = sqrt(G*Menc(halo->sp->rvcmax,gi)/halo->sp->rvcmax);
 	}
-    halo->sp->rhalf = exp(lininterpolate(NGRIDR,gi->gridr->Menc,gi->gridr->logr,halo->sp->M/2.0));
+    halo->sp->rhalf = exp(lininterpolate(gi->Ngridr,gi->gridr->Menc,gi->gridr->logr,halo->sp->M/2.0));
     halo->r1 = pow(((3.0-halo->sp->gamma)*halo->shell[0].mass)/(4*M_PI*halo->sp->rho0*pow(halo->sp->rs,halo->sp->gamma)),1.0/(3.0-halo->sp->gamma));
     halo->r100 = pow(((3.0-halo->sp->gamma)*100*halo->shell[0].mass)/(4*M_PI*halo->sp->rho0*pow(halo->sp->rs,halo->sp->gamma)),1.0/(3.0-halo->sp->gamma));
     }
@@ -1199,7 +1265,7 @@ void write_gridr(GRIDR *gridr, FILE *file) {
 
     INT i;
 
-    for (i = 0; i < NGRIDR; i++) {
+    for (i = 0; i < gi->Ngridr; i++) {
 	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
 		gridr->r[i],gridr->logr[i],gridr->rho[i],gridr->logrho[i],gridr->rhoenc[i],gridr->logrhoenc[i],
 		gridr->Menc[i],gridr->logMenc[i],gridr->Pot[i],gridr->logPot[i]);
@@ -1212,7 +1278,7 @@ void write_griddf(SI *si, FILE *file) {
     GRIDDF *griddf;
 
     griddf = si->griddf;
-    for (i = 0; i < NGRIDDF; i++) {
+    for (i = 0; i < gi->ngriddf; i++) {
 	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
 		griddf->r[i],griddf->logr[i],griddf->E[i],griddf->logE[i],griddf->fE[i],griddf->logfE[i]);
 	}

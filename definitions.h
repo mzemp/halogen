@@ -5,8 +5,6 @@
 */
 
 #define VERSION "1.1"
-#define NGRIDR 2001
-#define NGRIDDF 101
 #define NINTMIN 5
 #define NINTMAX 28
 #define NINTMINDF 8
@@ -37,34 +35,34 @@
 
 typedef struct gridr {
 
-    DOUBLE r[NGRIDR];
-    DOUBLE logr[NGRIDR];
-    DOUBLE rho[NGRIDR];
-    DOUBLE logrho[NGRIDR];
-    DOUBLE rhoHalo[NGRIDR];
-    DOUBLE logrhoHalo[NGRIDR];
-    DOUBLE rhoenc[NGRIDR];
-    DOUBLE logrhoenc[NGRIDR];
-    DOUBLE rhoencHalo[NGRIDR];
-    DOUBLE logrhoencHalo[NGRIDR];
-    DOUBLE Menc[NGRIDR];
-    DOUBLE logMenc[NGRIDR];
-    DOUBLE MencHalo[NGRIDR];
-    DOUBLE logMencHalo[NGRIDR];
-    DOUBLE Pot[NGRIDR];
-    DOUBLE logPot[NGRIDR];
-    DOUBLE Potoutr[NGRIDR];
-    DOUBLE eqrvcmax[NGRIDR];
+    DOUBLE *r;
+    DOUBLE *logr;
+    DOUBLE *rho;
+    DOUBLE *logrho;
+    DOUBLE *rhoHalo;
+    DOUBLE *logrhoHalo;
+    DOUBLE *rhoenc;
+    DOUBLE *logrhoenc;
+    DOUBLE *rhoencHalo;
+    DOUBLE *logrhoencHalo;
+    DOUBLE *Menc;
+    DOUBLE *logMenc;
+    DOUBLE *MencHalo;
+    DOUBLE *logMencHalo;
+    DOUBLE *Pot;
+    DOUBLE *logPot;
+    DOUBLE *Potoutr;
+    DOUBLE *eqrvcmax;
     } GRIDR;
 
 typedef struct griddf {
 
-    DOUBLE r[NGRIDDF];
-    DOUBLE logr[NGRIDDF];
-    DOUBLE E[NGRIDDF];
-    DOUBLE logE[NGRIDDF];
-    DOUBLE fE[NGRIDDF];
-    DOUBLE logfE[NGRIDDF];
+    DOUBLE *r;
+    DOUBLE *logr;
+    DOUBLE *E;
+    DOUBLE *logE;
+    DOUBLE *fE;
+    DOUBLE *logfE;
     } GRIDDF;
 
 typedef struct systemparameters {
@@ -157,9 +155,9 @@ typedef struct systeminfo {
     DOUBLE r1;
     DOUBLE r100;
     DOUBLE dfsf;
-    DOUBLE logr[NGRIDR];
-    DOUBLE logMenc[NGRIDR];
-    DOUBLE logrhoenc[NGRIDR];
+    DOUBLE *logr;
+    DOUBLE *logMenc;
+    DOUBLE *logrhoenc;
     SP *sp;
     SHELL *shell;
     GRIDDF *griddf;
@@ -168,6 +166,8 @@ typedef struct systeminfo {
 
 typedef struct generalinfo {
 
+    INT Ngridr;
+    INT Ngriddf;
     DOUBLE OmegaM0;
     DOUBLE OmegaK0;
     DOUBLE OmegaL0;

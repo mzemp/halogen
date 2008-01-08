@@ -4,9 +4,12 @@
 ** Header file for routines.c
 */
 
-void initialise_parameters(SI (*));
-void initialise_black_hole(PARTICLE (*));
+void initialise_general_info(GI (*));
+void initialise_system(SI (*));
+void initialise_particle(PARTICLE (*));
 void check_main_parameters(const SI (*));
+void allocate_general_info(GI (*));
+void allocate_system(const GI (*), SI (*));
 void calculate_parameters(const GI (*), SI (*)); 
 void initialise_gridr(GI (*), PARTICLE (*), SI (*));
 void calculate_virial_stuff(const GI (*), SI (*));

@@ -1,8 +1,9 @@
-/* halogen.c
+/* 
+** halogen.c
 **
 ** Program written in order to generate multi-mass spherical structures
 **
-** written by Marcel Zemp (mzemp@ucolick.org)
+** written by Marcel Zemp
 **
 ** This program works in units where
 ** 
@@ -32,13 +33,14 @@ int main(int argc, char **argv) {
 
     INT i, k;
     INT output_gridr, output_griddf;
-    INT output_tipsy_ascii, output_tipsy_binary, output_tipsy_standard;
+    INT output_tipsy_standard, output_tipsy_standard_dpp;
     INT output_gadget_binary;
     INT positionsonly;
     DOUBLE randomseed, OmegaMz;
     DOUBLE t0, t1, t2, t3, t4, t5, t6, t7, t8, t9;
     PARTICLE *bh;
     SI *halo;
+    SI *bulge;
     GI *gi;
     CHAR FILENAME[STRINGSIZE], INPUTNAME[STRINGSIZE];
     FILE *file;
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
     t0 = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
 
     /*
-    ** Initialise fixed structures
+    ** Initialise structures for reading parameters
     */
 
     bh = malloc(sizeof(PARTICLE));
@@ -58,41 +60,34 @@ int main(int argc, char **argv) {
     assert(halo != NULL);
     halo->sp = malloc(sizeof(SP));
     assert(halo->sp != NULL);
-    halo->griddf = malloc(sizeof(GRIDDF));
-    assert(halo->griddf != NULL);
+
+    bulge = malloc(sizeof(SI));
+    assert(bulge != NULL);
+    bulge->sp = malloc(sizeof(SP));
+    assert(bulge->sp != NULL);
 
     gi = malloc(sizeof(GI));
     assert(gi != NULL);
     gi->stuff = malloc(sizeof(STUFF));
     assert(gi->stuff != NULL);
-    gi->gridr = malloc(sizeof(GRIDR));
-    assert(gi->gridr != NULL);
 
     /*
     ** Set standard values for parameters
     */
 
-    gi->OmegaM0 = 0.3;
-    gi->OmegaK0 = 0;
-    gi->OmegaL0 = 0.7;
-    gi->h0 = 0.7;
-    gi->z = 0;
-    gi->rhocritz = -1;
-    gi->Deltavirz = -1;
-
     output_gridr = 0;
     output_griddf = 0;
-    output_tipsy_ascii = 0;
-    output_tipsy_binary = 0;
     output_tipsy_standard = 0;
+    output_tipsy_standard_dpp = 0;
     output_gadget_binary = 0;
     positionsonly = 0;
 
     sprintf(INPUTNAME,"none");
     sprintf(halo->systemname,"halo");
 
-    initialise_black_hole(bh);
-    initialise_parameters(halo);
+    initialise_general_info(gi);
+    initialise_particle(bh);
+    initialise_system(halo);
 
     /*
     ** Read in and calculate model parameters
@@ -280,6 +275,22 @@ int main(int argc, char **argv) {
 	    halo->dfsf = atof(argv[i]);
 	    i++;
 	    }
+	else if (strcmp(argv[i],"-Ngridr") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    gi->Ngridr = atoi(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-Ngriddf") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    gi->Ngriddf = atoi(argv[i]);
+	    i++;
+	    }
 	/*
 	** Black hole parameters
 	*/
@@ -331,16 +342,12 @@ int main(int argc, char **argv) {
 	    output_griddf = 1;
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-ota") == 0) {
-	    output_tipsy_ascii = 1;
-	    i++;
-	    }
-	else if (strcmp(argv[i],"-otb") == 0) {
-	    output_tipsy_binary = 1;
-	    i++;
-	    }
 	else if (strcmp(argv[i],"-ots") == 0) {
 	    output_tipsy_standard = 1;
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-otsdpp") == 0) {
+	    output_tipsy_standard_dpp = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-ogb") == 0) {
@@ -425,6 +432,11 @@ int main(int argc, char **argv) {
 	}
 
     fprintf(stderr,"Checking parameters, calculating halo properties and initialising grid in r... \n");
+
+    /*
+    ** Initialise random number generator
+    */
+
     srand(randomseed);
 
     /*
@@ -435,13 +447,20 @@ int main(int argc, char **argv) {
 	fprintf(stderr,"You have not set a name for the output model.\n");
 	usage();
 	}
-    if ((NGRIDR-1) % (NGRIDDF-1) != 0) {
-	fprintf(stderr,"Bad choice of NGRIDR and NGRIDDF!\n");
-	fprintf(stderr,"These numbers have to fulfill the condition (NGRIDR-1) mod (NGRIDDF-1) == 0.\n");
+    if ((gi->Ngridr-1) % (gi->Ngriddf-1) != 0) {
+	fprintf(stderr,"Bad choice of Ngridr and Ngriddf!\n");
+	fprintf(stderr,"These numbers have to fulfill the condition (Ngridr-1) mod (Ngriddf-1) == 0.\n");
 	usage();
 	}
 
     check_main_parameters(halo);
+
+    /*
+    ** Allocate memory for the structures
+    */
+
+    allocate_general_info(gi);
+    allocate_system(gi,halo);
 
     /*
     ** Derived cosmological parameters

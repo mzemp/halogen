@@ -130,11 +130,11 @@ DOUBLE trapezdf(INT k, INT n, const GI *gi, const SI *si) {
     GRIDR *gridr;
 
     gridr = gi->gridr;
-    Philower = gridr->Pot[NGRIDR-1];
+    Philower = gridr->Pot[gi->Ngridr-1];
     Phiupper = gridr->Pot[k];
     xlower = asin(sqrt(Philower/Phiupper));
     xupper = M_PI/2;
-    rlower = gridr->r[NGRIDR-1];
+    rlower = gridr->r[gi->Ngridr-1];
     rupper = gridr->r[k];
     if (n == 0) {
 	return ((sqrt(-Phiupper/2)/(M_PI*M_PI))*0.5*(xupper-xlower)*(d2rhodPhi2(rlower,gi,si)*sin(xlower)+d2rhodPhi2(rupper,gi,si)*sin(xupper)));
@@ -150,7 +150,7 @@ DOUBLE trapezdf(INT k, INT n, const GI *gi, const SI *si) {
 	    for (j = 1; j < (N[i-1]+1); j++) {
 		x = xlower+(2*j-1)*deltax;
 		Phi =  Phiupper*sin(x)*sin(x);
-		r = exp(lininterpolate(NGRIDR,gridr->logPot,gridr->logr,log(-Phi))); 
+		r = exp(lininterpolate(gi->Ngridr,gridr->logPot,gridr->logr,log(-Phi))); 
 		sumN += d2rhodPhi2(r,gi,si)*sin(x);
 		}
 	    sum = sum + sumN;
@@ -470,7 +470,7 @@ INT split(INT i, DOUBLE rperi, const SI *si) {
 
 DOUBLE Menc(DOUBLE r, const GI *gi) {
 
-    return (exp(lininterpolate(NGRIDR,gi->gridr->logr,gi->gridr->logMenc,log(r))));
+    return (exp(lininterpolate(gi->Ngridr,gi->gridr->logr,gi->gridr->logMenc,log(r))));
     }
 
 /*
@@ -479,7 +479,7 @@ DOUBLE Menc(DOUBLE r, const GI *gi) {
 
 DOUBLE Pot(DOUBLE r, const GI *gi) {
 
-    return (-exp(lininterpolate(NGRIDR,gi->gridr->logr,gi->gridr->logPot,log(r))));
+    return (-exp(lininterpolate(gi->Ngridr,gi->gridr->logr,gi->gridr->logPot,log(r))));
     }
 
 /*
@@ -488,7 +488,7 @@ DOUBLE Pot(DOUBLE r, const GI *gi) {
 
 DOUBLE vescape(DOUBLE r, const GI *gi) {
 
-    return (sqrt(2.0*fabs(Pot(r,gi)-gi->gridr->Pot[NGRIDR-1])));
+    return (sqrt(2.0*fabs(Pot(r,gi)-gi->gridr->Pot[gi->Ngridr-1])));
     }
 
 /*
@@ -504,16 +504,16 @@ DOUBLE Tdyn(DOUBLE r, const GI *gi) {
 ** Function for calculating the value of the distribution function at energy E 
 */
 
-DOUBLE f1(DOUBLE E, const SI *si) {
+DOUBLE f1(DOUBLE E, const GI *gi, const SI *si) {
 
-    return (exp(lininterpolate(NGRIDDF,si->griddf->logE,si->griddf->logfE,log(-E))));
+    return (exp(lininterpolate(gi->Ngriddf,si->griddf->logE,si->griddf->logfE,log(-E))));
     }
 
 /*
 ** Function for calculating the value of the distribution function at position r 
 */
 
-DOUBLE f2(DOUBLE r, const SI *si) {
+DOUBLE f2(DOUBLE r, const GI *gi, const SI *si) {
 
-    return (exp(lininterpolate(NGRIDDF,si->griddf->logr,si->griddf->logfE,log(r))));
+    return (exp(lininterpolate(gi->Ngriddf,si->griddf->logr,si->griddf->logfE,log(r))));
     }

@@ -28,5 +28,5 @@ DOUBLE Menc(DOUBLE, const GI (*));
 DOUBLE Pot(DOUBLE, const GI (*));
 DOUBLE vescape(DOUBLE, const GI (*));
 DOUBLE Tdyn(DOUBLE, const GI (*));
-DOUBLE f1(DOUBLE, const SI (*));
-DOUBLE f2(DOUBLE, const SI (*));
+DOUBLE f1(DOUBLE, const GI (*), const SI (*));
+DOUBLE f2(DOUBLE, const GI (*), const SI (*));
