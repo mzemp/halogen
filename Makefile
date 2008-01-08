@@ -10,12 +10,12 @@ EXE     = $(BASE)$(EXT)
 # Compiler stuff
 
 CC	= gcc
-CFLAGS	= -O3 -Wall #-DDPP
-LIBS	= -lm
+CFLAGS	= -O3 -Wall -I$(LOCAL_LIB_PATH)/include
+LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 
 # Object definition
 
-OBJ	= $(BASE).o functions.o routines.o IOfunctions.o
+OBJ	= $(BASE).o functions.o routines.o
 
 # Rules
 
@@ -30,7 +30,7 @@ tar:
 
 # Dependencies
 
-halogen.o: definitions.h functions.h routines.h IOfunctions.h
-functions.o: definitions.h functions.h routines.h IOfunctions.h
-routines.o: definitions.h functions.h routines.h IOfunctions.h
+halogen.o: definitions.h functions.h routines.h
+functions.o: definitions.h functions.h routines.h
+routines.o: definitions.h functions.h routines.h
 

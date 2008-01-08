@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <assert.h>
-#include "IOfunctions.h"
+#include <iof.h>
 #include "definitions.h"
 #include "functions.h"
 #include "routines.h"
@@ -577,7 +577,7 @@ void set_positions(SI *si) {
     INT i, j, N;
     DOUBLE Mrand, logMrand, Mmin, Mmax;
     DOUBLE rrand, logrrand;
-    DOUBLE theta, phi;
+    DOUBLE costheta, sintheta, phi, cosphi, sinphi;
     PARTICLE *p;
 
     for (j = 0; j < (si->Nshell+2); j++) {
@@ -590,12 +590,15 @@ void set_positions(SI *si) {
 	    logMrand = log(Mrand);
 	    logrrand = lininterpolate(NGRIDR,si->logMenc,si->logr,logMrand);
 	    rrand = exp(logrrand);
-	    theta = acos(2.0*rand01() - 1.0);
+	    costheta = 2.0*rand01() - 1.0;
+	    sintheta = sqrt(1-costheta*costheta);
 	    phi = rand01()*2.0*M_PI;
+	    cosphi = cos(phi);
+	    sinphi = sin(phi);
 	    p[i].r[0] = rrand;
-	    p[i].r[1] = rrand*sin(theta)*cos(phi);
-	    p[i].r[2] = rrand*sin(theta)*sin(phi);
-	    p[i].r[3] = rrand*cos(theta);
+	    p[i].r[1] = rrand*sintheta*cosphi;
+	    p[i].r[2] = rrand*sintheta*sinphi;
+	    p[i].r[3] = rrand*costheta;
 	    }
 	}
     }
@@ -611,7 +614,7 @@ void set_velocities(const GI *gi, SI *si) {
     DOUBLE fEmax, fEsplit, fErand, fEcheck;
     DOUBLE Compmax, Compsplit, Comprand;
     DOUBLE vesc, vsplit, vrand;
-    DOUBLE theta, phi;
+    DOUBLE costheta, sintheta, phi, cosphi, sinphi;
     GRIDR *gridr;
     GRIDDF *griddf;
     PARTICLE *p;
@@ -680,12 +683,15 @@ void set_velocities(const GI *gi, SI *si) {
 		    fEcheck = rand01()*fEsplit;
 		    }
 		}
-	    theta = acos(2.0*rand01() - 1.0);
+	    costheta = 2.0*rand01() - 1.0;
+	    sintheta = sqrt(1-costheta*costheta);
 	    phi = rand01()*2.0*M_PI;
+	    cosphi = cos(phi);
+	    sinphi = sin(phi);
 	    p[i].v[0] = vrand;
-	    p[i].v[1] = vrand*sin(theta)*cos(phi);
-	    p[i].v[2] = vrand*sin(theta)*sin(phi);
-	    p[i].v[3] = vrand*cos(theta);
+	    p[i].v[1] = vrand*sintheta*cosphi;
+	    p[i].v[2] = vrand*sintheta*sinphi;
+	    p[i].v[3] = vrand*costheta;
 	    }
 	}
     }
@@ -756,11 +762,13 @@ void refine(const GI *gi, SI *si) {
     DOUBLE Etot, L2;
     DOUBLE dgx, dgy, dx, m;
     DOUBLE massnew, softnew;
-    DOUBLE theta, phi, ScalarProd;
+    DOUBLE costheta, sintheta, phi, cosphi, sinphi;
+    DOUBLE ScalarProd;
     DOUBLE erad1, erad2, erad3;
-    DOUBLE ephi0, ephi1, ephi2, ephi3;
+    DOUBLE ephi1, ephi2, ephi3;
     DOUBLE etheta1, etheta2, etheta3;
     DOUBLE v1, v2, v3;
+    DOUBLE vrad, vtan;
     DOUBLE rootfunc[NGRIDR];
     GRIDR *gridr;
     PARTICLE *p;
@@ -832,22 +840,26 @@ void refine(const GI *gi, SI *si) {
 		    p[i].mass = massnew;
 		    p[i].soft = softnew;
 		    ScalarProd = p[i].r[1]*p[i].v[1] + p[i].r[2]*p[i].v[2] + p[i].r[3]*p[i].v[3];
+		    vrad = ScalarProd/p[i].r[0];
+		    vtan = p[i].L[0]/p[i].r[0];
 		    for(j = N + Nnew - (splitfac - 1); j < (N + Nnew); j++) {
 			/*
 			** Create orthonormal basis in spherical coordinates with random direction
 			*/
-			theta = acos(2.0*rand01() - 1.0);
+			costheta = 2.0*rand01() - 1.0;
+			sintheta = sqrt(1-costheta*costheta);
 			phi = rand01()*2.0*M_PI;
-			erad1 = sin(theta)*cos(phi);
-			erad2 = sin(theta)*sin(phi);
-			erad3 = cos(theta);
-			ephi0 = sqrt(erad1*erad1+erad2*erad2);
-			ephi1 = -erad2/ephi0;
-			ephi2 = erad1/ephi0;
+			cosphi = cos(phi);
+			sinphi = sin(phi);
+			erad1 = sintheta*cosphi;
+			erad2 = sintheta*sinphi;
+			erad3 = costheta;
+			ephi1 = -sinphi;
+			ephi2 = cosphi;
 			ephi3 = 0;
-			etheta1 = -erad3*ephi2;
-			etheta2 = erad3*ephi1;
-			etheta3 = erad1*ephi2 - erad2*ephi1;
+			etheta1 = -costheta*cosphi;
+			etheta2 = -costheta*sinphi;
+			etheta3 = sintheta;
 			/*
 			** Calculate new position
 			*/
@@ -859,16 +871,18 @@ void refine(const GI *gi, SI *si) {
 			** Generate random direction in tangential plane
 			*/
 			phi = rand01()*2.0*M_PI;
-			v1 = cos(phi)*ephi1 + sin(phi)*etheta1;
-			v2 = cos(phi)*ephi2 + sin(phi)*etheta2;
-			v3 = cos(phi)*ephi3 + sin(phi)*etheta3;
+			cosphi = cos(phi);
+			sinphi = sin(phi);
+			v1 = cosphi*ephi1 + sinphi*etheta1;
+			v2 = cosphi*ephi2 + sinphi*etheta2;
+			v3 = cosphi*ephi3 + sinphi*etheta3;
 			/*
 			** Calculate new velocity
 			*/
 			p[j].v[0] = p[i].v[0];
-			p[j].v[1] = (ScalarProd/p[i].r[0])*erad1 + (p[i].L[0]/p[i].r[0])*v1;
-			p[j].v[2] = (ScalarProd/p[i].r[0])*erad2 + (p[i].L[0]/p[i].r[0])*v2;
-			p[j].v[3] = (ScalarProd/p[i].r[0])*erad3 + (p[i].L[0]/p[i].r[0])*v3;
+			p[j].v[1] = vrad*erad1 + vtan*v1;
+			p[j].v[2] = vrad*erad2 + vtan*v2;
+			p[j].v[3] = vrad*erad3 + vtan*v3;
 			/*
 			** Calculate angular momentum
 			*/

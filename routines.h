@@ -24,7 +24,6 @@ void searchmin(INT (*), DOUBLE (*));
 void double_particles(SI (*));
 void correct_cm_velocity(SI (*));
 void calculate_stuff(GI (*), PARTICLE (*), SI (*));
-void transfer_particles(const PARTICLE (*), const SI (*), TIPSY_STRUCTURE (*));
 void write_tipsy_standard_2(FILE (*), const PARTICLE (*), const SI (*));
 void write_griddf(SI (*), FILE (*));
 void write_gridr(GRIDR (*), FILE (*));

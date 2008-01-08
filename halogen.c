@@ -20,7 +20,6 @@
 #include <malloc.h>
 #include <assert.h>
 #include <time.h>
-#include "IOfunctions.h"
 #include "definitions.h"
 #include "functions.h"
 #include "routines.h"
@@ -41,7 +40,6 @@ int main(int argc, char **argv) {
     PARTICLE *bh;
     SI *halo;
     GI *gi;
-    TIPSY_STRUCTURE *ts;
     CHAR FILENAME[STRINGSIZE], INPUTNAME[STRINGSIZE];
     FILE *file;
 
@@ -69,9 +67,6 @@ int main(int argc, char **argv) {
     assert(gi->stuff != NULL);
     gi->gridr = malloc(sizeof(GRIDR));
     assert(gi->gridr != NULL);
-
-    ts = malloc(sizeof(TIPSY_STRUCTURE));
-    assert(ts != NULL);
 
     /*
     ** Set standard values for parameters
