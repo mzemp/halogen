@@ -22,11 +22,12 @@
 #include <assert.h>
 #include <time.h>
 #include "definitions.h"
-#include "arguments.h"
 #include "functions.h"
 #include "routines.h"
-#include "write.h"
+#include "arguments.h"
+#include "allocate.h"
 #include "check.h"
+#include "write.h"
 #include "usage.h"
 
 int main(int argc, char **argv) {
