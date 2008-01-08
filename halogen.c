@@ -26,6 +26,7 @@
 #include "functions.h"
 #include "routines.h"
 #include "write.h"
+#include "check.h"
 #include "usage.h"
 
 int main(int argc, char **argv) {
@@ -34,10 +35,10 @@ int main(int argc, char **argv) {
     ** Variables
     */
 
+    GI *gi;
     PARTICLE *bh;
     SI *halo;
     SI *bulge;
-    GI *gi;
     CHAR FILENAME[STRINGSIZE];
     FILE *file;
 
@@ -93,17 +94,8 @@ int main(int argc, char **argv) {
     ** Check main input parameters
     */
 
-    if (strcmp(gi->inputname,"none") == 0) {
-	fprintf(stderr,"You have not set a name for the output model.\n");
-	usage();
-	}
-    if ((gi->Ngridr-1) % (gi->Ngriddf-1) != 0) {
-	fprintf(stderr,"Bad choice of Ngridr and Ngriddf!\n");
-	fprintf(stderr,"These numbers have to fulfill the condition (Ngridr-1) mod (Ngriddf-1) == 0.\n");
-	usage();
-	}
-
-    check_main_parameters(halo);
+    check_main_parameters_general_info(gi);
+    check_main_parameters_system(halo);
 
     /*
     ** Allocate memory for the structures
@@ -170,7 +162,7 @@ int main(int argc, char **argv) {
     ** Check some more things
     */
 
-    check_more_parameters(gi,halo);
+    check_more_parameters_system(gi,halo);
 
     /*
     ** Initialise griddf

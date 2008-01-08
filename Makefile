@@ -15,8 +15,8 @@ LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 
 # Object definition
 
-OBJ	= $(BASE).o arguments.o functions.o routines.o write.o usage.o
-INCL	= definitions.h arguments.h functions.h routines.h write.h usage.h
+OBJ	= $(BASE).o arguments.o functions.o routines.o write.o check.o usage.o
+INCL	= definitions.h arguments.h functions.h routines.h write.h check.h usage.h
 
 # Rules
 
@@ -35,5 +35,6 @@ halogen.o: $(INCL)
 functions.o: $(INCL)
 routines.o: $(INCL)
 write.o: $(INCL)
+check.o: $(INCL)
 usage.o: $(INCL)
 
