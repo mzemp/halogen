@@ -27,8 +27,9 @@
 #include "arguments.h"
 #include "allocate.h"
 #include "check.h"
-#include "write.h"
+#include "initialise.h"
 #include "usage.h"
+#include "write.h"
 
 int main(int argc, char **argv) {
 

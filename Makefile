@@ -16,9 +16,9 @@ LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 # Object definition
 
 OBJ	= $(BASE).o functions.o routines.o \
-	arguments.o allocate.o check.o write.o usage.o
+	arguments.o allocate.o check.o initialise.o usage.o write.o
 INCL	= definitions.h functions.h routines.h \
-	arguments.h allocate.h check.h write.h usage.h
+	arguments.h allocate.h check.h initialise.h usage.h write.h
 
 # Rules
 
@@ -39,6 +39,8 @@ routines.o: $(INCL)
 arguments.o: $(INCL)
 allocate.o: $(INCL)
 check.o: $(INCL)
-write.o: $(INCL)
+initialise.o: $(INCL)
 usage.o: $(INCL)
+write.o: $(INCL)
+
 

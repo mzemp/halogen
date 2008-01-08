@@ -2,15 +2,9 @@
 ** routines.h
 */
 
-void initialise_general_info(GI (*));
-void initialise_system(SI (*));
-void initialise_particle(PARTICLE (*));
 void calculate_parameters(const GI (*), SI (*)); 
-void initialise_gridr(GI (*), PARTICLE (*), SI (*));
 void calculate_virial_stuff(const GI (*), SI (*));
 void set_remaining_parameters(const GI (*), SI (*));
-void initialise_griddf(const GI (*), SI (*));
-void initialise_shell(const GI (*), SI (*));
 void set_positions(const GI (*), SI (*)); 
 void set_velocities(const GI (*), SI (*));
 void set_velocities_zero(SI (*));
