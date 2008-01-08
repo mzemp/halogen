@@ -1,7 +1,5 @@
 /* 
 ** definitions.h
-**
-** Some definitions for halogen
 */
 
 #define VERSION "1.1"
@@ -155,9 +153,6 @@ typedef struct systeminfo {
     DOUBLE r1;
     DOUBLE r100;
     DOUBLE dfsf;
-    DOUBLE *logr;
-    DOUBLE *logMenc;
-    DOUBLE *logrhoenc;
     SP *sp;
     SHELL *shell;
     GRIDDF *griddf;
@@ -166,6 +161,12 @@ typedef struct systeminfo {
 
 typedef struct generalinfo {
 
+    INT output_gridr;
+    INT output_griddf;
+    INT output_tipsy_standard;
+    INT output_tipsy_standard_dpp;
+    INT output_gadget_binary;
+    INT positionsonly;
     INT Ngridr;
     INT Ngriddf;
     DOUBLE OmegaM0;
@@ -175,8 +176,12 @@ typedef struct generalinfo {
     DOUBLE z;
     DOUBLE rhocritz;
     DOUBLE Deltavirz;
+    DOUBLE OmegaMz;
     DOUBLE rinner;
     DOUBLE router;
+    DOUBLE randomseed;
+    DOUBLE t[10];
     STUFF *stuff;
     GRIDR *gridr;
+    CHAR inputname[STRINGSIZE];
     } GI;

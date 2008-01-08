@@ -1,7 +1,5 @@
 /* 
 ** functions.h
-**
-** Header file for functions.c
 */
 
 DOUBLE Ecosmo(const GI (*));

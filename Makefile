@@ -15,7 +15,8 @@ LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 
 # Object definition
 
-OBJ	= $(BASE).o functions.o routines.o
+OBJ	= $(BASE).o arguments.o functions.o routines.o write.o usage.o
+INCL	= definitions.h arguments.h functions.h routines.h write.h usage.h
 
 # Rules
 
@@ -30,7 +31,9 @@ tar:
 
 # Dependencies
 
-halogen.o: definitions.h functions.h routines.h
-functions.o: definitions.h functions.h routines.h
-routines.o: definitions.h functions.h routines.h
+halogen.o: $(INCL)
+functions.o: $(INCL)
+routines.o: $(INCL)
+write.o: $(INCL)
+usage.o: $(INCL)
 
