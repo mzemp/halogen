@@ -16,6 +16,11 @@ void usage() {
     fprintf(stderr,"\n");
     fprintf(stderr,"You can specify the following arguments:\n");
     fprintf(stderr,"\n");
+    fprintf(stderr,"System specification:\n");
+    fprintf(stderr,"\n");
+    fprintf(stderr,"-halo                : all system parameters after this flag are set for the halo system\n");
+    fprintf(stderr,"-bulge               : all system parameters after this flag are set for the bulge system\n");
+    fprintf(stderr,"\n");
     fprintf(stderr,"System parameters:\n");
     fprintf(stderr,"\n");
     fprintf(stderr,"-a <value>           : alpha parameter in density profile\n");
