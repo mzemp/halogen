@@ -1,5 +1,7 @@
 /*
 ** arguments.c
+**
+** Routine for processing input arguments
 */
 
 #include <stdio.h>

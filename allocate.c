@@ -1,5 +1,7 @@
 /*
 ** allocate.c
+**
+** Some allocation routines for HALOGEN
 */
 
 #include "definitions.h"

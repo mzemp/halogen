@@ -1,5 +1,7 @@
 /*
 ** usage.c
+**
+** Usage for HALOGEN
 */
 
 #include <stdio.h>
