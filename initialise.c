@@ -36,6 +36,11 @@ void initialise_general_info(GI *gi) {
     gi->z = 0;
     gi->rhocritz = -1;
     gi->Deltavirz = -1;
+    gi->OmegaMz = -1;
+    gi->rinner = -1;
+    gi->router = -1;
+    gi->factor_rinner = 1e-6;
+    gi->factor_router = 1e20;
     gi->randomseed = time(NULL);
     }
 
@@ -48,15 +53,15 @@ void initialise_system(SI *si) {
     /*
     ** General stuff
     */
-    si->set_rsi_to_rs = 0;
-    si->set_rsi_to_rvir = 0;
-    si->set_rsi_to_rcutoff = 0;
-    si->set_rso_to_rs = 0;
-    si->set_rso_to_rvir = 0;
-    si->set_rso_to_rcutoff = 0;
-    si->set_rmor_to_rs = 0;
-    si->set_rmor_to_rvir = 0;
-    si->set_rmor_to_rcutoff = 0;
+    si->rsi_in_rs_units = 0;
+    si->rsi_in_rvir_units = 0;
+    si->rsi_in_rcutoff_units = 0;
+    si->rso_in_rs_units = 0;
+    si->rso_in_rvir_units = 0;
+    si->rso_in_rcutoff_units = 0;
+    si->rmor_in_rs_units = 0;
+    si->rmor_in_rvir_units = 0;
+    si->rmor_in_rcutoff_units = 0;
     si->Nshell = 0;
     si->Ismor = -1;
     si->N0 = -1;
@@ -129,6 +134,11 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
 
     gridr = gi->gridr;
     hp = halo->sp;
+    gi->rinner = gi->factor_rinner*halo->sp->rs;
+    gi->router = halo->sp->rs;
+    while (rho(halo->sp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
+	gi->router = gi->router*10;
+	}
     dlogr = (log(gi->router)-log(gi->rinner))/(gi->Ngridr-1);
     i = 0;
     logr = log(gi->rinner);

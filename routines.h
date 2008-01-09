@@ -2,7 +2,8 @@
 ** routines.h
 */
 
-void calculate_parameters(const GI (*), SI (*)); 
+void calculate_parameters_general_info(GI (*));
+void calculate_parameters_system(const GI (*), SI (*)); 
 void calculate_virial_stuff(const GI (*), SI (*));
 void set_remaining_parameters(const GI (*), SI (*));
 void set_positions(const GI (*), SI (*)); 

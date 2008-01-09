@@ -107,36 +107,15 @@ int main(int argc, char **argv) {
     allocate_system(gi,halo);
 
     /*
-    ** Derived cosmological parameters
+    ** Calculate parameters
     */
 
-    gi->rhocritz = 3/(8*M_PI*G)*(pow((100*gi->h0*Ecosmo(gi)*VelConvertFac/1000),2));
-    if (gi->Deltavirz == -1) {
-	gi->OmegaMz = gi->OmegaM0*pow((1+gi->z),3)/pow(Ecosmo(gi),2);
-	if (gi->OmegaK0 == 0) {
-	    gi->Deltavirz = 178*(pow(gi->OmegaMz,0.45));
-	    }
-	else if (gi->OmegaL0 == 0) {
-	    gi->Deltavirz = 178*(pow(gi->OmegaMz,0.3));
-	    }
-	else {
-	    fprintf(stderr,"HALOGEN can't calculate a value for Deltavirz for that choice of cosmological parameters.\n");
-	    fprintf(stderr,"Set a value vor Deltavirz by hand or choose a different cosmology.\n");
-	    usage();
-	    }
-	}
-
-    calculate_parameters(gi,halo);
+    calculate_parameters_general_info(gi);
+    calculate_parameters_system(gi,halo);
 
     /*
     ** Initialise gridr
     */
-
-    gi->rinner = FACTORRINNER*halo->sp->rs;
-    gi->router = halo->sp->rs;
-    while (rho(halo->sp->rs,halo)/rho(gi->router,halo) < FACTORROUTER) {
-	gi->router = gi->router*10;
-	}
 
     initialise_gridr(gi,bh,halo);
     
@@ -271,9 +250,10 @@ int main(int argc, char **argv) {
 
     fprintf(stderr,"Done in "OFD1" seconds\nTotal time needed was "OFD1" seconds\n",gi->t[9]-gi->t[8],gi->t[9]-gi->t[0]);
 
+    free(gi);
     free(bh);
     free(halo);
-    free(gi);
+    free(bulge);
 
     exit(0);
     } /* end of main function */

@@ -11,8 +11,6 @@
 #define TOLDF 1e-3
 #define TOLLININT 1e-10
 #define DFFAILUREMAX 1e20
-#define FACTORRINNER 1e-6
-#define FACTORROUTER 1e20
 #define SBI 1e100
 #define CutoffFac 0.3
 #define MU 2.2229621e5
@@ -132,15 +130,15 @@ typedef struct stuff {
 
 typedef struct systeminfo {
 
-    INT set_rsi_to_rs;
-    INT set_rsi_to_rvir;
-    INT set_rsi_to_rcutoff;
-    INT set_rso_to_rs;
-    INT set_rso_to_rvir;
-    INT set_rso_to_rcutoff;
-    INT set_rmor_to_rs;
-    INT set_rmor_to_rvir;
-    INT set_rmor_to_rcutoff;
+    INT rsi_in_rs_units;
+    INT rsi_in_rvir_units;
+    INT rsi_in_rcutoff_units;
+    INT rso_in_rs_units;
+    INT rso_in_rvir_units;
+    INT rso_in_rcutoff_units;
+    INT rmor_in_rs_units;
+    INT rmor_in_rvir_units;
+    INT rmor_in_rcutoff_units;
     INT Nshell;
     INT Ismor;
     INT N0;
@@ -179,6 +177,8 @@ typedef struct generalinfo {
     DOUBLE OmegaMz;
     DOUBLE rinner;
     DOUBLE router;
+    DOUBLE factor_rinner;
+    DOUBLE factor_router;
     DOUBLE randomseed;
     DOUBLE t[10];
     STUFF *stuff;

@@ -18,10 +18,33 @@
 #include "usage.h"
 
 /*
-** Routine for calculating system parameters
+** Routine for calculatein parameters for general info structure
 */
 
-void calculate_parameters(const GI *gi, SI *si) {
+void calculate_parameters_general_info(GI *gi) {
+
+    gi->rhocritz = 3/(8*M_PI*G)*(pow((100*gi->h0*Ecosmo(gi)*VelConvertFac/1000),2));
+    if (gi->Deltavirz == -1) {
+	gi->OmegaMz = gi->OmegaM0*pow((1+gi->z),3)/pow(Ecosmo(gi),2);
+	if (gi->OmegaK0 == 0) {
+	    gi->Deltavirz = 178*(pow(gi->OmegaMz,0.45));
+	    }
+	else if (gi->OmegaL0 == 0) {
+	    gi->Deltavirz = 178*(pow(gi->OmegaMz,0.3));
+	    }
+	else {
+	    fprintf(stderr,"HALOGEN can't calculate a value for Deltavirz for that choice of cosmological parameters.\n");
+	    fprintf(stderr,"Set a value vor Deltavirz by hand or choose a different cosmology.\n");
+	    usage();
+	    }
+	}
+    }
+
+/*
+** Routine for calculating parameters for system
+*/
+
+void calculate_parameters_system(const GI *gi, SI *si) {
 
     DOUBLE I_M;
 
@@ -126,14 +149,14 @@ void set_remaining_parameters(const GI *gi, SI *si) {
     /*
     ** Set rsi
     */
-    if (si->set_rsi_to_rs == 1) {
-	si->rsi = si->sp->rs;
+    if (si->rsi_in_rs_units == 1) {
+	si->rsi *= si->sp->rs;
 	}
-    else if (si->set_rsi_to_rvir == 1) {
-	si->rsi = si->sp->rvir;
+    else if (si->rsi_in_rvir_units == 1) {
+	si->rsi *= si->sp->rvir;
 	}
-    else if (si->set_rsi_to_rcutoff == 1) {
-	si->rsi = si->sp->rcutoff;
+    else if (si->rsi_in_rcutoff_units == 1) {
+	si->rsi *= si->sp->rcutoff;
 	}
     if (si->rsi == -1) {
 	/*
@@ -149,14 +172,14 @@ void set_remaining_parameters(const GI *gi, SI *si) {
     /*
     ** Set rso
     */
-    if (si->set_rso_to_rs == 1) {
-	si->rso = si->sp->rs;
+    if (si->rso_in_rs_units == 1) {
+	si->rso *= si->sp->rs;
 	}
-    else if (si->set_rso_to_rvir == 1) {
-	si->rso = si->sp->rvir;
+    else if (si->rso_in_rvir_units == 1) {
+	si->rso *= si->sp->rvir;
 	}
-    else if (si->set_rso_to_rcutoff == 1) {
-	si->rso = si->sp->rcutoff;
+    else if (si->rso_in_rcutoff_units == 1) {
+	si->rso *= si->sp->rcutoff;
 	}
     if (si->rso == -1) {
 	/*
@@ -172,14 +195,14 @@ void set_remaining_parameters(const GI *gi, SI *si) {
     /*
     ** Ser rmor
     */
-    if (si->set_rmor_to_rs == 1) {
-	si->rmor = si->sp->rs;
+    if (si->rmor_in_rs_units == 1) {
+	si->rmor *= si->sp->rs;
 	}
-    else if (si->set_rmor_to_rvir == 1) {
-	si->rmor = si->sp->rvir;
+    else if (si->rmor_in_rvir_units == 1) {
+	si->rmor *= si->sp->rvir;
 	}
-    else if (si->set_rmor_to_rcutoff == 1) {
-	si->rmor = si->sp->rcutoff;
+    else if (si->rmor_in_rcutoff_units == 1) {
+	si->rmor *= si->sp->rcutoff;
 	}
     if (si->rmor == -1) {
 	/*

@@ -12,21 +12,31 @@
 ** Routine for processing input arguments
 */
 
-void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
+void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo, SI *bulge) {
 
     INT i;
+    SI *si;
 
+    si = halo; /* Default for backwards compability */
     i = 1;
     while (i < argc) {
 	/*
 	** Model parameters
 	*/
-	if (strcmp(argv[i],"-a") == 0) {
+	if (strcmp(argv[i],"-halo") == 0) {
+	    si = halo;
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-bulge") == 0) {
+	    si = halo;
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-a") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->alpha = atof(argv[i]);
+	    si->sp->alpha = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-b") == 0) {
@@ -34,7 +44,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->beta = atof(argv[i]);
+	    si->sp->beta = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-c") == 0) {
@@ -42,7 +52,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->gamma = atof(argv[i]);
+	    si->sp->gamma = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-M") == 0) {
@@ -50,17 +60,25 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->M = atof(argv[i]);
+	    if (strcmp("Mo",argv[i]) == 0) {
+		si->sp->M = 1;
+		}
+	    else if (strcmp("MU",argv[i]) == 0) {
+		si->sp->M = MU;
+		}
+	    else {
+		si->sp->M = atof(argv[i]);
+		}
 	    i++;
 	    if (strcmp("Mo",argv[i]) == 0) {
-		halo->sp->M /= MU;
+		si->sp->M /= MU;
 		i++;
 		}
 	    else if (strcmp("MU",argv[i]) == 0) {
 		i++;
 		}
 	    else {
-		halo->sp->M /= MU;
+		si->sp->M /= MU;
 		}
 	    }
 	else if (strcmp(argv[i],"-rs") == 0) {
@@ -68,7 +86,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->rs = atof(argv[i]);
+	    si->sp->rs = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-rcutoff") == 0) {
@@ -76,7 +94,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->rcutoff = atof(argv[i]);
+	    si->sp->rcutoff = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-cvir") == 0) {
@@ -84,7 +102,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->sp->cvir = atof(argv[i]);
+	    si->sp->cvir = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-N0") == 0) {
@@ -92,7 +110,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->N0 = (INT) (atof(argv[i]));
+	    si->N0 = (INT) (atof(argv[i]));
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-soft0") == 0) {
@@ -100,7 +118,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->soft0 = atof(argv[i]);
+	    si->soft0 = atof(argv[i]);
 	    i++;
 	    }
 	/*
@@ -111,45 +129,87 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    if (strcmp("rs",argv[i]) == 0) {
-		halo->set_rsi_to_rs = 1;
+	    if (strcmp("LU",argv[i]) == 0) {
+		si->rsi = 1;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rsi = 1;
+		si->rsi_in_rs_units = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->set_rsi_to_rvir = 1;
+		si->rsi = 1;
+		si->rsi_in_rvir_units = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->set_rsi_to_rcutoff = 1;
+		si->rsi = 1;
+		si->rsi_in_rcutoff_units = 1;
 		}
 	    else {
-		halo->rsi = atof(argv[i]);
+		si->rsi = atof(argv[i]);
 		}
 	    i++;
+	    if (strcmp("LU",argv[i]) == 0) {
+		i++;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rsi_in_rs_units = 1;
+		i++;
+		}
+	    else if (strcmp("rvir",argv[i]) == 0) {
+		si->rsi_in_rvir_units = 1;
+		i++;
+		}
+	    else if (strcmp("rcutoff",argv[i]) == 0) {
+		si->rsi_in_rcutoff_units = 1;
+		i++;
+		}
 	    }
 	else if (strcmp(argv[i],"-rso") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    if (strcmp("rs",argv[i]) == 0) {
-		halo->set_rso_to_rs = 1;
+	    if (strcmp("LU",argv[i]) == 0) {
+		si->rso = 1;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rso = 1;
+		si->rso_in_rs_units = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->set_rso_to_rvir = 1;
+		si->rso = 1;
+		si->rso_in_rvir_units = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->set_rso_to_rcutoff = 1;
+		si->rso = 1;
+		si->rso_in_rcutoff_units = 1;
 		}
 	    else {
-		halo->rso = atof(argv[i]);
+		si->rso = atof(argv[i]);
 		}
 	    i++;
+	    if (strcmp("LU",argv[i]) == 0) {
+		i++;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rso_in_rs_units = 1;
+		i++;
+		}
+	    else if (strcmp("rvir",argv[i]) == 0) {
+		si->rso_in_rvir_units = 1;
+		i++;
+		}
+	    else if (strcmp("rcutoff",argv[i]) == 0) {
+		si->rso_in_rcutoff_units = 1;
+		i++;
+		}
 	    }
 	else if (strcmp(argv[i],"-Nshell") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->Nshell = (INT) atof(argv[i]);
+	    si->Nshell = (INT) atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-Ismor") == 0) {
@@ -157,7 +217,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->Ismor = (INT) atof(argv[i]);
+	    si->Ismor = (INT) atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-DRMmax") == 0) {
@@ -165,7 +225,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->DRMmax = (INT) atof(argv[i]);
+	    si->DRMmax = (INT) atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-rmor") == 0) {
@@ -173,19 +233,40 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    if (strcmp("rs",argv[i]) == 0) {
-		halo->set_rmor_to_rs = 1;
+	    if (strcmp("LU",argv[i]) == 0) {
+		si->rmor = 1;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rmor = 1;
+		si->rmor_in_rs_units = 1;
 		}
 	    else if (strcmp("rvir",argv[i]) == 0) {
-		halo->set_rmor_to_rvir = 1;
+		si->rmor = 1;
+		si->rmor_in_rvir_units = 1;
 		}
 	    else if (strcmp("rcutoff",argv[i]) == 0) {
-		halo->set_rmor_to_rcutoff = 1;
+		si->rmor = 1;
+		si->rmor_in_rcutoff_units = 1;
 		}
 	    else {
-		halo->rmor = atof(argv[i]);
+		si->rmor = atof(argv[i]);
 		}
 	    i++;
+	    if (strcmp("LU",argv[i]) == 0) {
+		i++;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->rmor_in_rs_units = 1;
+		i++;
+		}
+	    else if (strcmp("rvir",argv[i]) == 0) {
+		si->rmor_in_rvir_units = 1;
+		i++;
+		}
+	    else if (strcmp("rcutoff",argv[i]) == 0) {
+		si->rmor_in_rcutoff_units = 1;
+		i++;
+		}
 	    }
 	/*
 	** Special parameters
@@ -195,7 +276,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    halo->dfsf = atof(argv[i]);
+	    si->dfsf = atof(argv[i]);
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-Ngridr") == 0) {
@@ -222,7 +303,15 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo) {
 	    if (i >= argc) {
 		usage();
 		}
-	    bh->mass = atof(argv[i]);
+	    if (strcmp("Mo",argv[i]) == 0) {
+		bh->mass = 1;
+		}
+	    else if (strcmp("MU",argv[i]) == 0) {
+		bh->mass = MU;
+		}
+	    else {
+		bh->mass = atof(argv[i]);
+		}
 	    i++;
 	    if (strcmp("Mo",argv[i]) == 0) {
 		bh->mass /= MU;
