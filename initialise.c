@@ -19,7 +19,9 @@
 ** Routine for initialising general info structure
 */
 
-void initialise_general_info(GI *gi) {
+void initialise_general(GI *gi) {
+
+    INT i;
 
     gi->do_bh = 0;
     gi->do_bulge = 0;
@@ -46,6 +48,26 @@ void initialise_general_info(GI *gi) {
     gi->factor_router = 1e20;
     gi->factor_cutoff = 0.3;
     gi->randomseed = time(NULL);
+    /*
+    ** Sampling info stuff
+    */
+    gi->samp = malloc(sizeof(SAMP));
+    assert(gi->samp != NULL);
+    gi->samp->Ntot = 0;
+    gi->samp->Ninitialtot = 0;
+    gi->samp->Nnosplittot = 0;
+    gi->samp->Nnewtot = 0;
+    gi->samp->Neff = 0;
+    gi->samp->Mp = 0;
+    gi->samp->Ekin = 0;
+    gi->samp->Epot = 0;
+    gi->samp->Nfemm = 0;
+    gi->samp->Nfesm = 0;
+    for(i = 0; i < 4; i++) {
+	gi->samp->Cr[i] = 0;
+	gi->samp->Cv[i] = 0;
+	gi->samp->Ltot[i] = 0;
+	}
     }
 
 /*
@@ -111,6 +133,7 @@ void initialise_system(SI *si) {
     si->samp->Ninitialtot = 0;
     si->samp->Nnosplittot = 0;
     si->samp->Nnewtot = 0;
+    si->samp->Neff = 0;
     si->samp->Mp = 0;
     si->samp->Ekin = 0;
     si->samp->Epot = 0;
@@ -267,6 +290,8 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
     gridr->MencHalo[i] = MencHalor;
     gridr->logMencHalo[i] = log(MencHalor);
     gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
+    gridr->eqrvcmaxBulge[i] = MencBulger - 4*M_PI*rhoBulger*r3;
+    gridr->eqrvcmaxHalo[i] = MencHalor - 4*M_PI*rhoHalor*r3;
     for (i = 1; i < gi->Ngridr; i++) {
 	logr = log(gi->rinner) + i*dlogr;
 	r = exp(logr);
@@ -315,6 +340,8 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	gridr->MencHalo[i] = MencHalor;
 	gridr->logMencHalo[i] = log(MencHalor);
 	gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
+	gridr->eqrvcmaxBulge[i] = MencBulger - 4*M_PI*rhoBulger*r3;
+	gridr->eqrvcmaxHalo[i] = MencHalor - 4*M_PI*rhoHalor*r3;
 	}
     i = gi->Ngridr-1;
     Potoutr = 0; /* approximate outer gridpoint by 0 */

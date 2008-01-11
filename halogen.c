@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     sprintf(bulge->systemname,"bulge");
     sprintf(halo->systemname,"halo");
 
-    initialise_general_info(gi);
+    initialise_general(gi);
     initialise_particle(bh);
     initialise_system(bulge);
     initialise_system(halo);
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     ** Check main input parameters
     */
 
-    check_main_parameters_general_info(gi);
+    check_main_parameters_general(gi);
     if (gi->do_bulge == 1) {
 	check_main_parameters_system(bulge);
 	}
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     ** Allocate memory for the structures
     */
 
-    allocate_general_info(gi);
+    allocate_general(gi);
     if (gi->do_bulge == 1) {
 	allocate_system(gi,bulge);
 	}
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     ** Calculate parameters
     */
 
-    calculate_parameters_general_info(gi);
+    calculate_parameters_general(gi);
     if (gi->do_bulge == 1) {
 	calculate_parameters_system(gi,bulge);
 	}
@@ -300,12 +300,13 @@ int main(int argc, char **argv) {
 
     if (gi->do_bulge == 1) {
 	double_particles(bulge);
-	calculate_samplinginfo(gi,bulge);
+	calculate_samplinginfo_system(gi,bulge);
 	}
     if (gi->do_halo == 1) {
 	double_particles(halo);
-	calculate_samplinginfo(gi,halo);
+	calculate_samplinginfo_system(gi,halo);
 	}
+    calculate_samplinginfo_general(gi);
 
     /*
     ** Write Output

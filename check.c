@@ -10,7 +10,7 @@
 #include "definitions.h"
 #include "usage.h"
 
-void check_main_parameters_general_info(const GI *gi) {
+void check_main_parameters_general(const GI *gi) {
 
     if (strcmp(gi->outputname,"none") == 0) {
 	fprintf(stderr,"You have not set a name for the output model.\n");

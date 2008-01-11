@@ -13,7 +13,7 @@
 ** Routine for allocating memory for general info structure
 */
 
-void allocate_general_info(GI *gi) {
+void allocate_general(GI *gi) {
 
     gi->gridr = malloc(sizeof(GRIDR));
     assert(gi->gridr != NULL);
@@ -65,6 +65,10 @@ void allocate_general_info(GI *gi) {
     assert(gi->gridr->Potoutr != NULL);
     gi->gridr->eqrvcmax = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->eqrvcmax != NULL);
+    gi->gridr->eqrvcmaxBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->eqrvcmaxBulge != NULL);
+    gi->gridr->eqrvcmaxHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->eqrvcmaxHalo != NULL);
     }
 
 /*
@@ -92,9 +96,11 @@ void allocate_system(const GI *gi, SI *si) {
     if (strcmp(si->systemname,"bulge") == 0) {
 	si->logrhoenc = gi->gridr->logrhoencBulge;
 	si->logMenc = gi->gridr->logMencBulge;
+	si->eqrvcmax = gi->gridr->eqrvcmaxBulge;
 	}
     else if (strcmp(si->systemname,"halo") == 0) {
 	si->logrhoenc = gi->gridr->logrhoencHalo;
 	si->logMenc = gi->gridr->logMencHalo;
+	si->eqrvcmax = gi->gridr->eqrvcmaxHalo;
 	}
     }

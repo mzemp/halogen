@@ -2,7 +2,7 @@
 ** initialise.h
 */
 
-void initialise_general_info(GI (*));
+void initialise_general(GI (*));
 void initialise_system(SI (*));
 void initialise_particle(PARTICLE (*));
 void initialise_gridr(GI (*), PARTICLE (*), SI (*), SI (*));

@@ -54,6 +54,8 @@ typedef struct gridr {
     DOUBLE *logPot;
     DOUBLE *Potoutr;
     DOUBLE *eqrvcmax;
+    DOUBLE *eqrvcmaxBulge;
+    DOUBLE *eqrvcmaxHalo;
     } GRIDR;
 
 typedef struct griddf {
@@ -122,15 +124,16 @@ typedef struct samplinginfo {
     INT Ninitialtot;
     INT Nnosplittot;
     INT Nnewtot;
+    DOUBLE Neff;
     DOUBLE Mp;
     DOUBLE Ekin;
     DOUBLE Epot;
     DOUBLE Etot;
+    DOUBLE Nfemm;
+    DOUBLE Nfesm;
     DOUBLE Cr[4];
     DOUBLE Cv[4];
     DOUBLE Ltot[4];
-    DOUBLE Nfemm;
-    DOUBLE Nfesm;
     } SAMP;
 
 typedef struct systeminfo {
@@ -158,6 +161,7 @@ typedef struct systeminfo {
     DOUBLE dfsf;
     DOUBLE *logrhoenc;
     DOUBLE *logMenc;
+    DOUBLE *eqrvcmax;
     SP *sp;
     SHELL *shell;
     GRIDDF *griddf;
@@ -192,7 +196,11 @@ typedef struct generalinfo {
     DOUBLE factor_router;
     DOUBLE factor_cutoff;
     DOUBLE randomseed;
+    DOUBLE rvcmax;
+    DOUBLE vcmax;
+    DOUBLE rhalf;
     DOUBLE t[10];
     GRIDR *gridr;
+    SAMP *samp;
     CHAR outputname[STRINGSIZE];
     } GI;

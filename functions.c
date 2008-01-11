@@ -479,6 +479,20 @@ DOUBLE Menc_system(DOUBLE r, const GI *gi, const SI *si) {
     }
 
 /*
+** Function for calculating the dynamical time at position r 
+*/
+
+DOUBLE Tdyn_total(DOUBLE r, const GI *gi) {
+
+    return (2*M_PI*sqrt((r*r*r)/(G*Menc_total(r,gi))));
+    }
+
+DOUBLE Tdyn_system(DOUBLE r, const GI *gi, const SI *si) {
+
+    return (2*M_PI*sqrt((r*r*r)/(G*Menc_system(r,gi,si))));
+    }
+
+/*
 ** Function for calculating potential at radius r 
 */
 
@@ -494,15 +508,6 @@ DOUBLE Pot(DOUBLE r, const GI *gi) {
 DOUBLE vescape(DOUBLE r, const GI *gi) {
 
     return (sqrt(2.0*fabs(Pot(r,gi)-gi->gridr->Pot[gi->Ngridr-1])));
-    }
-
-/*
-** Function for calculating the dynamical time at position r 
-*/
-
-DOUBLE Tdyn(DOUBLE r, const GI *gi) {
-
-    return (2*M_PI*sqrt((r*r*r)/(G*Menc_total(r,gi))));
     }
 
 /*

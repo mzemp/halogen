@@ -21,7 +21,7 @@
 ** Routine for calculatein parameters for general info structure
 */
 
-void calculate_parameters_general_info(GI *gi) {
+void calculate_parameters_general(GI *gi) {
 
     gi->rhocritz = 3/(8*M_PI*G)*(pow((100*gi->h0*Ecosmo(gi)*VelConvertFac/1000),2));
     if (gi->Deltavirz == -1) {
@@ -648,55 +648,83 @@ void double_particles(SI *si) {
 ** Routines for calculating center of mass position and velocity, and angular momentum
 */
 
-void calculate_samplinginfo(const GI *gi, SI *si) {
+void calculate_samplinginfo_system(GI *gi, SI *si) {
 
     INT i, j, N;
     DOUBLE temp;
     PARTICLE *p;
-    SAMP *samp;
+    SAMP *gisamp, *sisamp;
 
-    samp = si->samp;
+    sisamp = si->samp;
+    gisamp = gi->samp;
+    sisamp->Neff = Menc_system(gi->router,gi,si)/si->shell[0].mass;
+    gisamp->Neff += sisamp->Neff;
     for(j = 0; j < (si->Nshell+2); j++) {
 	N = si->shell[j].N;
 	p = si->shell[j].p;
-	samp->Ntot += si->shell[j].N;
-	samp->Ninitialtot += si->shell[j].Ninitial;
-	samp->Nnosplittot += si->shell[j].Nnosplit;
-	samp->Nnewtot += si->shell[j].Nnew;
+	sisamp->Ntot += si->shell[j].N;
+	sisamp->Ninitialtot += si->shell[j].Ninitial;
+	sisamp->Nnosplittot += si->shell[j].Nnosplit;
+	sisamp->Nnewtot += si->shell[j].Nnew;
+	gisamp->Ntot += si->shell[j].N;
+	gisamp->Ninitialtot += si->shell[j].Ninitial;
+	gisamp->Nnosplittot += si->shell[j].Nnosplit;
+	gisamp->Nnewtot += si->shell[j].Nnew;
 	for (i = 0; i < N; i++) {
 	    if((j == 0) && (p[i].r[0] < si->rimp)) {
 		si->rimp = p[i].r[0];
 		}
 	    temp = p[i].mass;
 	    si->shell[j].Mp += temp;
-	    samp->Mp += temp;
-	    samp->Cr[1] += temp*p[i].r[1];
-	    samp->Cr[2] += temp*p[i].r[2];
-	    samp->Cr[3] += temp*p[i].r[3];
-	    samp->Cv[1] += temp*p[i].v[1];
-	    samp->Cv[2] += temp*p[i].v[2];
-	    samp->Cv[3] += temp*p[i].v[3];
-	    samp->Ltot[1] += temp*p[i].L[1];
-	    samp->Ltot[2] += temp*p[i].L[2];
-	    samp->Ltot[3] += temp*p[i].L[3];
-	    samp->Ekin += temp*p[i].Ekin;
-	    samp->Epot += temp*p[i].Epot;
-	    temp = (2*M_PI)/(0.03*Tdyn(p[i].r[0],gi));
-	    samp->Nfemm += temp;
-	    samp->Nfesm += temp*p[i].mass/si->shell[0].mass;
+	    sisamp->Mp += temp;
+	    sisamp->Cr[1] += temp*p[i].r[1];
+	    sisamp->Cr[2] += temp*p[i].r[2];
+	    sisamp->Cr[3] += temp*p[i].r[3];
+	    sisamp->Cv[1] += temp*p[i].v[1];
+	    sisamp->Cv[2] += temp*p[i].v[2];
+	    sisamp->Cv[3] += temp*p[i].v[3];
+	    sisamp->Ltot[1] += temp*p[i].L[1];
+	    sisamp->Ltot[2] += temp*p[i].L[2];
+	    sisamp->Ltot[3] += temp*p[i].L[3];
+	    sisamp->Ekin += temp*p[i].Ekin;
+	    sisamp->Epot += temp*p[i].Epot;
+	    /*
+	    ** Calculate theoretical speed-up factors
+	    */
+	    temp = (2*M_PI)/(0.03*Tdyn_system(p[i].r[0],gi,si));
+	    sisamp->Nfemm += temp;
+	    sisamp->Nfesm += temp*p[i].mass/si->shell[0].mass;
+	    temp = (2*M_PI)/(0.03*Tdyn_total(p[i].r[0],gi));
+	    gisamp->Nfemm += temp;
+	    gisamp->Nfesm += temp*p[i].mass/si->shell[0].mass;
 	    }
 	}
+    gisamp->Mp += sisamp->Mp;
+    gisamp->Cr[1] += sisamp->Cr[1];
+    gisamp->Cr[2] += sisamp->Cr[2];
+    gisamp->Cr[3] += sisamp->Cr[3];
+    gisamp->Cv[1] += sisamp->Cv[1];
+    gisamp->Cv[2] += sisamp->Cv[2];
+    gisamp->Cv[3] += sisamp->Cv[3];
+    gisamp->Ltot[1] += sisamp->Ltot[1];
+    gisamp->Ltot[2] += sisamp->Ltot[2];
+    gisamp->Ltot[3] += sisamp->Ltot[3];
+    gisamp->Ekin += sisamp->Ekin;
+    gisamp->Epot += sisamp->Epot;
+    /*
+    ** Calculate system specific stuff
+    */
     for(i = 1; i < 4; i++) {
-	samp->Cr[i] = samp->Cr[i]/samp->Mp;
-	samp->Cv[i] = samp->Cv[i]/samp->Mp;
+	sisamp->Cr[i] = sisamp->Cr[i]/sisamp->Mp;
+	sisamp->Cv[i] = sisamp->Cv[i]/sisamp->Mp;
 	}
-    samp->Cr[0] = sqrt(samp->Cr[1]*samp->Cr[1]+samp->Cr[2]*samp->Cr[2]+samp->Cr[3]*samp->Cr[3]);
-    samp->Cv[0] = sqrt(samp->Cv[1]*samp->Cv[1]+samp->Cv[2]*samp->Cv[2]+samp->Cv[3]*samp->Cv[3]);
-    samp->Ltot[0] = sqrt(samp->Ltot[1]*samp->Ltot[1]+samp->Ltot[2]*samp->Ltot[2]+samp->Ltot[3]*samp->Ltot[3]);
-    samp->Epot = samp->Epot/2.0;
-    samp->Etot = samp->Ekin + samp->Epot;
-    if (gi->gridr->eqrvcmax[0] < 0) {
-	si->sp->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
+    sisamp->Cr[0] = sqrt(sisamp->Cr[1]*sisamp->Cr[1]+sisamp->Cr[2]*sisamp->Cr[2]+sisamp->Cr[3]*sisamp->Cr[3]);
+    sisamp->Cv[0] = sqrt(sisamp->Cv[1]*sisamp->Cv[1]+sisamp->Cv[2]*sisamp->Cv[2]+sisamp->Cv[3]*sisamp->Cv[3]);
+    sisamp->Ltot[0] = sqrt(sisamp->Ltot[1]*sisamp->Ltot[1]+sisamp->Ltot[2]*sisamp->Ltot[2]+sisamp->Ltot[3]*sisamp->Ltot[3]);
+    sisamp->Epot = sisamp->Epot/2.0;
+    sisamp->Etot = sisamp->Ekin + sisamp->Epot;
+    if (si->eqrvcmax[0] < 0) {
+	si->sp->rvcmax = exp(lininterpolate(gi->Ngridr,si->eqrvcmax,gi->gridr->logr,0.0));
 	si->sp->vcmax = sqrt(G*Menc_system(si->sp->rvcmax,gi,si)/si->sp->rvcmax);
 	}
     si->sp->rhalf = exp(lininterpolate(gi->Ngridr,si->logMenc,gi->gridr->logr,log(si->sp->M/2.0)));
@@ -704,3 +732,24 @@ void calculate_samplinginfo(const GI *gi, SI *si) {
     si->r100 = pow(((3.0-si->sp->gamma)*100*si->shell[0].mass)/(4*M_PI*si->sp->rho0*pow(si->sp->rs,si->sp->gamma)),1.0/(3.0-si->sp->gamma));
     }
 
+void calculate_samplinginfo_general(GI *gi) {
+
+    INT i;
+    SAMP *gisamp;
+
+    gisamp = gi->samp;
+    for(i = 1; i < 4; i++) {
+	gisamp->Cr[i] = gisamp->Cr[i]/gisamp->Mp;
+	gisamp->Cv[i] = gisamp->Cv[i]/gisamp->Mp;
+	}
+    gisamp->Cr[0] = sqrt(gisamp->Cr[1]*gisamp->Cr[1]+gisamp->Cr[2]*gisamp->Cr[2]+gisamp->Cr[3]*gisamp->Cr[3]);
+    gisamp->Cv[0] = sqrt(gisamp->Cv[1]*gisamp->Cv[1]+gisamp->Cv[2]*gisamp->Cv[2]+gisamp->Cv[3]*gisamp->Cv[3]);
+    gisamp->Ltot[0] = sqrt(gisamp->Ltot[1]*gisamp->Ltot[1]+gisamp->Ltot[2]*gisamp->Ltot[2]+gisamp->Ltot[3]*gisamp->Ltot[3]);
+    gisamp->Epot = gisamp->Epot/2.0;
+    gisamp->Etot = gisamp->Ekin + gisamp->Epot;
+    if (gi->gridr->eqrvcmax[0] < 0) {
+	gi->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
+	gi->vcmax = sqrt(G*Menc_total(gi->rvcmax,gi)/gi->rvcmax);
+	}
+    gi->rhalf = exp(lininterpolate(gi->Ngridr,gi->gridr->logMenc,gi->gridr->logr,log(gisamp->Mp/2.0)));
+    }
