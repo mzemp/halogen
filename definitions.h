@@ -12,7 +12,6 @@
 #define TOLLININT 1e-10
 #define DFFAILUREMAX 1e20
 #define SBI 1e100
-#define CutoffFac 0.3
 #define MU 2.2229621e5
 #define G 1
 #define VelConvertFac 1.0227122
@@ -35,14 +34,20 @@ typedef struct gridr {
     DOUBLE *logr;
     DOUBLE *rho;
     DOUBLE *logrho;
+    DOUBLE *rhoBulge;
+    DOUBLE *logrhoBulge;
     DOUBLE *rhoHalo;
     DOUBLE *logrhoHalo;
     DOUBLE *rhoenc;
     DOUBLE *logrhoenc;
+    DOUBLE *rhoencBulge;
+    DOUBLE *logrhoencBulge;
     DOUBLE *rhoencHalo;
     DOUBLE *logrhoencHalo;
     DOUBLE *Menc;
     DOUBLE *logMenc;
+    DOUBLE *MencBulge;
+    DOUBLE *logMencBulge;
     DOUBLE *MencHalo;
     DOUBLE *logMencHalo;
     DOUBLE *Pot;
@@ -111,7 +116,7 @@ typedef struct shell {
     PARTICLE *p;
     } SHELL;
 
-typedef struct stuff {
+typedef struct samplinginfo {
 
     INT Ntot;
     INT Ninitialtot;
@@ -126,7 +131,7 @@ typedef struct stuff {
     DOUBLE Ltot[4];
     DOUBLE Nfemm;
     DOUBLE Nfesm;
-    } STUFF;
+    } SAMP;
 
 typedef struct systeminfo {
 
@@ -151,14 +156,20 @@ typedef struct systeminfo {
     DOUBLE r1;
     DOUBLE r100;
     DOUBLE dfsf;
+    DOUBLE *logrhoenc;
+    DOUBLE *logMenc;
     SP *sp;
     SHELL *shell;
     GRIDDF *griddf;
+    SAMP *samp;
     CHAR systemname[STRINGSIZE];
     } SI;
 
 typedef struct generalinfo {
 
+    INT do_bh;
+    INT do_bulge;
+    INT do_halo;
     INT output_gridr;
     INT output_griddf;
     INT output_tipsy_standard;
@@ -179,9 +190,9 @@ typedef struct generalinfo {
     DOUBLE router;
     DOUBLE factor_rinner;
     DOUBLE factor_router;
+    DOUBLE factor_cutoff;
     DOUBLE randomseed;
     DOUBLE t[10];
-    STUFF *stuff;
     GRIDR *gridr;
-    CHAR inputname[STRINGSIZE];
+    CHAR outputname[STRINGSIZE];
     } GI;

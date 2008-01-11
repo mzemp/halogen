@@ -14,5 +14,4 @@ void refine(const GI (*), SI (*));
 void searchroot(const GI (*), INT (*), DOUBLE (*));
 void searchmin(const GI (*), INT (*), DOUBLE (*));
 void double_particles(SI (*));
-void correct_cm_velocity(SI (*));
-void calculate_stuff(GI (*), PARTICLE (*), SI (*));
+void calculate_samplinginfo(const GI (*), SI (*));

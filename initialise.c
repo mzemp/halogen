@@ -21,6 +21,9 @@
 
 void initialise_general_info(GI *gi) {
 
+    gi->do_bh = 0;
+    gi->do_bulge = 0;
+    gi->do_halo = 0;
     gi->output_gridr = 0;
     gi->output_griddf = 0;
     gi->output_tipsy_standard = 0;
@@ -41,6 +44,7 @@ void initialise_general_info(GI *gi) {
     gi->router = -1;
     gi->factor_rinner = 1e-6;
     gi->factor_router = 1e20;
+    gi->factor_cutoff = 0.3;
     gi->randomseed = time(NULL);
     }
 
@@ -49,6 +53,8 @@ void initialise_general_info(GI *gi) {
 */
 
 void initialise_system(SI *si) {
+
+    INT i;
 
     /*
     ** General stuff
@@ -74,9 +80,13 @@ void initialise_system(SI *si) {
     si->r1 = -1;
     si->r100 = -1;
     si->dfsf = 0.01;
+    si->logrhoenc = NULL;
+    si->logMenc = NULL;
     /*
     ** Particle stuff
     */
+    si->sp = malloc(sizeof(SP));
+    assert(si->sp != NULL);
     si->sp->alpha = -1;
     si->sp->beta = -1;
     si->sp->gamma = -1;
@@ -92,6 +102,25 @@ void initialise_system(SI *si) {
     si->sp->rhalf = -1;
     si->sp->rvcmax = -1;
     si->sp->vcmax = -1;
+    /*
+    ** Sampling info stuff
+    */
+    si->samp = malloc(sizeof(SAMP));
+    assert(si->samp != NULL);
+    si->samp->Ntot = 0;
+    si->samp->Ninitialtot = 0;
+    si->samp->Nnosplittot = 0;
+    si->samp->Nnewtot = 0;
+    si->samp->Mp = 0;
+    si->samp->Ekin = 0;
+    si->samp->Epot = 0;
+    si->samp->Nfemm = 0;
+    si->samp->Nfesm = 0;
+    for(i = 0; i < 4; i++) {
+	si->samp->Cr[i] = 0;
+	si->samp->Cv[i] = 0;
+	si->samp->Ltot[i] = 0;
+	}
     }
 
 /*
@@ -121,48 +150,120 @@ void initialise_particle(PARTICLE *p) {
 ** Routine for initialising gridr 
 */
 
-void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
+void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 
     INT i;
     DOUBLE dlogr, logr, r, r3;
-    DOUBLE Mencr, MencHalor, DeltaMencHalor;
-    DOUBLE rhor, rhoHalor;
-    DOUBLE rhoencr, rhoencHalor;
+    DOUBLE Mencr, MencHalor, DeltaMencHalor, MencBulger, DeltaMencBulger;
+    DOUBLE rhor, rhoHalor, rhoBulger;
+    DOUBLE rhoencr, rhoencHalor, rhoencBulger;
     DOUBLE Potr, Potoutr;
     GRIDR *gridr;
-    SP *hp;
+    SP *bp, *hp;
 
     gridr = gi->gridr;
+    bp = bulge->sp;
     hp = halo->sp;
-    gi->rinner = gi->factor_rinner*halo->sp->rs;
-    gi->router = halo->sp->rs;
-    while (rho(halo->sp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
-	gi->router = gi->router*10;
+    /*
+    ** Determine gridr size
+    */
+    if (gi->do_bulge == 1) {
+	if (gi->do_halo == 1) {
+	    if (bp->rs < hp->rs) {
+		gi->rinner = gi->factor_rinner*bp->rs;
+		}
+	    else {
+		gi->rinner = gi->factor_rinner*hp->rs;
+		}
+	    }
+	else {
+	    gi->rinner = gi->factor_rinner*bp->rs;
+	    }
 	}
+    else if (gi->do_halo == 1) {
+	gi->rinner = gi->factor_rinner*hp->rs;
+	}
+    if (gi->rinner == -1) {
+	fprintf(stderr,"HALOGEN is confused!\n");
+	fprintf(stderr,"Missing or bad parameter.\n");
+	fprintf(stderr,"Could not determine rinner for grid in r.\n");
+	usage();
+	}
+    if (gi->do_bulge == 1) {
+	if (gi->do_halo == 1) {
+	    gi->router = hp->rs;
+	    while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
+		gi->router = gi->router*10;
+		}
+	    }
+	else {
+	    gi->router = bp->rs;
+	    while (rho(bp->rs,bulge)/rho(gi->router,bulge) < gi->factor_router) {
+		gi->router = gi->router*10;
+		}
+	    }
+	}
+    else if (gi->do_halo == 1) {
+	gi->router = hp->rs;
+	while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
+	    gi->router = gi->router*10;
+	    }
+	}
+    if (gi->router == -1) {
+	fprintf(stderr,"HALOGEN is confused!\n");
+	fprintf(stderr,"Missing or bad parameter.\n");
+	fprintf(stderr,"Could not determine router for grid in r.\n");
+	usage();
+	}
+    /*
+    ** Initialise gridr
+    */
     dlogr = (log(gi->router)-log(gi->rinner))/(gi->Ngridr-1);
     i = 0;
     logr = log(gi->rinner);
     r = exp(logr);
     r3 = r*r*r;
-    rhoHalor = rho(r,halo);
-    rhor = rhoHalor;
-    DeltaMencHalor = 4*M_PI*rhoHalor*r3/(3-hp->gamma); /* approximate inner gridpoint by analytical calculation */
+    if (gi->do_bulge == 1) {
+	rhoBulger = rho(r,bulge);
+	DeltaMencBulger = 4*M_PI*rhoBulger*r3/(3-bp->gamma); /* approximate inner gridpoint by analytical calculation */
+	}
+    else {
+	rhoBulger = 0;
+	DeltaMencBulger = 0;
+	}
+    if (gi->do_halo == 1) {
+	rhoHalor = rho(r,halo);
+	DeltaMencHalor = 4*M_PI*rhoHalor*r3/(3-hp->gamma); /* approximate inner gridpoint by analytical calculation */
+	}
+    else {
+	rhoHalor = 0;
+	DeltaMencHalor = 0;
+	}
+    rhor = rhoHalor + rhoBulger;
+    MencBulger = DeltaMencBulger;
     MencHalor = DeltaMencHalor;
-    Mencr = bh->mass + DeltaMencHalor;
+    Mencr = bh->mass + DeltaMencBulger + DeltaMencHalor;
+    rhoencBulger = MencBulger/(4*M_PI*r3/3.0);
     rhoencHalor = MencHalor/(4*M_PI*r3/3.0);
     rhoencr = Mencr/(4*M_PI*r3/3.0);
     gridr->r[i] = r;
     gridr->logr[i] = logr;
     gridr->rho[i] = rhor;
     gridr->logrho[i] = log(rhor);
+    gridr->rhoBulge[i] = rhoBulger;
+    gridr->logrhoBulge[i] = log(rhoBulger);
     gridr->rhoHalo[i] = rhoHalor;
     gridr->logrhoHalo[i] = log(rhoHalor);
     gridr->rhoenc[i] = rhoencr;
     gridr->logrhoenc[i] = log(rhoencr);
+    gridr->rhoencBulge[i] = rhoencBulger;
+    gridr->logrhoencBulge[i] = log(rhoencBulger);
     gridr->rhoencHalo[i] = rhoencHalor;
     gridr->logrhoencHalo[i] = log(rhoencHalor);
     gridr->Menc[i] = Mencr;
     gridr->logMenc[i] = log(Mencr);
+    gridr->MencBulge[i] = MencBulger;
+    gridr->logMencBulge[i] = log(MencBulger);
     gridr->MencHalo[i] = MencHalor;
     gridr->logMencHalo[i] = log(MencHalor);
     gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
@@ -170,25 +271,47 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
 	logr = log(gi->rinner) + i*dlogr;
 	r = exp(logr);
 	r3 = r*r*r;
-	rhoHalor = rho(r,halo);
-	rhor = rhoHalor;
-	DeltaMencHalor =  integral(integrandMenc,gridr->r[i-1],r,halo);
+	if (gi->do_bulge == 1) {
+	    rhoBulger = rho(r,bulge);
+	    DeltaMencBulger = integral(integrandMenc,gridr->r[i-1],r,bulge);
+	    }
+	else {
+	    rhoBulger = 0;
+	    DeltaMencBulger = 0;
+	    }
+	if (gi->do_halo == 1) {
+	    rhoHalor = rho(r,halo);
+	    DeltaMencHalor = integral(integrandMenc,gridr->r[i-1],r,halo);
+	    }
+	else {
+	    rhoHalor = 0;
+	    DeltaMencHalor = 0;
+	    }
+	rhor = rhoHalor + rhoBulger;
+	MencBulger = gridr->MencBulge[i-1] + DeltaMencBulger;
 	MencHalor = gridr->MencHalo[i-1] + DeltaMencHalor;
-	Mencr = gridr->Menc[i-1] + DeltaMencHalor;
+	Mencr = gridr->Menc[i-1] + DeltaMencBulger + DeltaMencHalor;
+	rhoencBulger = MencBulger/(4*M_PI*r3/3.0);
 	rhoencHalor = MencHalor/(4*M_PI*r3/3.0);
 	rhoencr = Mencr/(4*M_PI*r3/3.0);
 	gridr->r[i] = r;
 	gridr->logr[i] = logr;
 	gridr->rho[i] = rhor;
 	gridr->logrho[i] = log(rhor);
+	gridr->rhoBulge[i] = rhoBulger;
+	gridr->logrhoBulge[i] = log(rhoBulger);
 	gridr->rhoHalo[i] = rhoHalor;
 	gridr->logrhoHalo[i] = log(rhoHalor);
 	gridr->rhoenc[i] = rhoencr;
 	gridr->logrhoenc[i] = log(rhoencr);
+	gridr->rhoencBulge[i] = rhoencBulger;
+	gridr->logrhoencBulge[i] = log(rhoencBulger);
 	gridr->rhoencHalo[i] = rhoencHalor;
 	gridr->logrhoencHalo[i] = log(rhoencHalor);
 	gridr->Menc[i] = Mencr;
 	gridr->logMenc[i] = log(Mencr);
+	gridr->MencBulge[i] = MencBulger;
+	gridr->logMencBulge[i] = log(MencBulger);
 	gridr->MencHalo[i] = MencHalor;
 	gridr->logMencHalo[i] = log(MencHalor);
 	gridr->eqrvcmax[i] = Mencr - 4*M_PI*rhor*r3;
@@ -200,7 +323,13 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *halo) {
     gridr->logPot[i] = log(-Potr);
     gridr->Potoutr[i] = Potoutr;
     for (i = (gi->Ngridr-2); i >= 0; i--) {
-	Potoutr = integral(integrandPot,gridr->r[i],gridr->r[i+1],halo)+gridr->Potoutr[i+1];
+	Potoutr = gridr->Potoutr[i+1];
+	if (gi->do_bulge == 1) {
+	    Potoutr += integral(integrandPot,gridr->r[i],gridr->r[i+1],bulge);
+	    }
+	if (gi->do_halo == 1) {
+	    Potoutr += integral(integrandPot,gridr->r[i],gridr->r[i+1],halo);
+	    }
 	Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
 	gridr->Pot[i] = Potr;
 	gridr->logPot[i] = log(-Potr);
@@ -225,7 +354,7 @@ void initialise_griddf(const GI *gi, SI *si) {
     for (i = (gi->Ngriddf-1), j = (gi->Ngridr-1); i >= 0; i--, j = j-dj) {
 	fE = integraldf(j,gi,si);
 	if (fE < 0) {
-	    fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
+	    fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	    fprintf(stderr,"You have chosen parameters that lead to a negative and hence unphysical distribution function.\n");
 	    usage();
 	    }
@@ -268,7 +397,7 @@ void initialise_shell(const GI *gi, SI *si) {
     shell[Nshell+1].router = shell[Nshell+2].rinner;
     shell[Nshell+2].router = shell[Nshell+2].rinner;
     for (i = 0; i < (Nshell+3); i++) {
-	shell[i].Menc = exp(lininterpolate(gi->Ngridr,gi->gridr->logr,gi->gridr->logMencHalo,log(shell[i].rinner)));
+	shell[i].Menc = exp(lininterpolate(gi->Ngridr,gi->gridr->logr,si->logMenc,log(shell[i].rinner)));
 	}
     mass0 = (shell[1].Menc-shell[0].Menc)/(2.0*(si->N0/2));
     for (i = 0; i < (Nshell+2); i++) {

@@ -4,9 +4,10 @@
 ** Some allocation routines for HALOGEN
 */
 
-#include "definitions.h"
+#include <string.h>
 #include <malloc.h>
 #include <assert.h>
+#include "definitions.h"
 
 /*
 ** Routine for allocating memory for general info structure
@@ -14,8 +15,6 @@
 
 void allocate_general_info(GI *gi) {
 
-    gi->stuff = malloc(sizeof(STUFF));
-    assert(gi->stuff != NULL);
     gi->gridr = malloc(sizeof(GRIDR));
     assert(gi->gridr != NULL);
     gi->gridr->r = malloc(gi->Ngridr*sizeof(DOUBLE));
@@ -26,6 +25,10 @@ void allocate_general_info(GI *gi) {
     assert(gi->gridr->rho != NULL);
     gi->gridr->logrho = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->logrho != NULL);
+    gi->gridr->rhoBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->rhoBulge != NULL);
+    gi->gridr->logrhoBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->logrhoBulge != NULL);
     gi->gridr->rhoHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->rhoHalo != NULL);
     gi->gridr->logrhoHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
@@ -34,6 +37,10 @@ void allocate_general_info(GI *gi) {
     assert(gi->gridr->rhoenc != NULL);
     gi->gridr->logrhoenc = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->logrhoenc != NULL);
+    gi->gridr->rhoencBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->rhoencBulge != NULL);
+    gi->gridr->logrhoencBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->logrhoencBulge != NULL);
     gi->gridr->rhoencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->rhoencHalo != NULL);
     gi->gridr->logrhoencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
@@ -42,6 +49,10 @@ void allocate_general_info(GI *gi) {
     assert(gi->gridr->Menc != NULL);
     gi->gridr->logMenc = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->logMenc != NULL);
+    gi->gridr->MencBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->MencBulge != NULL);
+    gi->gridr->logMencBulge = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->logMencBulge != NULL);
     gi->gridr->MencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->MencHalo != NULL);
     gi->gridr->logMencHalo = malloc(gi->Ngridr*sizeof(DOUBLE));
@@ -78,4 +89,12 @@ void allocate_system(const GI *gi, SI *si) {
     assert(si->griddf->fE != NULL);
     si->griddf->logfE = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(si->griddf->logfE != NULL);
+    if (strcmp(si->systemname,"bulge") == 0) {
+	si->logrhoenc = gi->gridr->logrhoencBulge;
+	si->logMenc = gi->gridr->logMencBulge;
+	}
+    else if (strcmp(si->systemname,"halo") == 0) {
+	si->logrhoenc = gi->gridr->logrhoencHalo;
+	si->logMenc = gi->gridr->logMencHalo;
+	}
     }

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "definitions.h"
 #include "usage.h"
 
@@ -14,12 +15,12 @@
 ** Routine for processing input arguments
 */
 
-void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo, SI *bulge) {
+void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 
     INT i;
     SI *si;
 
-    si = halo; /* Default for backwards compability */
+    si = NULL;
     i = 1;
     while (i < argc) {
 	/*
@@ -27,13 +28,19 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo, SI
 	*/
 	if (strcmp(argv[i],"-halo") == 0) {
 	    si = halo;
+	    gi->do_halo = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-bulge") == 0) {
 	    si = halo;
+	    gi->do_bulge = 1;
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-a") == 0) {
+	if (si == NULL) {
+	    fprintf(stderr,"You have no system specified!\n");
+	    usage();
+	    }
+	if (strcmp(argv[i],"-a") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
@@ -342,7 +349,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo, SI
 	    if (i >= argc) {
 		usage();
 		}
-	    sprintf(gi->inputname,"%s",argv[i]);
+	    sprintf(gi->outputname,"%s",argv[i]);
 	    i++;
 	    }
 	/*
@@ -432,6 +439,30 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *halo, SI
 		usage();
 		}
 	    gi->randomseed = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-factorrinner") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    gi->factor_rinner = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-factorrouter") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    gi->factor_router = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-factorcutoff") == 0) {
+	    i++;
+	    if (i >= argc) {
+		usage();
+		}
+	    gi->factor_cutoff = atof(argv[i]);
 	    i++;
 	    }
 	/*

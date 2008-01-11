@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
 
     GI *gi;
     PARTICLE *bh;
-    SI *halo;
     SI *bulge;
+    SI *halo;
     CHAR FILENAME[STRINGSIZE];
     FILE *file;
 
@@ -48,21 +48,14 @@ int main(int argc, char **argv) {
     ** Initialise structures for reading parameters and start clock
     */
 
-    bh = malloc(sizeof(PARTICLE));
-    assert(bh != NULL);
-
-    halo = malloc(sizeof(SI));
-    assert(halo != NULL);
-    halo->sp = malloc(sizeof(SP));
-    assert(halo->sp != NULL);
-
-    bulge = malloc(sizeof(SI));
-    assert(bulge != NULL);
-    bulge->sp = malloc(sizeof(SP));
-    assert(bulge->sp != NULL);
-
     gi = malloc(sizeof(GI));
     assert(gi != NULL);
+    bh = malloc(sizeof(PARTICLE));
+    assert(bh != NULL);
+    bulge = malloc(sizeof(SI));
+    assert(bulge != NULL);
+    halo = malloc(sizeof(SI));
+    assert(halo != NULL);
 
     gi->t[0] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
 
@@ -70,19 +63,20 @@ int main(int argc, char **argv) {
     ** Set standard values for parameters
     */
 
-    sprintf(gi->inputname,"none");
-    sprintf(halo->systemname,"halo");
+    sprintf(gi->outputname,"none");
     sprintf(bulge->systemname,"bulge");
+    sprintf(halo->systemname,"halo");
 
     initialise_general_info(gi);
     initialise_particle(bh);
+    initialise_system(bulge);
     initialise_system(halo);
 
     /*
     ** Read in and process arguments
     */
 
-    process_arguments(argc,argv,gi,bh,halo);
+    process_arguments(argc,argv,gi,bh,bulge,halo);
 
     fprintf(stderr,"Checking parameters, calculating halo properties and initialising grid in r... \n");
 
@@ -97,53 +91,95 @@ int main(int argc, char **argv) {
     */
 
     check_main_parameters_general_info(gi);
-    check_main_parameters_system(halo);
+    if (gi->do_bulge == 1) {
+	check_main_parameters_system(bulge);
+	}
+    if (gi->do_halo == 1) {
+	check_main_parameters_system(halo);
+	}
 
     /*
     ** Allocate memory for the structures
     */
 
     allocate_general_info(gi);
-    allocate_system(gi,halo);
+    if (gi->do_bulge == 1) {
+	allocate_system(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	allocate_system(gi,halo);
+	}
 
     /*
     ** Calculate parameters
     */
 
     calculate_parameters_general_info(gi);
-    calculate_parameters_system(gi,halo);
+    if (gi->do_bulge == 1) {
+	calculate_parameters_system(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	calculate_parameters_system(gi,halo);
+	}
 
     /*
     ** Initialise gridr
     */
 
-    initialise_gridr(gi,bh,halo);
-    
+    initialise_gridr(gi,bh,bulge,halo);
+
     if (gi->output_gridr == 1) {
-	sprintf(FILENAME,"%s.gridr.dat",gi->inputname);
+	sprintf(FILENAME,"%s.gridr.total.dat",gi->outputname);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
-	write_gridr(file,gi);
+	write_gridr_total(file,gi);
 	fclose(file);
+	if (gi->do_bulge == 1) {
+	    sprintf(FILENAME,"%s.gridr.bulge.dat",gi->outputname);
+	    file = fopen(FILENAME,"w");
+	    write_gridr_system(file,gi,bulge);
+	    fclose(file);
+	    }
+	if (gi->do_halo == 1) {
+	    sprintf(FILENAME,"%s.gridr.halo.dat",gi->outputname);
+	    file = fopen(FILENAME,"w");
+	    write_gridr_system(file,gi,halo);
+	    fclose(file);
+	    }
 	}
 
     /*
     ** Calculate virial stuff for finite mass models and cutoff models
     */
 
-    calculate_virial_stuff(gi,halo);
+    if (gi->do_bulge == 1) {
+	calculate_virial_stuff(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	calculate_virial_stuff(gi,halo);
+	}
 
     /*
     ** Set remaining parameters
     */
 
-    set_remaining_parameters(gi,halo);
+    if (gi->do_bulge == 1) {
+	set_remaining_parameters(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	set_remaining_parameters(gi,halo);
+	}
 
     /*
     ** Check some more things
     */
 
-    check_more_parameters_system(gi,halo);
+    if (gi->do_bulge == 1) {
+	check_more_parameters_system(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	check_more_parameters_system(gi,halo);
+	}
 
     /*
     ** Initialise griddf
@@ -153,13 +189,25 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Done in "OFD1" seconds.\nInitialising grid for distribution function... \n",gi->t[1]-gi->t[0]);
 
     if (gi->positionsonly == 0) {
-	initialise_griddf(gi,halo);
-	if (gi->output_griddf == 1) {
-	    sprintf(FILENAME,"%s.griddf.halo.dat",gi->inputname);
-	    file = fopen(FILENAME,"w");
-	    assert(file != NULL);
-	    write_griddf(file,gi,halo);
-	    fclose(file);
+	if (gi->do_bulge == 1) {
+	    initialise_griddf(gi,bulge);
+	    if (gi->output_griddf == 1) {
+		sprintf(FILENAME,"%s.griddf.bulge.dat",gi->outputname);
+		file = fopen(FILENAME,"w");
+		assert(file != NULL);
+		write_griddf_system(file,gi,bulge);
+		fclose(file);
+		}
+	    }
+	if (gi->do_halo == 1) {
+	    initialise_griddf(gi,halo);
+	    if (gi->output_griddf == 1) {
+		sprintf(FILENAME,"%s.griddf.halo.dat",gi->outputname);
+		file = fopen(FILENAME,"w");
+		assert(file != NULL);
+		write_griddf_system(file,gi,halo);
+		fclose(file);
+		}
 	    }
 	}
 
@@ -170,7 +218,12 @@ int main(int argc, char **argv) {
     gi->t[2] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds\nInitialising shells... \n",gi->t[2]-gi->t[1]);
 
-    initialise_shell(gi,halo);
+    if (gi->do_bulge == 1) {
+	initialise_shell(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	initialise_shell(gi,halo);
+	}
 
     /*
     ** Set particle positions
@@ -179,7 +232,12 @@ int main(int argc, char **argv) {
     gi->t[3] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds.\nSetting particle positions... \n",gi->t[3]-gi->t[2]);
 
-    set_positions(gi,halo);
+    if (gi->do_bulge == 1) {
+	set_positions(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	set_positions(gi,halo);
+	}
 
     /*
     ** Set particle velocities
@@ -189,10 +247,20 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Done in "OFD1" seconds.\nSetting particle velocities... \n",gi->t[4]-gi->t[3]);
 
     if (gi->positionsonly == 0) {
-	set_velocities(gi,halo);
+	if (gi->do_bulge == 1) {
+	    set_velocities(gi,bulge);
+	    }
+	if (gi->do_halo == 1) {
+	    set_velocities(gi,halo);
+	    }
 	}
     else {
-	set_velocities_zero(halo);
+	if (gi->do_bulge == 1) {
+	    set_velocities_zero(bulge);
+	    }
+	if (gi->do_halo == 1) {
+	    set_velocities_zero(halo);
+	    }
 	}
 
     /*
@@ -202,7 +270,12 @@ int main(int argc, char **argv) {
     gi->t[5] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds.\nSetting remaining particle attributes... \n",gi->t[5]-gi->t[4]);
 
-    set_attributes(gi,halo);
+    if (gi->do_bulge == 1) {
+	set_attributes(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	set_attributes(gi,halo);
+	}
 
     /*
     ** Do orbit dependent refining
@@ -211,7 +284,12 @@ int main(int argc, char **argv) {
     gi->t[6] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds.\nDoing orbit dependent refining... \n",gi->t[6]-gi->t[5]);
 
-    refine(gi,halo);
+    if (gi->do_bulge == 1) {
+	refine(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	refine(gi,halo);
+	}
 
     /*
     ** Calculate a few things and do center of mass correction
@@ -220,8 +298,14 @@ int main(int argc, char **argv) {
     gi->t[7] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(stderr,"Done in "OFD1" seconds\nCalculating a few things and correct center of mass position and velocity... \n",gi->t[7]-gi->t[6]);
 
-    double_particles(halo);
-    calculate_stuff(gi,bh,halo);
+    if (gi->do_bulge == 1) {
+	double_particles(bulge);
+	calculate_samplinginfo(gi,bulge);
+	}
+    if (gi->do_halo == 1) {
+	double_particles(halo);
+	calculate_samplinginfo(gi,halo);
+	}
 
     /*
     ** Write Output
@@ -231,10 +315,10 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Done in "OFD1" seconds\nWriting output... \n",gi->t[8]-gi->t[7]);
 
     if (gi->output_tipsy_standard == 1) {
-	sprintf(FILENAME,"%s.tipsy.std",gi->inputname);
+	sprintf(FILENAME,"%s.tipsy.std",gi->outputname);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
-	write_tipsy_standard_2(file,bh,halo);
+	write_tipsy_standard_halogen(file,gi,bh,bulge,halo);
 	fclose(file);
 	}
 
@@ -242,10 +326,10 @@ int main(int argc, char **argv) {
     ** Print some output in file
     */
 
-    sprintf(FILENAME,"%s.out",gi->inputname);
+    sprintf(FILENAME,"%s.out",gi->outputname);
     file = fopen(FILENAME,"w");
     assert(file != NULL);
-    write_general_output(file,argc,argv,gi,bh,halo);
+    write_general_output(file,argc,argv,gi,bh,bulge,halo);
     fclose(file);
 
     fprintf(stderr,"Done in "OFD1" seconds\nTotal time needed was "OFD1" seconds\n",gi->t[9]-gi->t[8],gi->t[9]-gi->t[0]);

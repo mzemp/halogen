@@ -62,7 +62,7 @@ void usage() {
     fprintf(stderr,"-otsdpp              : set this flag for writing particles in tipsy standard binary format with double precision positions\n");
     fprintf(stderr,"-ogb                 : set this flag for writing particles in gadget binary format\n");
     fprintf(stderr,"-po                  : set this flag for initialising positions only (velocities are 0)\n");
-    fprintf(stderr,"-randomseed <value>  : set this flag for setting a value for a random seed (default: random value)\n");
+    fprintf(stderr,"-randomseed <value>  : value for a random seed (default: random value)\n");
     fprintf(stderr,"\n");
     exit(1);
     }

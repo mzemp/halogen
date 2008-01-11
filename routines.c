@@ -53,17 +53,17 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	** Finite mass models
 	*/
 	if (si->sp->rs == -1) {
-	    fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
+	    fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	    fprintf(stderr,"For finite mass models you have to set a value for the scale radius rs.\n");
 	    usage();
 	    }
 	if (si->sp->cvir != -1) {
-	    fprintf(stderr,"Warning for %s!\n",si->systemname);
+	    fprintf(stderr,"Warning for the %s!\n",si->systemname);
 	    fprintf(stderr,"For finite mass models the virial concentration cvir is calculated selfconsistently.\n");
 	    fprintf(stderr,"Hence, your input for the virial concentration cvir (= "OFD1") was ignored.\n",si->sp->cvir);
 	    }
 	if (si->sp->rcutoff != -1) {
-	    fprintf(stderr,"Warning for %s!\n",si->systemname);
+	    fprintf(stderr,"Warning for the %s!\n",si->systemname);
 	    fprintf(stderr,"For finite mass models the cutoff radius rcutoff is not needed!\n");
 	    fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" kpc) was ignored.\n",si->sp->rcutoff);
 	    }
@@ -82,7 +82,7 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	if (((si->sp->cvir != -1) && (si->sp->rs != -1) && (si->sp->rcutoff != -1)) ||
 	    ((si->sp->cvir == -1) && ((si->sp->rs == -1) || (si->sp->rcutoff == -1)))) {
 	    fprintf(stderr,"HALOGEN is confused!\n");
-	    fprintf(stderr,"Missing or bad parameter for %s.\n",si->systemname);
+	    fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	    fprintf(stderr,"Specify either just a value for the virial concentration cvir or give values\n");
 	    fprintf(stderr,"for the scale radius rs and cutoff radius rcutoff.\n");
 	    usage();
@@ -92,12 +92,12 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	    ** Models with virial overdensity
 	    */
 	    if (si->sp->rs != -1) {
-		fprintf(stderr,"Warning for %s!\n",si->systemname);
+		fprintf(stderr,"Warning for the %s!\n",si->systemname);
 		fprintf(stderr,"If you set a virial concentration cvir the scale radius rs is calculated selfconsistently.\n");
 		fprintf(stderr,"Hence, your input for the scale radius rs (= "OFD1" kpc) was ignored.\n",si->sp->rs);
 		}
 	    if (si->sp->rcutoff != -1) {
-		fprintf(stderr,"Warning for %s!\n",si->systemname);
+		fprintf(stderr,"Warning for the %s!\n",si->systemname);
 		fprintf(stderr,"If you set a virial concentration cvir the cutoff radius rcutoff is set to the virial radius rvir.\n");
 		fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" kpc) was ignored.\n",si->sp->rcutoff);
 		}
@@ -109,7 +109,7 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	I_M = pow(1e-6,3-si->sp->gamma)/(3-si->sp->gamma); /* approximate inner integral */
 	I_M += integral(integrandIM,1e-6,si->sp->rcutoff/si->sp->rs,si);
 	si->sp->rho0 = si->sp->M/(4*M_PI*(si->sp->rs*si->sp->rs*si->sp->rs)*I_M);
-	si->sp->rdecay = CutoffFac*si->sp->rcutoff;
+	si->sp->rdecay = gi->factor_cutoff*si->sp->rcutoff;
 	si->sp->delta = si->sp->rcutoff/si->sp->rdecay + dlrhodlr(si->sp->rcutoff,si);
 	}
     }
@@ -124,7 +124,7 @@ void calculate_virial_stuff(const GI *gi, SI *si) {
 	/*
 	** Finite mass models
 	*/
-	si->sp->rvir = exp(lininterpolate(gi->Ngridr,gi->gridr->logrhoencHalo,gi->gridr->logr,log(gi->Deltavirz*gi->rhocritz)));
+	si->sp->rvir = exp(lininterpolate(gi->Ngridr,gi->gridr->logrhoenc,gi->gridr->logr,log(gi->Deltavirz*gi->rhocritz)));
 	si->sp->cvir = si->sp->rvir/si->sp->rs;
 	si->sp->vvir = sqrt(G*si->sp->M/si->sp->rvir);
 	}
@@ -133,7 +133,7 @@ void calculate_virial_stuff(const GI *gi, SI *si) {
 	** Cutoff models
 	*/
 	if (si->sp->rvir == -1) {
-	    si->sp->rvir = exp(lininterpolate(gi->Ngridr,gi->gridr->logrhoencHalo,gi->gridr->logr,log(gi->Deltavirz*gi->rhocritz)));
+	    si->sp->rvir = exp(lininterpolate(gi->Ngridr,si->logrhoenc,gi->gridr->logr,log(gi->Deltavirz*gi->rhocritz)));
 	    si->sp->cvir = si->sp->rvir/si->sp->rs;
 	    si->sp->vvir = sqrt(G*si->sp->M/si->sp->rvir);
 	    }
@@ -226,7 +226,7 @@ void set_positions(const GI *gi, SI *si) {
     
     INT i, j, N;
     DOUBLE Mrand, logMrand, Mmin, Mmax;
-    DOUBLE rrand, logrrand;
+    DOUBLE rrand, logrrand = 0;
     DOUBLE costheta, sintheta, phi, cosphi, sinphi;
     PARTICLE *p;
 
@@ -238,7 +238,7 @@ void set_positions(const GI *gi, SI *si) {
 	for (i = 0; i < N; i++) {
 	    Mrand = Mmin + rand01()*(Mmax - Mmin);
 	    logMrand = log(Mrand);
-	    logrrand = lininterpolate(gi->Ngridr,gi->gridr->logMencHalo,gi->gridr->logr,logMrand);
+	    logrrand = lininterpolate(gi->Ngridr,si->logMenc,gi->gridr->logr,logMrand);
 	    rrand = exp(logrrand);
 	    costheta = 2.0*rand01() - 1.0;
 	    sintheta = sqrt(1-costheta*costheta);
@@ -645,80 +645,62 @@ void double_particles(SI *si) {
     }
 
 /*
-** Routine for calculating center of mass position and velocity, and angular momentum
+** Routines for calculating center of mass position and velocity, and angular momentum
 */
 
-void calculate_stuff(GI *gi, PARTICLE *bh, SI *halo) {
+void calculate_samplinginfo(const GI *gi, SI *si) {
 
     INT i, j, N;
     DOUBLE temp;
-    STUFF *stuff;
     PARTICLE *p;
+    SAMP *samp;
 
-    stuff = gi->stuff;
-    stuff->Ntot = 0;
-    stuff->Ninitialtot = 0;
-    stuff->Nnosplittot = 0;
-    stuff->Nnewtot = 0;
-    stuff->Mp = 0;
-    stuff->Ekin = 0;
-    stuff->Epot = 0;
-    stuff->Nfemm = 0;
-    stuff->Nfesm = 0;
-    for(i = 0; i < 4; i++) {
-	stuff->Cr[i] = 0;
-	stuff->Cv[i] = 0;
-	stuff->Ltot[i] = 0;
-	}
-    if (bh->mass > 0) {
-	stuff->Ntot++;
-	stuff->Mp += bh->mass;
-	}
-    for(j = 0; j < (halo->Nshell+2); j++) {
-	N = halo->shell[j].N;
-	p = halo->shell[j].p;
-	stuff->Ntot += halo->shell[j].N;
-	stuff->Ninitialtot += halo->shell[j].Ninitial;
-	stuff->Nnosplittot += halo->shell[j].Nnosplit;
-	stuff->Nnewtot += halo->shell[j].Nnew;
+    samp = si->samp;
+    for(j = 0; j < (si->Nshell+2); j++) {
+	N = si->shell[j].N;
+	p = si->shell[j].p;
+	samp->Ntot += si->shell[j].N;
+	samp->Ninitialtot += si->shell[j].Ninitial;
+	samp->Nnosplittot += si->shell[j].Nnosplit;
+	samp->Nnewtot += si->shell[j].Nnew;
 	for (i = 0; i < N; i++) {
-	    if((j == 0) && (p[i].r[0] < halo->rimp)) {
-		halo->rimp = p[i].r[0];
+	    if((j == 0) && (p[i].r[0] < si->rimp)) {
+		si->rimp = p[i].r[0];
 		}
 	    temp = p[i].mass;
-	    halo->shell[j].Mp += temp;
-	    stuff->Mp += temp;
-	    stuff->Cr[1] += temp*p[i].r[1];
-	    stuff->Cr[2] += temp*p[i].r[2];
-	    stuff->Cr[3] += temp*p[i].r[3];
-	    stuff->Cv[1] += temp*p[i].v[1];
-	    stuff->Cv[2] += temp*p[i].v[2];
-	    stuff->Cv[3] += temp*p[i].v[3];
-	    stuff->Ltot[1] += temp*p[i].L[1];
-	    stuff->Ltot[2] += temp*p[i].L[2];
-	    stuff->Ltot[3] += temp*p[i].L[3];
-	    stuff->Ekin += temp*p[i].Ekin;
-	    stuff->Epot += temp*p[i].Epot;
+	    si->shell[j].Mp += temp;
+	    samp->Mp += temp;
+	    samp->Cr[1] += temp*p[i].r[1];
+	    samp->Cr[2] += temp*p[i].r[2];
+	    samp->Cr[3] += temp*p[i].r[3];
+	    samp->Cv[1] += temp*p[i].v[1];
+	    samp->Cv[2] += temp*p[i].v[2];
+	    samp->Cv[3] += temp*p[i].v[3];
+	    samp->Ltot[1] += temp*p[i].L[1];
+	    samp->Ltot[2] += temp*p[i].L[2];
+	    samp->Ltot[3] += temp*p[i].L[3];
+	    samp->Ekin += temp*p[i].Ekin;
+	    samp->Epot += temp*p[i].Epot;
 	    temp = (2*M_PI)/(0.03*Tdyn(p[i].r[0],gi));
-	    stuff->Nfemm += temp;
-	    stuff->Nfesm += temp*p[i].mass/halo->shell[0].mass;
+	    samp->Nfemm += temp;
+	    samp->Nfesm += temp*p[i].mass/si->shell[0].mass;
 	    }
 	}
     for(i = 1; i < 4; i++) {
-	stuff->Cr[i] = stuff->Cr[i]/stuff->Mp;
-	stuff->Cv[i] = stuff->Cv[i]/stuff->Mp;
+	samp->Cr[i] = samp->Cr[i]/samp->Mp;
+	samp->Cv[i] = samp->Cv[i]/samp->Mp;
 	}
-    stuff->Cr[0] = sqrt(stuff->Cr[1]*stuff->Cr[1]+stuff->Cr[2]*stuff->Cr[2]+stuff->Cr[3]*stuff->Cr[3]);
-    stuff->Cv[0] = sqrt(stuff->Cv[1]*stuff->Cv[1]+stuff->Cv[2]*stuff->Cv[2]+stuff->Cv[3]*stuff->Cv[3]);
-    stuff->Ltot[0] = sqrt(stuff->Ltot[1]*stuff->Ltot[1]+stuff->Ltot[2]*stuff->Ltot[2]+stuff->Ltot[3]*stuff->Ltot[3]);
-    stuff->Epot = stuff->Epot/2.0;
-    stuff->Etot = stuff->Ekin + stuff->Epot;
+    samp->Cr[0] = sqrt(samp->Cr[1]*samp->Cr[1]+samp->Cr[2]*samp->Cr[2]+samp->Cr[3]*samp->Cr[3]);
+    samp->Cv[0] = sqrt(samp->Cv[1]*samp->Cv[1]+samp->Cv[2]*samp->Cv[2]+samp->Cv[3]*samp->Cv[3]);
+    samp->Ltot[0] = sqrt(samp->Ltot[1]*samp->Ltot[1]+samp->Ltot[2]*samp->Ltot[2]+samp->Ltot[3]*samp->Ltot[3]);
+    samp->Epot = samp->Epot/2.0;
+    samp->Etot = samp->Ekin + samp->Epot;
     if (gi->gridr->eqrvcmax[0] < 0) {
-	halo->sp->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
-	halo->sp->vcmax = sqrt(G*Menc(halo->sp->rvcmax,gi)/halo->sp->rvcmax);
+	si->sp->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
+	si->sp->vcmax = sqrt(G*Menc_system(si->sp->rvcmax,gi,si)/si->sp->rvcmax);
 	}
-    halo->sp->rhalf = exp(lininterpolate(gi->Ngridr,gi->gridr->Menc,gi->gridr->logr,halo->sp->M/2.0));
-    halo->r1 = pow(((3.0-halo->sp->gamma)*halo->shell[0].mass)/(4*M_PI*halo->sp->rho0*pow(halo->sp->rs,halo->sp->gamma)),1.0/(3.0-halo->sp->gamma));
-    halo->r100 = pow(((3.0-halo->sp->gamma)*100*halo->shell[0].mass)/(4*M_PI*halo->sp->rho0*pow(halo->sp->rs,halo->sp->gamma)),1.0/(3.0-halo->sp->gamma));
+    si->sp->rhalf = exp(lininterpolate(gi->Ngridr,si->logMenc,gi->gridr->logr,log(si->sp->M/2.0)));
+    si->r1 = pow(((3.0-si->sp->gamma)*si->shell[0].mass)/(4*M_PI*si->sp->rho0*pow(si->sp->rs,si->sp->gamma)),1.0/(3.0-si->sp->gamma));
+    si->r100 = pow(((3.0-si->sp->gamma)*100*si->shell[0].mass)/(4*M_PI*si->sp->rho0*pow(si->sp->rs,si->sp->gamma)),1.0/(3.0-si->sp->gamma));
     }
 

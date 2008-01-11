@@ -339,7 +339,7 @@ DOUBLE d2rhodPhi2(DOUBLE r, const GI *gi, const SI *si) {
     SP *sp;
 
     sp = si->sp;
-    Mencr = Menc(r,gi);
+    Mencr = Menc_total(r,gi);
     fac1 = r*r/(G*G*Mencr*Mencr);
     fac2 = 2*r-4*M_PI*r*r*r*r*rho(r,si)/Mencr;
     return (fac1*(r*r*d2rhodr2(r,si)+fac2*drhodr(r,si)));
@@ -468,9 +468,14 @@ INT split(INT i, DOUBLE rperi, const SI *si) {
 ** Function for calculating total enclosed mass within radius r 
 */
 
-DOUBLE Menc(DOUBLE r, const GI *gi) {
+DOUBLE Menc_total(DOUBLE r, const GI *gi) {
 
     return (exp(lininterpolate(gi->Ngridr,gi->gridr->logr,gi->gridr->logMenc,log(r))));
+    }
+
+DOUBLE Menc_system(DOUBLE r, const GI *gi, const SI *si) {
+
+    return (exp(lininterpolate(gi->Ngridr,gi->gridr->logr,si->logMenc,log(r))));
     }
 
 /*
@@ -497,7 +502,7 @@ DOUBLE vescape(DOUBLE r, const GI *gi) {
 
 DOUBLE Tdyn(DOUBLE r, const GI *gi) {
 
-    return (2*M_PI*sqrt((r*r*r)/(G*Menc(r,gi))));
+    return (2*M_PI*sqrt((r*r*r)/(G*Menc_total(r,gi))));
     }
 
 /*

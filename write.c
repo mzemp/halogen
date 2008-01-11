@@ -15,16 +15,78 @@
 #include "definitions.h"
 #include "functions.h"
 #include "routines.h"
+#include "write.h"
+
+/*
+** Routines for writing out grids
+*/
+
+void write_gridr_total(FILE *file, const GI *gi) {
+
+    INT i;
+    GRIDR *gridr;
+
+    gridr = gi->gridr;
+    for (i = 0; i < gi->Ngridr; i++) {
+	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
+		gridr->r[i],gridr->logr[i],
+		gridr->rho[i],gridr->logrho[i],
+		gridr->rhoenc[i],gridr->logrhoenc[i],
+		gridr->Menc[i],gridr->logMenc[i],
+		gridr->Pot[i],gridr->logPot[i]);
+	}
+    }
+
+void write_gridr_system(FILE *file, const GI *gi, const SI *si) {
+
+    INT i;
+    GRIDR *gridr;
+
+    gridr = gi->gridr;
+    if (strcmp(si->systemname,"bulge") == 0) {
+	for (i = 0; i < gi->Ngridr; i++) {
+	    fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
+		    gridr->r[i],gridr->logr[i],
+		    gridr->rhoBulge[i],gridr->logrhoBulge[i],
+		    gridr->rhoencBulge[i],gridr->logrhoencBulge[i],
+		    gridr->MencBulge[i],gridr->logMencBulge[i]);
+	    }
+	}
+    else if (strcmp(si->systemname,"halo") == 0) {
+	for (i = 0; i < gi->Ngridr; i++) {
+	    fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
+		    gridr->r[i],gridr->logr[i],
+		    gridr->rhoHalo[i],gridr->logrhoHalo[i],
+		    gridr->rhoencHalo[i],gridr->logrhoencHalo[i],
+		    gridr->MencHalo[i],gridr->logMencHalo[i]);
+	    }
+	}
+    }
+
+void write_griddf_system(FILE *file, const GI *gi, const SI *si) {
+
+    INT i;
+    GRIDDF *griddf;
+
+    griddf = si->griddf;
+    for (i = 0; i < gi->Ngriddf; i++) {
+	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
+		griddf->r[i],griddf->logr[i],
+		griddf->E[i],griddf->logE[i],
+		griddf->fE[i],griddf->logfE[i]);
+	}
+    }
 
 /*
 ** Routine for writing tipsy standard format memory efficient
 */
 
-void write_tipsy_standard_2(FILE *fp, const PARTICLE *bh, const SI *halo) {
+void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
 
-    INT i, j, k, Ntotal;
+    INT i, j, k, Ntotal, Ndark, Nstar;
     TIPSY_HEADER th;
     DARK_PARTICLE dp;
+    STAR_PARTICLE sp;
     PARTICLE *p;
     XDR xdrs;
 
@@ -33,18 +95,33 @@ void write_tipsy_standard_2(FILE *fp, const PARTICLE *bh, const SI *halo) {
     ** Write out header
     */
     Ntotal = 0;
+    Ndark = 0;
+    Nstar = 0;
     if (bh->mass != 0) {
-	Ntotal++;
+	Ndark++;
 	}
-    for (j = 0; j < (halo->Nshell+2); j++) {
-	Ntotal = Ntotal + halo->shell[j].N;
+    if (gi->do_halo == 1) {
+	for (j = 0; j < (halo->Nshell+2); j++) {
+	    Ndark +=  halo->shell[j].N;
+	    }
 	}
+    if (gi->do_bulge == 1) {
+	for (j = 0; j < (bulge->Nshell+2); j++) {
+	    Nstar +=  bulge->shell[j].N;
+	    }
+	}
+    if (gi->do_halo == 1) {
+	for (j = 0; j < (halo->Nshell+2); j++) {
+	    Ndark +=  halo->shell[j].N;
+	    }
+	}
+    Ntotal = Ndark + Nstar;
     th.time = 0;
     th.ntotal = Ntotal;
     th.ndim = 3;
     th.ngas = 0;
-    th.ndark = Ntotal;
-    th.nstar = 0;
+    th.ndark = Ndark;
+    th.nstar = Nstar;
     write_tipsy_standard_header(&xdrs,&th);
     /*
     ** Write out dark matter particles
@@ -59,54 +136,46 @@ void write_tipsy_standard_2(FILE *fp, const PARTICLE *bh, const SI *halo) {
 	dp.phi = bh->Epot;
 	write_tipsy_standard_dark(&xdrs,&dp);
 	}
-    for (j = 0; j < (halo->Nshell+2); j++) {
-	p = halo->shell[j].p;
-	for (i = 0; i < halo->shell[j].N; i++) {
-	    for (k = 0; k < 3; k++) {
-		dp.pos[k] = p[i].r[k+1];
-		dp.vel[k] = p[i].v[k+1];
+    if (gi->do_halo == 1) {
+	for (j = 0; j < (halo->Nshell+2); j++) {
+	    p = halo->shell[j].p;
+	    for (i = 0; i < halo->shell[j].N; i++) {
+		for (k = 0; k < 3; k++) {
+		    dp.pos[k] = p[i].r[k+1];
+		    dp.vel[k] = p[i].v[k+1];
+		    }
+		dp.mass = p[i].mass;
+		dp.eps = p[i].soft;
+		dp.phi = p[i].Epot;
+		write_tipsy_standard_dark(&xdrs,&dp);
 		}
-	    dp.mass = p[i].mass;
-	    dp.eps = p[i].soft;
-	    dp.phi = p[i].Epot;
-	    write_tipsy_standard_dark(&xdrs,&dp);
+	    }
+	}
+    if (gi->do_bulge == 1) {
+	for (j = 0; j < (bulge->Nshell+2); j++) {
+	    p = bulge->shell[j].p;
+	    for (i = 0; i < bulge->shell[j].N; i++) {
+		for (k = 0; k < 3; k++) {
+		    sp.pos[k] = p[i].r[k+1];
+		    sp.vel[k] = p[i].v[k+1];
+		    }
+		sp.mass = p[i].mass;
+		sp.eps = p[i].soft;
+		sp.phi = p[i].Epot;
+		sp.metals = 0;
+		sp.tform = 0;
+		write_tipsy_standard_dark(&xdrs,&dp);
+		}
 	    }
 	}
     xdr_destroy(&xdrs);
     }
 
-/*
-** Routines for writing out grids
-*/
 
-void write_gridr(FILE *file, const GI *gi) {
+
+void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
 
     INT i;
-    GRIDR *gridr;
-
-    gridr = gi->gridr;
-    for (i = 0; i < gi->Ngridr; i++) {
-	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
-		gridr->r[i],gridr->logr[i],gridr->rho[i],gridr->logrho[i],gridr->rhoenc[i],gridr->logrhoenc[i],
-		gridr->Menc[i],gridr->logMenc[i],gridr->Pot[i],gridr->logPot[i]);
-	}
-    }
-
-void write_griddf(FILE *file, const GI *gi, const SI *si) {
-
-    INT i;
-    GRIDDF *griddf;
-
-    griddf = si->griddf;
-    for (i = 0; i < gi->Ngriddf; i++) {
-	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
-		griddf->r[i],griddf->logr[i],griddf->E[i],griddf->logE[i],griddf->fE[i],griddf->logfE[i]);
-	}
-    }
-
-void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTICLE *bh, const SI *halo) {
-
-    INT i, k;
 
     fprintf(file,"HALOGEN "VERSION" by Marcel Zemp\n");
     fprintf(file,"This version works in units where [G] = 1 [L]^3 [T]^-2 [M]^-1.\n");
@@ -120,126 +189,26 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
     fprintf(file,"OmegaL0   = "OFD1"\n",gi->OmegaL0);
     fprintf(file,"h0        = "OFD1"\n",gi->h0);
     fprintf(file,"z         = "OFD1"\n",gi->z);
-    fprintf(file,"rhocritz  = "OFD3" Mo kpc^-3 = "OFD3" MU kpc^-3\n",gi->rhocritz*MU,gi->rhocritz);
     fprintf(file,"Deltavirz = "OFD3"\n",gi->Deltavirz);
+    fprintf(file,"rhocritz  = "OFD3" Mo kpc^-3 = "OFD3" MU kpc^-3\n",gi->rhocritz*MU,gi->rhocritz);
     fprintf(file,"rhovirz   = "OFD3" Mo kpc^-3 = "OFD3" MU kpc^-3\n\n",gi->rhocritz*gi->Deltavirz*MU,gi->rhocritz*gi->Deltavirz);
-    fprintf(file,"Model properties\n\n");
-    fprintf(file,"alpha = "OFD1"\n",halo->sp->alpha);
-    fprintf(file,"beta  = "OFD1"\n",halo->sp->beta);
-    fprintf(file,"gamma = "OFD1"\n",halo->sp->gamma);
-    fprintf(file,"rho0  = "OFD3" Mo kpc^-3 = "OFD3" MU kpc^-3\n",halo->sp->rho0*MU,halo->sp->rho0);
-    fprintf(file,"cvir  = "OFD3"\n",halo->sp->cvir);
-    if (halo->sp->gamma < 2) {
-	fprintf(file,"cV    = "OFD3"\n",2*pow(1000*halo->sp->vcmax/(100*gi->h0*Ecosmo(gi)*halo->sp->rvcmax*VelConvertFac),2));
-	fprintf(file,"vcmax = "OFD3" kpc Gyr^-1 = "OFD3" km s^-1\n",halo->sp->vcmax,halo->sp->vcmax/VelConvertFac);
-	}
-    fprintf(file,"\n");
     if (bh->mass > 0) {
+	fprintf(file,"Black hole properties\n\n");
 	fprintf(file,"MBH    = "OFD3" Mo = "OFD3" MU\n",bh->mass*MU,bh->mass);
-	fprintf(file,"softBH = "OFD3" kpc\n",bh->soft);
-	fprintf(file,"\n");
+	fprintf(file,"softBH = "OFD3" kpc\n\n",bh->soft);
 	}
-    fprintf(file,"rs      = "OFD3" kpc\n",halo->sp->rs);
-    if (gi->gridr->eqrvcmax[0] < 0) {
-	fprintf(file,"rvcmax  = "OFD3" kpc\n",halo->sp->rvcmax);
+    if (gi->do_bulge == 1) {
+	write_output_system(file,gi,bulge);
 	}
-    fprintf(file,"rhalf   = "OFD3" kpc\n",halo->sp->rhalf);
-    if (halo->sp->rcutoff != SBI) {
-	fprintf(file,"rcutoff = "OFD3" kpc\n",halo->sp->rcutoff);
+    if (gi->do_halo == 1) {
+	write_output_system(file,gi,halo);
 	}
-    fprintf(file,"rvir    = "OFD3" kpc\n",halo->sp->rvir);
-    fprintf(file,"rinner  = "OFD3" kpc\n",gi->rinner);
-    fprintf(file,"router  = "OFD3" kpc\n",gi->router);
-    fprintf(file,"rsi     = "OFD3" kpc\n",halo->rsi);
-    fprintf(file,"rso     = "OFD3" kpc\n",halo->rso);
-    fprintf(file,"rmor    = "OFD3" kpc\n",halo->rmor);
-    fprintf(file,"rdecay  = "OFD3" kpc\n",halo->sp->rdecay);
-    fprintf(file,"\n");
-    fprintf(file,"Tdyn(rs)      = "OFD3" Gyr\n",Tdyn(halo->sp->rs,gi));
-    if (gi->gridr->eqrvcmax[0] < 0) {
-	fprintf(file,"Tdyn(rvcmax)  = "OFD3" Gyr\n",Tdyn(halo->sp->rvcmax,gi));
-	}
-    fprintf(file,"Tdyn(rhalf)   = "OFD3" Gyr\n",Tdyn(halo->sp->rhalf,gi));
-    if (halo->sp->rcutoff != SBI) {
-	fprintf(file,"Tdyn(rcutoff) = "OFD3" Gyr\n",Tdyn(halo->sp->rcutoff,gi));
-	}
-    fprintf(file,"Tdyn(rvir)    = "OFD3" Gyr\n",Tdyn(halo->sp->rvir,gi));
-    fprintf(file,"Tdyn(rinner)  = "OFD3" Gyr\n",Tdyn(gi->rinner,gi));
-    fprintf(file,"Tdyn(router)  = "OFD3" Gyr\n",Tdyn(gi->router,gi));
-    fprintf(file,"Tdyn(rsi)     = "OFD3" Gyr\n",Tdyn(halo->rsi,gi));
-    fprintf(file,"Tdyn(rso)     = "OFD3" Gyr\n",Tdyn(halo->rso,gi));
-    if (halo->rmor != 0) {
-	fprintf(file,"Tdyn(rmor)    = "OFD3" Gyr\n",Tdyn(halo->rmor,gi));
-	}
-    fprintf(file,"\n");
-    fprintf(file,"M(rs)      = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rs,gi)*MU,Menc(halo->sp->rs,gi));
-    if (gi->gridr->eqrvcmax[0] < 0) {
-	fprintf(file,"M(rvcmax)  = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rvcmax,gi)*MU,Menc(halo->sp->rvcmax,gi));
-	}
-    fprintf(file,"M(rhalf)   = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rhalf,gi)*MU,Menc(halo->sp->rhalf,gi));
-    if (halo->sp->rcutoff != SBI) {
-	fprintf(file,"M(rcutoff) = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rcutoff,gi)*MU,Menc(halo->sp->rcutoff,gi));
-	}
-    fprintf(file,"M(rvir)    = "OFD3" Mo = "OFD3" MU\n",Menc(halo->sp->rvir,gi)*MU,Menc(halo->sp->rvir,gi));
-    fprintf(file,"M(rinner)  = "OFD3" Mo = "OFD3" MU\n",Menc(gi->rinner,gi)*MU,Menc(gi->rinner,gi));
-    fprintf(file,"M(router)  = "OFD3" Mo = "OFD3" MU\n",Menc(gi->router,gi)*MU,Menc(gi->router,gi));
-    fprintf(file,"M(rsi)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rsi,gi)*MU,Menc(halo->rsi,gi));
-    fprintf(file,"M(rso)     = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rso,gi)*MU,Menc(halo->rso,gi));
-    if (halo->rmor != 0) {
-	fprintf(file,"M(rmor)    = "OFD3" Mo = "OFD3" MU\n",Menc(halo->rmor,gi)*MU,Menc(halo->rmor,gi));
-	}
-    fprintf(file,"\n");
-    fprintf(file,"Sampling properties\n\n");
-    fprintf(file,"|Cr|      = "OFD3" kpc             Cr      = ("OFD4", "OFD4", "OFD4") kpc\n",gi->stuff->Cr[0],gi->stuff->Cr[1],gi->stuff->Cr[2],gi->stuff->Cr[3]);
-    fprintf(file,"|Cv|      = "OFD3" kpc Gyr^-1      Cv      = ("OFD4", "OFD4", "OFD4") kpc Gyr^-1\n",gi->stuff->Cv[0],gi->stuff->Cv[1],gi->stuff->Cv[2],gi->stuff->Cv[3]);
-    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",gi->stuff->Ltot[0]*MU,gi->stuff->Ltot[1]*MU,gi->stuff->Ltot[2]*MU,gi->stuff->Ltot[3]*MU);
-    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",gi->stuff->Ltot[0],gi->stuff->Ltot[1],gi->stuff->Ltot[2],gi->stuff->Ltot[3]);
-    fprintf(file,"|L|/Msamp = "OFD3" kpc^2 Gyr^-1    L/Msamp = ("OFD4", "OFD4", "OFD4") kpc^2 Gyr^-1\n",
-	    gi->stuff->Ltot[0]/gi->stuff->Mp,gi->stuff->Ltot[1]/gi->stuff->Mp,gi->stuff->Ltot[2]/gi->stuff->Mp,gi->stuff->Ltot[3]/gi->stuff->Mp);
-    fprintf(file,"\n");
-    fprintf(file,"Etot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Etot*MU,gi->stuff->Etot);
-    fprintf(file,"Ekin = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Ekin*MU,gi->stuff->Ekin);
-    fprintf(file,"Epot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",gi->stuff->Epot*MU,gi->stuff->Epot);
-    fprintf(file,"Rvir = |2*Ekin/Epot| = %g\n",fabs(2*gi->stuff->Ekin/gi->stuff->Epot));
-    fprintf(file,"\n");
-    fprintf(file,"i   rshelli [kpc] rshello [kpc] N          Ninitial   Nnosplit   Nnew       Mtheo [MU]    Msamp [MU]    massmax [MU]  softmax [kpc]\n");
-    if ((halo->sp->beta > 3) && (halo->rsi == gi->router)) {
-	k = halo->Nshell+1;
-	}
-    else {
-	k = halo->Nshell+2;
-	}
-    for (i = 0; i < k; i++) {
-	fprintf(file,OFI2" "OFD3" "OFD3" "OFI3" "OFI3" "OFI3" "OFI3" "OFD3" "OFD3" "OFD3" "OFD3"\n",
-		i,halo->shell[i].rinner,halo->shell[i].router,halo->shell[i].N,halo->shell[i].Ninitial,halo->shell[i].Nnosplit,halo->shell[i].Nnew,(halo->shell[i+1].Menc-halo->shell[i].Menc),halo->shell[i].Mp,halo->shell[i].mass,halo->shell[i].soft);
-	}
-    fprintf(file,"\n");
-    fprintf(file,"Nshell              = "OFI1"\n",halo->Nshell);
-    fprintf(file,"Ismor               = "OFI1"\n",halo->Ismor);
-    fprintf(file,"DRMmax              = "OFI1"\n",halo->DRMmax);
-    fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ntot,gi->stuff->Ntot);
-    fprintf(file,"Neff                = "OFD3"\n",Menc(gi->router,gi)/halo->shell[0].mass);
-    if (halo->sp->beta <= 3) {
-	fprintf(file,"Neff within rcutoff = "OFD3"\n",Menc(halo->sp->rcutoff,gi)/halo->shell[0].mass);
-	}
-    fprintf(file,"Ninitialtot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Ninitialtot,gi->stuff->Ninitialtot);
-    fprintf(file,"Nnosplittot         = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnosplittot,gi->stuff->Nnosplittot);
-    fprintf(file,"Nnewtot             = "OFD3" = "OFI1"\n",(DOUBLE)gi->stuff->Nnewtot,gi->stuff->Nnewtot);
-    fprintf(file,"Nfesm               = "OFD3" Gyr^-1\n",gi->stuff->Nfesm);
-    fprintf(file,"Nfemm               = "OFD3" Gyr^-1\n",gi->stuff->Nfemm);
-    fprintf(file,"sth                 = "OFD3"\n",gi->stuff->Nfesm/gi->stuff->Nfemm);
-    fprintf(file,"rimp                = "OFD3" kpc\n",halo->rimp);
-    fprintf(file,"r1                  = "OFD3" kpc\n",halo->r1);
-    fprintf(file,"r100                = "OFD3" kpc\n",halo->r100);
-    fprintf(file,"Tdyn(rimp)          = "OFD3" Gyr\n",Tdyn(halo->rimp,gi));
-    fprintf(file,"Tdyn(r1)            = "OFD3" Gyr\n",Tdyn(halo->r1,gi));
-    fprintf(file,"Tdyn(r100)          = "OFD3" Gyr\n",Tdyn(halo->r100,gi));
-    fprintf(file,"Mtheo               = "OFD3" Mo = "OFD3" MU\n",Menc(gi->router,gi)*MU,Menc(gi->router,gi));
-    fprintf(file,"Msamp               = "OFD3" Mo = "OFD3" MU\n",gi->stuff->Mp*MU,gi->stuff->Mp);
-    fprintf(file,"(Msamp-Mtheo)/Mtheo = "OFD3"\n",gi->stuff->Mp/Menc(gi->router,gi)-1.0);
-    fprintf(file,"DF split factor     = "OFD3"\n",halo->dfsf);
-    fprintf(file,"Random seed         = "OFD3"\n",gi->randomseed);
-    fprintf(file,"\n");
+    fprintf(file,"General parameters\n\n");
+    fprintf(file,"Random seed = "OFD3"\n",gi->randomseed);
+    fprintf(file,"Ngridr      = "OFI1"\n",gi->Ngridr);
+    fprintf(file,"Ngriddf     = "OFI1"\n",gi->Ngriddf);
+    fprintf(file,"rinner      = "OFD3" kpc\n",gi->rinner);
+    fprintf(file,"router      = "OFD3" kpc\n\n",gi->router);
     fprintf(file,"Times for individual steps\n\n");
     fprintf(file,"Calculation of halo properties and initialisation of grid in r: "OFD1" seconds.\n",gi->t[1]-gi->t[0]);
     fprintf(file,"Initialisation of grid for distribution function: "OFD1" seconds.\n",gi->t[2]-gi->t[1]);
@@ -252,4 +221,94 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
     gi->t[9] = ((DOUBLE) clock())/((DOUBLE) CLOCKS_PER_SEC);
     fprintf(file,"Writing output: "OFD1" seconds\n",gi->t[9]-gi->t[8]);
     fprintf(file,"Total time: "OFD1" seconds\n",gi->t[9]-gi->t[0]);
+    }
+
+void write_output_system(FILE *file, const GI *gi, const SI *si) {
+
+    INT i, k;
+
+    fprintf(file,"Model properties for %s\n\n",si->systemname);
+    fprintf(file,"alpha = "OFD1"\n",si->sp->alpha);
+    fprintf(file,"beta  = "OFD1"\n",si->sp->beta);
+    fprintf(file,"gamma = "OFD1"\n",si->sp->gamma);
+    fprintf(file,"rho0  = "OFD3" Mo kpc^-3 = "OFD3" MU kpc^-3\n",si->sp->rho0*MU,si->sp->rho0);
+    fprintf(file,"cvir  = "OFD3"\n",si->sp->cvir);
+    if (si->sp->gamma < 2) {
+	fprintf(file,"cV    = "OFD3"\n",2*pow(1000*si->sp->vcmax/(100*gi->h0*Ecosmo(gi)*si->sp->rvcmax*VelConvertFac),2));
+	fprintf(file,"vcmax = "OFD3" kpc Gyr^-1\n",si->sp->vcmax);
+	}
+    fprintf(file,"\n");
+    fprintf(file,"rs      = "OFD3" kpc\n",si->sp->rs);
+    if (gi->gridr->eqrvcmax[0] < 0) {
+	fprintf(file,"rvcmax  = "OFD3" kpc\n",si->sp->rvcmax);
+	}
+    fprintf(file,"rhalf   = "OFD3" kpc\n",si->sp->rhalf);
+    if (si->sp->rcutoff != SBI) {
+	fprintf(file,"rcutoff = "OFD3" kpc\n",si->sp->rcutoff);
+	}
+    fprintf(file,"rvir    = "OFD3" kpc\n",si->sp->rvir);
+    fprintf(file,"rsi     = "OFD3" kpc\n",si->rsi);
+    fprintf(file,"rso     = "OFD3" kpc\n",si->rso);
+    fprintf(file,"rmor    = "OFD3" kpc\n\n",si->rmor);
+    fprintf(file,"M(rs)      = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->sp->rs,gi,si)*MU,Menc_system(si->sp->rs,gi,si));
+    if (gi->gridr->eqrvcmax[0] < 0) {
+	fprintf(file,"M(rvcmax)  = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->sp->rvcmax,gi,si)*MU,Menc_system(si->sp->rvcmax,gi,si));
+	}
+    fprintf(file,"M(rhalf)   = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->sp->rhalf,gi,si)*MU,Menc_system(si->sp->rhalf,gi,si));
+    if (si->sp->rcutoff != SBI) {
+	fprintf(file,"M(rcutoff) = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->sp->rcutoff,gi,si)*MU,Menc_system(si->sp->rcutoff,gi,si));
+	}
+    fprintf(file,"M(rvir)    = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->sp->rvir,gi,si)*MU,Menc_system(si->sp->rvir,gi,si));
+    fprintf(file,"M(rsi)     = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->rsi,gi,si)*MU,Menc_system(si->rsi,gi,si));
+    fprintf(file,"M(rso)     = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->rso,gi,si)*MU,Menc_system(si->rso,gi,si));
+    if (si->rmor != 0) {
+	fprintf(file,"M(rmor)    = "OFD3" Mo = "OFD3" MU\n",Menc_system(si->rmor,gi,si)*MU,Menc_system(si->rmor,gi,si));
+	}
+    fprintf(file,"\n");
+    fprintf(file,"Sampling properties for %s\n\n",si->systemname);
+    fprintf(file,"|Cr|      = "OFD3" kpc             Cr      = ("OFD4", "OFD4", "OFD4") kpc\n",si->samp->Cr[0],si->samp->Cr[1],si->samp->Cr[2],si->samp->Cr[3]);
+    fprintf(file,"|Cv|      = "OFD3" kpc Gyr^-1      Cv      = ("OFD4", "OFD4", "OFD4") kpc Gyr^-1\n",si->samp->Cv[0],si->samp->Cv[1],si->samp->Cv[2],si->samp->Cv[3]);
+    fprintf(file,"|L|       = "OFD3" Mo kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") Mo kpc^2 Gyr^-1\n",si->samp->Ltot[0]*MU,si->samp->Ltot[1]*MU,si->samp->Ltot[2]*MU,si->samp->Ltot[3]*MU);
+    fprintf(file,"|L|       = "OFD3" MU kpc^2 Gyr^-1 L       = ("OFD4", "OFD4", "OFD4") MU kpc^2 Gyr^-1\n",si->samp->Ltot[0],si->samp->Ltot[1],si->samp->Ltot[2],si->samp->Ltot[3]);
+    fprintf(file,"|L|/Msamp = "OFD3" kpc^2 Gyr^-1    L/Msamp = ("OFD4", "OFD4", "OFD4") kpc^2 Gyr^-1\n",
+	    si->samp->Ltot[0]/si->samp->Mp,si->samp->Ltot[1]/si->samp->Mp,si->samp->Ltot[2]/si->samp->Mp,si->samp->Ltot[3]/si->samp->Mp);
+    fprintf(file,"\n");
+    fprintf(file,"Etot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",si->samp->Etot*MU,si->samp->Etot);
+    fprintf(file,"Ekin = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",si->samp->Ekin*MU,si->samp->Ekin);
+    fprintf(file,"Epot = "OFD4" Mo kpc^2 Gyr^-2 = "OFD4" MU kpc^2 Gyr^-2\n",si->samp->Epot*MU,si->samp->Epot);
+    fprintf(file,"Rvir = |2*Ekin/Epot| = %g\n",fabs(2*si->samp->Ekin/si->samp->Epot));
+    fprintf(file,"\n");
+    fprintf(file,"i   rshelli [kpc] rshello [kpc] N          Ninitial   Nnosplit   Nnew       Mtheo [MU]    Msamp [MU]    massmax [MU]  softmax [kpc]\n");
+    if ((si->sp->beta > 3) && (si->rsi == gi->router)) {
+	k = si->Nshell+1;
+	}
+    else {
+	k = si->Nshell+2;
+	}
+    for (i = 0; i < k; i++) {
+	fprintf(file,OFI2" "OFD3" "OFD3" "OFI3" "OFI3" "OFI3" "OFI3" "OFD3" "OFD3" "OFD3" "OFD3"\n",
+		i,si->shell[i].rinner,si->shell[i].router,si->shell[i].N,si->shell[i].Ninitial,si->shell[i].Nnosplit,si->shell[i].Nnew,(si->shell[i+1].Menc-si->shell[i].Menc),si->shell[i].Mp,si->shell[i].mass,si->shell[i].soft);
+	}
+    fprintf(file,"\n");
+    fprintf(file,"Nshell              = "OFI1"\n",si->Nshell);
+    fprintf(file,"Ismor               = "OFI1"\n",si->Ismor);
+    fprintf(file,"DRMmax              = "OFI1"\n",si->DRMmax);
+    fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)si->samp->Ntot,si->samp->Ntot);
+    fprintf(file,"Neff                = "OFD3"\n",Menc_system(gi->router,gi,si)/si->shell[0].mass);
+    if (si->sp->beta <= 3) {
+	fprintf(file,"Neff within rcutoff = "OFD3"\n",Menc_system(si->sp->rcutoff,gi,si)/si->shell[0].mass);
+	}
+    fprintf(file,"Ninitialtot         = "OFD3" = "OFI1"\n",(DOUBLE)si->samp->Ninitialtot,si->samp->Ninitialtot);
+    fprintf(file,"Nnosplittot         = "OFD3" = "OFI1"\n",(DOUBLE)si->samp->Nnosplittot,si->samp->Nnosplittot);
+    fprintf(file,"Nnewtot             = "OFD3" = "OFI1"\n",(DOUBLE)si->samp->Nnewtot,si->samp->Nnewtot);
+    fprintf(file,"Nfesm               = "OFD3" Gyr^-1\n",si->samp->Nfesm);
+    fprintf(file,"Nfemm               = "OFD3" Gyr^-1\n",si->samp->Nfemm);
+    fprintf(file,"sth                 = "OFD3"\n",si->samp->Nfesm/si->samp->Nfemm);
+    fprintf(file,"rimp                = "OFD3" kpc\n",si->rimp);
+    fprintf(file,"r1                  = "OFD3" kpc\n",si->r1);
+    fprintf(file,"r100                = "OFD3" kpc\n",si->r100);
+    fprintf(file,"Mtheo               = "OFD3" Mo = "OFD3" MU\n",Menc_system(gi->router,gi,si)*MU,Menc_system(gi->router,gi,si));
+    fprintf(file,"Msamp               = "OFD3" Mo = "OFD3" MU\n",si->samp->Mp*MU,si->samp->Mp);
+    fprintf(file,"(Msamp-Mtheo)/Mtheo = "OFD3"\n",si->samp->Mp/Menc_system(gi->router,gi,si)-1.0);
+    fprintf(file,"DF split factor     = "OFD3"\n\n",si->dfsf);
     }
