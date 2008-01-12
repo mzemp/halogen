@@ -26,14 +26,14 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	/*
 	** Model parameters
 	*/
-	if (strcmp(argv[i],"-halo") == 0) {
-	    si = halo;
-	    gi->do_halo = 1;
+	if (strcmp(argv[i],"-bulge") == 0) {
+	    si = bulge;
+	    gi->do_bulge = 1;
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-bulge") == 0) {
+	else if (strcmp(argv[i],"-halo") == 0) {
 	    si = halo;
-	    gi->do_bulge = 1;
+	    gi->do_halo = 1;
 	    i++;
 	    }
 	if (si == NULL) {
@@ -308,6 +308,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	** Black hole parameters
 	*/
 	else if (strcmp(argv[i],"-MBH") == 0) {
+	    gi->do_bh = 1;
 	    i++;
 	    if (i >= argc) {
 		usage();
@@ -334,6 +335,7 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 		}
 	    }
 	else if (strcmp(argv[i],"-softBH") == 0) {
+	    gi->do_bh = 1;
 	    i++;
 	    if (i >= argc) {
 		usage();

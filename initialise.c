@@ -47,6 +47,8 @@ void initialise_general(GI *gi) {
     gi->factor_rinner = 1e-6;
     gi->factor_router = 1e20;
     gi->factor_cutoff = 0.3;
+    gi->rvcmax = -1;
+    gi->vcmax = -1;
     gi->randomseed = time(NULL);
     /*
     ** Sampling info stuff

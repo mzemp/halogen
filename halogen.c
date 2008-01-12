@@ -4,14 +4,6 @@
 ** Program written in order to generate multi-mass spherical structures
 **
 ** written by Marcel Zemp
-**
-** This program works in units where
-** 
-** [G] = 1 [L]^3 [T]^-2 [M]^-1
-** [L] = kpc
-** [T] = Gyr 
-** [V] = kpc Gyr^-1
-** [M] = MU
 */
 
 #include <stdio.h>
@@ -306,7 +298,7 @@ int main(int argc, char **argv) {
 	double_particles(halo);
 	calculate_samplinginfo_system(gi,halo);
 	}
-    calculate_samplinginfo_general(gi);
+    calculate_samplinginfo_general(gi,bh);
 
     /*
     ** Write Output
@@ -320,6 +312,13 @@ int main(int argc, char **argv) {
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
 	write_tipsy_standard_halogen(file,gi,bh,bulge,halo);
+	fclose(file);
+	}
+    if (gi->output_tipsy_standard_dpp == 1) {
+	sprintf(FILENAME,"%s.tipsy.dpp.std",gi->outputname);
+	file = fopen(FILENAME,"w");
+	assert(file != NULL);
+	write_tipsy_standard_dpp_halogen(file,gi,bh,bulge,halo);
 	fclose(file);
 	}
 

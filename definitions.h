@@ -198,7 +198,6 @@ typedef struct generalinfo {
     DOUBLE randomseed;
     DOUBLE rvcmax;
     DOUBLE vcmax;
-    DOUBLE rhalf;
     DOUBLE t[10];
     GRIDR *gridr;
     SAMP *samp;

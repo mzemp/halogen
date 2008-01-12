@@ -65,7 +65,7 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	if (si->sp->rcutoff != -1) {
 	    fprintf(stderr,"Warning for the %s!\n",si->systemname);
 	    fprintf(stderr,"For finite mass models the cutoff radius rcutoff is not needed!\n");
-	    fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" kpc) was ignored.\n",si->sp->rcutoff);
+	    fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" LU) was ignored.\n",si->sp->rcutoff);
 	    }
 	I_M = exp(lgamma((si->sp->beta-3)/si->sp->alpha));
 	I_M *= exp(lgamma((3-si->sp->gamma)/si->sp->alpha));
@@ -94,12 +94,12 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	    if (si->sp->rs != -1) {
 		fprintf(stderr,"Warning for the %s!\n",si->systemname);
 		fprintf(stderr,"If you set a virial concentration cvir the scale radius rs is calculated selfconsistently.\n");
-		fprintf(stderr,"Hence, your input for the scale radius rs (= "OFD1" kpc) was ignored.\n",si->sp->rs);
+		fprintf(stderr,"Hence, your input for the scale radius rs (= "OFD1" LU) was ignored.\n",si->sp->rs);
 		}
 	    if (si->sp->rcutoff != -1) {
 		fprintf(stderr,"Warning for the %s!\n",si->systemname);
 		fprintf(stderr,"If you set a virial concentration cvir the cutoff radius rcutoff is set to the virial radius rvir.\n");
-		fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" kpc) was ignored.\n",si->sp->rcutoff);
+		fprintf(stderr,"Hence, your input for the cutoff radius rcutoff (= "OFD1" LU) was ignored.\n",si->sp->rcutoff);
 		}
 	    si->sp->rvir = pow(3*si->sp->M/(4*M_PI*gi->rhocritz*gi->Deltavirz),1.0/3.0);
 	    si->sp->vvir = sqrt(G*si->sp->M/si->sp->rvir);
@@ -732,12 +732,26 @@ void calculate_samplinginfo_system(GI *gi, SI *si) {
     si->r100 = pow(((3.0-si->sp->gamma)*100*si->shell[0].mass)/(4*M_PI*si->sp->rho0*pow(si->sp->rs,si->sp->gamma)),1.0/(3.0-si->sp->gamma));
     }
 
-void calculate_samplinginfo_general(GI *gi) {
+void calculate_samplinginfo_general(GI *gi, const PARTICLE *bh) {
 
     INT i;
     SAMP *gisamp;
 
     gisamp = gi->samp;
+    /*
+    ** Add black hole stuff
+    */
+    if (gi->do_bh == 1) {
+	gisamp->Mp += bh->mass;
+	for(i = 1; i < 4; i++) {
+	    gisamp->Cr[i] += bh->mass*bh->r[i];
+	    gisamp->Cv[i] += bh->mass*bh->v[i];
+	    gisamp->Ltot[i] += bh->mass*bh->L[i];
+	    }
+	}
+    /*
+    ** Calculate general stuff
+    */
     for(i = 1; i < 4; i++) {
 	gisamp->Cr[i] = gisamp->Cr[i]/gisamp->Mp;
 	gisamp->Cv[i] = gisamp->Cv[i]/gisamp->Mp;
@@ -751,5 +765,4 @@ void calculate_samplinginfo_general(GI *gi) {
 	gi->rvcmax = exp(lininterpolate(gi->Ngridr,gi->gridr->eqrvcmax,gi->gridr->logr,0.0));
 	gi->vcmax = sqrt(G*Menc_total(gi->rvcmax,gi)/gi->rvcmax);
 	}
-    gi->rhalf = exp(lininterpolate(gi->Ngridr,gi->gridr->logMenc,gi->gridr->logr,log(gisamp->Mp/2.0)));
     }
