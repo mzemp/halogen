@@ -44,9 +44,9 @@ void initialise_general(GI *gi) {
     gi->OmegaMz = -1;
     gi->rinner = -1;
     gi->router = -1;
-    gi->factor_rinner = 1e-6;
-    gi->factor_router = 1e20;
-    gi->factor_cutoff = 0.3;
+    gi->f_rinner = 1e-6;
+    gi->f_router = 1e20;
+    gi->f_cutoff = 0.3;
     gi->rvcmax = -1;
     gi->vcmax = -1;
     gi->randomseed = time(NULL);
@@ -195,18 +195,18 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
     if (gi->do_bulge == 1) {
 	if (gi->do_halo == 1) {
 	    if (bp->rs < hp->rs) {
-		gi->rinner = gi->factor_rinner*bp->rs;
+		gi->rinner = gi->f_rinner*bp->rs;
 		}
 	    else {
-		gi->rinner = gi->factor_rinner*hp->rs;
+		gi->rinner = gi->f_rinner*hp->rs;
 		}
 	    }
 	else {
-	    gi->rinner = gi->factor_rinner*bp->rs;
+	    gi->rinner = gi->f_rinner*bp->rs;
 	    }
 	}
     else if (gi->do_halo == 1) {
-	gi->rinner = gi->factor_rinner*hp->rs;
+	gi->rinner = gi->f_rinner*hp->rs;
 	}
     if (gi->rinner == -1) {
 	fprintf(stderr,"HALOGEN is confused!\n");
@@ -214,24 +214,38 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	fprintf(stderr,"Could not determine rinner for grid in r.\n");
 	usage();
 	}
+    r = sqrt(10); /* use r as factor here temporarily */
     if (gi->do_bulge == 1) {
 	if (gi->do_halo == 1) {
-	    gi->router = hp->rs;
-	    while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
-		gi->router = gi->router*10;
+	    /*
+	    ** Now we have both: bulge & halo and we have to be 
+	    ** careful with the choice of router. We in general assume
+	    ** that the bulge is less extended than the halo.
+	    */
+	    if ((bp->beta <= 3) && (hp->beta > 3)) {
+		gi->router = bp->rs;
+		while (rho(bp->rs,bulge)/rho(gi->router,bulge) < gi->f_router) {
+		    gi->router = gi->router*r;
+		    }
+		}
+	    else {
+		gi->router = hp->rs;
+		while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->f_router) {
+		    gi->router = gi->router*r;
+		    }
 		}
 	    }
 	else {
 	    gi->router = bp->rs;
-	    while (rho(bp->rs,bulge)/rho(gi->router,bulge) < gi->factor_router) {
-		gi->router = gi->router*10;
+	    while (rho(bp->rs,bulge)/rho(gi->router,bulge) < gi->f_router) {
+		gi->router = gi->router*r;
 		}
 	    }
 	}
     else if (gi->do_halo == 1) {
 	gi->router = hp->rs;
-	while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->factor_router) {
-	    gi->router = gi->router*10;
+	while (rho(hp->rs,halo)/rho(gi->router,halo) < gi->f_router) {
+	    gi->router = gi->router*r;
 	    }
 	}
     if (gi->router == -1) {
@@ -346,7 +360,22 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	gridr->eqrvcmaxHalo[i] = MencHalor - 4*M_PI*rhoHalor*r3;
 	}
     i = gi->Ngridr-1;
-    Potoutr = 0; /* approximate outer gridpoint by 0 */
+    /* 
+    ** Analytic approximation for models without exponential cutoff.
+    ** Analytic approximation for models with exponential cutoff
+    ** would neet WhittakerM function. Hence, set Potoutr = 0.
+    */
+    Potoutr = 0;
+    if (gi->do_bulge == 1) {
+	if (bp->beta > 3) {
+	    Potoutr += 4*M_PI*G*rho(gi->router,bulge)*(gi->router*gi->router)/(2-bp->beta); /* minus cancel */
+	    }
+	}
+    if (gi->do_halo == 1) {
+	if (hp->beta > 3) {
+	    Potoutr += 4*M_PI*G*rho(gi->router,halo)*(gi->router*gi->router)/(2-hp->beta); /* minus cancel */
+	    }
+	}
     Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
     gridr->Pot[i] = Potr;
     gridr->logPot[i] = log(-Potr);

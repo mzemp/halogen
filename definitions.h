@@ -192,9 +192,9 @@ typedef struct generalinfo {
     DOUBLE OmegaMz;
     DOUBLE rinner;
     DOUBLE router;
-    DOUBLE factor_rinner;
-    DOUBLE factor_router;
-    DOUBLE factor_cutoff;
+    DOUBLE f_rinner;
+    DOUBLE f_router;
+    DOUBLE f_cutoff;
     DOUBLE randomseed;
     DOUBLE rvcmax;
     DOUBLE vcmax;

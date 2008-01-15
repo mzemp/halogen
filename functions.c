@@ -434,7 +434,7 @@ DOUBLE integrandMenc(DOUBLE r, const SI *si) {
 
 DOUBLE integrandPot(DOUBLE r, const SI *si) {
 
-    return (4*M_PI*r*(rho(r,si)));
+    return (4*M_PI*G*r*(rho(r,si)));
     }
 
 /*

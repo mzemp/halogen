@@ -109,7 +109,7 @@ void calculate_parameters_system(const GI *gi, SI *si) {
 	I_M = pow(1e-6,3-si->sp->gamma)/(3-si->sp->gamma); /* approximate inner integral */
 	I_M += integral(integrandIM,1e-6,si->sp->rcutoff/si->sp->rs,si);
 	si->sp->rho0 = si->sp->M/(4*M_PI*(si->sp->rs*si->sp->rs*si->sp->rs)*I_M);
-	si->sp->rdecay = gi->factor_cutoff*si->sp->rcutoff;
+	si->sp->rdecay = gi->f_cutoff*si->sp->rcutoff;
 	si->sp->delta = si->sp->rcutoff/si->sp->rdecay + dlrhodlr(si->sp->rcutoff,si);
 	}
     }
@@ -279,6 +279,12 @@ void set_velocities(const GI *gi, SI *si) {
 	    Potr = Pot(r,gi);
 	    vesc = vescape(r,gi);
 	    fEmax = f2(r,gi,si);
+	    if (fEmax == 0) {
+		fprintf(stderr,"Got zero value for f_max(E)!\n");
+		fprintf(stderr,"Try again with increased value for Ngriddf (= %d), Ngridr (= %d)\n",gi->Ngriddf,gi->Ngridr);
+		fprintf(stderr,"and f_router (= %g) in order to refine and expand the grid.\n",gi->f_router);
+		exit(1);
+		}
 	    if (si->dfsf == 0 || si->dfsf == 1) {
 		/*
 		** No splitting

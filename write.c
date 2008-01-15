@@ -277,11 +277,11 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
     fprintf(file,"h0        = "OFD1"\n",gi->h0);
     fprintf(file,"z         = "OFD1"\n",gi->z);
     fprintf(file,"Deltavirz = "OFD3"\n",gi->Deltavirz);
-    fprintf(file,"rhocritz  = "OFD3" Mo LU^-3 = "OFD3" MU LU^-3\n",gi->rhocritz*MU,gi->rhocritz);
-    fprintf(file,"rhovirz   = "OFD3" Mo LU^-3 = "OFD3" MU LU^-3\n\n",gi->rhocritz*gi->Deltavirz*MU,gi->rhocritz*gi->Deltavirz);
+    fprintf(file,"rhocritz  = "OFD3" MU LU^-3 = "OFD3" Mo LU^-3\n",gi->rhocritz,gi->rhocritz*MU);
+    fprintf(file,"rhovirz   = "OFD3" MU LU^-3 = "OFD3" Mo LU^-3\n\n",gi->rhocritz*gi->Deltavirz,gi->rhocritz*gi->Deltavirz*MU);
     if (bh->mass > 0) {
 	fprintf(file,"Black hole properties\n\n");
-	fprintf(file,"MBH    = "OFD3" Mo = "OFD3" MU\n",bh->mass*MU,bh->mass);
+	fprintf(file,"MBH    = "OFD3" MU = "OFD3" Mo\n",bh->mass,bh->mass*MU);
 	fprintf(file,"softBH = "OFD3" LU\n\n",bh->soft);
 	}
     if (gi->do_bulge == 1) {
@@ -297,44 +297,48 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
 	fprintf(file,"vcmax  = "OFD3" LU TU^-1\n",gi->vcmax);
 	fprintf(file,"rvcmax = "OFD3" LU\n\n",gi->rvcmax);
 	temp = Menc_total(gi->rvcmax,gi);
-	fprintf(file,"M(rvcmax)        = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rvcmax)        = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	}
     if (gi->do_bulge == 1) {
 	temp = Menc_total(bulge->r1,gi);
-	fprintf(file,"M(r1_bulge)      = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(r1_bulge)      = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	temp = Menc_total(bulge->sp->rs,gi);
-	fprintf(file,"M(rs_bulge)      = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rs_bulge)      = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	if (bulge->eqrvcmax[0] < 0) {
 	    temp = Menc_total(bulge->sp->rvcmax,gi);
-	    fprintf(file,"M(rvcmax_bulge)  = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	    fprintf(file,"M(rvcmax_bulge)  = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	    }
 	temp = Menc_total(bulge->sp->rhalf,gi);
-	fprintf(file,"M(rhalf_bulge)   = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rhalf_bulge)   = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	if (bulge->sp->rcutoff != SBI) {
 	    temp = Menc_total(bulge->sp->rcutoff,gi);
-	    fprintf(file,"M(rcutoff_bulge) = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	    fprintf(file,"M(rcutoff_bulge) = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	    }
 	temp = Menc_total(bulge->sp->rvir,gi);
-	fprintf(file,"M(rvir_bulge)    = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rvir_bulge)    = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	}
     if (gi->do_halo == 1) {
 	temp = Menc_total(halo->r1,gi);
-	fprintf(file,"M(r1_halo)       = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(r1_halo)       = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	temp = Menc_total(halo->sp->rs,gi);
-	fprintf(file,"M(rs_halo)       = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rs_halo)       = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	if (halo->eqrvcmax[0] < 0) {
 	    temp = Menc_total(halo->sp->rvcmax,gi);
-	    fprintf(file,"M(rvcmax_halo)   = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	    fprintf(file,"M(rvcmax_halo)   = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	    }
 	temp = Menc_total(halo->sp->rhalf,gi);
-	fprintf(file,"M(rhalf_halo)    = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rhalf_halo)    = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	if (halo->sp->rcutoff != SBI) {
 	    temp = Menc_total(halo->sp->rcutoff,gi);
-	    fprintf(file,"M(rcutoff_halo)  = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	    fprintf(file,"M(rcutoff_halo)  = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	    }
 	temp = Menc_total(halo->sp->rvir,gi);
-	fprintf(file,"M(rvir_halo)     = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M(rvir_halo)     = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
 	}
+    temp = Menc_total(gi->rinner,gi);
+    fprintf(file,"M(rinner)        = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
+    temp = Menc_total(gi->router,gi);
+    fprintf(file,"M(router)        = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
     fprintf(file,"\n");
     if (gi->gridr->eqrvcmax[0] < 0) {
 	temp = Tdyn_total(gi->rvcmax,gi);
@@ -379,14 +383,14 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
     fprintf(file,"\n");
     fprintf(file,"|Cr|      = "OFD3" LU            Cr      = ("OFD4", "OFD4", "OFD4") LU\n",gi->samp->Cr[0],gi->samp->Cr[1],gi->samp->Cr[2],gi->samp->Cr[3]);
     fprintf(file,"|Cv|      = "OFD3" LU TU^-1      Cv      = ("OFD4", "OFD4", "OFD4") LU TU^-1\n",gi->samp->Cv[0],gi->samp->Cv[1],gi->samp->Cv[2],gi->samp->Cv[3]);
+ fprintf(file,"|L|       = "OFD3" MU LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") MU LU^2 TU^-1\n",gi->samp->Ltot[0],gi->samp->Ltot[1],gi->samp->Ltot[2],gi->samp->Ltot[3]);
     fprintf(file,"|L|       = "OFD3" Mo LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") Mo LU^2 TU^-1\n",gi->samp->Ltot[0]*MU,gi->samp->Ltot[1]*MU,gi->samp->Ltot[2]*MU,gi->samp->Ltot[3]*MU);
-    fprintf(file,"|L|       = "OFD3" MU LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") MU LU^2 TU^-1\n",gi->samp->Ltot[0],gi->samp->Ltot[1],gi->samp->Ltot[2],gi->samp->Ltot[3]);
     fprintf(file,"|L|/Msamp = "OFD3" LU^2 TU^-1    L/Msamp = ("OFD4", "OFD4", "OFD4") LU^2 TU^-1\n",
 	    gi->samp->Ltot[0]/gi->samp->Mp,gi->samp->Ltot[1]/gi->samp->Mp,gi->samp->Ltot[2]/gi->samp->Mp,gi->samp->Ltot[3]/gi->samp->Mp);
     fprintf(file,"\n");
-    fprintf(file,"Etot = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",gi->samp->Etot*MU,gi->samp->Etot);
-    fprintf(file,"Ekin = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",gi->samp->Ekin*MU,gi->samp->Ekin);
-    fprintf(file,"Epot = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",gi->samp->Epot*MU,gi->samp->Epot);
+    fprintf(file,"Etot = "OFD4" MU LU^2 TU^-2 = "OFD4" Mo LU^2 TU^-2\n",gi->samp->Etot,gi->samp->Etot*MU);
+    fprintf(file,"Ekin = "OFD4" MU LU^2 TU^-2 = "OFD4" Mo LU^2 TU^-2\n",gi->samp->Ekin,gi->samp->Ekin*MU);
+    fprintf(file,"Epot = "OFD4" MU LU^2 TU^-2 = "OFD4" Mo LU^2 TU^-2\n",gi->samp->Epot,gi->samp->Epot*MU);
     fprintf(file,"Rvir = |2*Ekin/Epot| = %g\n",fabs(2*gi->samp->Ekin/gi->samp->Epot));
     fprintf(file,"\n");
     fprintf(file,"Ntot        = "OFD3" = "OFI1"\n",(DOUBLE)gi->samp->Ntot,gi->samp->Ntot);
@@ -426,7 +430,7 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"alpha = "OFD1"\n",si->sp->alpha);
     fprintf(file,"beta  = "OFD1"\n",si->sp->beta);
     fprintf(file,"gamma = "OFD1"\n",si->sp->gamma);
-    fprintf(file,"rho0  = "OFD3" Mo LU^-3 = "OFD3" MU LU^-3\n",si->sp->rho0*MU,si->sp->rho0);
+    fprintf(file,"rho0  = "OFD3" MU LU^-3 = "OFD3" Mo LU^-3\n",si->sp->rho0,si->sp->rho0*MU);
     fprintf(file,"cvir  = "OFD3"\n",si->sp->cvir);
     if (si->eqrvcmax[0] < 0) {
 	temp = 2*pow(1000*si->sp->vcmax/(100*gi->h0*Ecosmo(gi)*si->sp->rvcmax*VelConvertFac),2);
@@ -447,40 +451,39 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"rso     = "OFD3" LU\n",si->rso);
     fprintf(file,"rmor    = "OFD3" LU\n\n",si->rmor);
     temp = Menc_system(si->sp->rs,gi,si);
-    fprintf(file,"M(rs)      = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+    fprintf(file,"M_%s(rs)      = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     if (gi->gridr->eqrvcmax[0] < 0) {
 	temp = Menc_system(si->sp->rvcmax,gi,si);
-	fprintf(file,"M(rvcmax)  = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M_%s(rvcmax)  = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
 	}
     temp = Menc_system(si->sp->rhalf,gi,si);
-    fprintf(file,"M(rhalf)   = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+    fprintf(file,"M_%s(rhalf)   = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     if (si->sp->rcutoff != SBI) {
 	temp = Menc_system(si->sp->rcutoff,gi,si);
-	fprintf(file,"M(rcutoff) = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M_%s(rcutoff) = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
 	}
     temp = Menc_system(si->sp->rvir,gi,si);
-    fprintf(file,"M(rvir)    = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+    fprintf(file,"M_%s(rvir)    = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     temp = Menc_system(si->rsi,gi,si);
-    fprintf(file,"M(rsi)     = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+    fprintf(file,"M_%s(rsi)     = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     temp = Menc_system(si->rso,gi,si);
-    fprintf(file,"M(rso)     = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+    fprintf(file,"M_%s(rso)     = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     if (si->rmor != 0) {
 	temp = Menc_system(si->rmor,gi,si);
-	fprintf(file,"M(rmor)    = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
+	fprintf(file,"M_%s(rmor)    = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
 	}
+    temp = Menc_system(gi->rinner,gi,si);
+    fprintf(file,"M_%s(rinner)  = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
+    temp = Menc_system(gi->router,gi,si);
+    fprintf(file,"M_%s(router)  = "OFD3" MU = "OFD3" Mo\n",si->systemname,temp,temp*MU);
     fprintf(file,"\n");
     fprintf(file,"Sampling properties for %s\n\n",si->systemname);
     fprintf(file,"|Cr|      = "OFD3" LU            Cr      = ("OFD4", "OFD4", "OFD4") LU\n",si->samp->Cr[0],si->samp->Cr[1],si->samp->Cr[2],si->samp->Cr[3]);
     fprintf(file,"|Cv|      = "OFD3" LU TU^-1      Cv      = ("OFD4", "OFD4", "OFD4") LU TU^-1\n",si->samp->Cv[0],si->samp->Cv[1],si->samp->Cv[2],si->samp->Cv[3]);
-    fprintf(file,"|L|       = "OFD3" Mo LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") Mo LU^2 TU^-1\n",si->samp->Ltot[0]*MU,si->samp->Ltot[1]*MU,si->samp->Ltot[2]*MU,si->samp->Ltot[3]*MU);
     fprintf(file,"|L|       = "OFD3" MU LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") MU LU^2 TU^-1\n",si->samp->Ltot[0],si->samp->Ltot[1],si->samp->Ltot[2],si->samp->Ltot[3]);
+    fprintf(file,"|L|       = "OFD3" Mo LU^2 TU^-1 L       = ("OFD4", "OFD4", "OFD4") Mo LU^2 TU^-1\n",si->samp->Ltot[0]*MU,si->samp->Ltot[1]*MU,si->samp->Ltot[2]*MU,si->samp->Ltot[3]*MU);
     fprintf(file,"|L|/Msamp = "OFD3" LU^2 TU^-1    L/Msamp = ("OFD4", "OFD4", "OFD4") LU^2 TU^-1\n",
 	    si->samp->Ltot[0]/si->samp->Mp,si->samp->Ltot[1]/si->samp->Mp,si->samp->Ltot[2]/si->samp->Mp,si->samp->Ltot[3]/si->samp->Mp);
-    fprintf(file,"\n");
-    fprintf(file,"Etot = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",si->samp->Etot*MU,si->samp->Etot);
-    fprintf(file,"Ekin = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",si->samp->Ekin*MU,si->samp->Ekin);
-    fprintf(file,"Epot = "OFD4" Mo LU^2 TU^-2 = "OFD4" MU LU^2 TU^-2\n",si->samp->Epot*MU,si->samp->Epot);
-    fprintf(file,"Rvir = |2*Ekin/Epot| = %g\n",fabs(2*si->samp->Ekin/si->samp->Epot));
     fprintf(file,"\n");
     fprintf(file,"i   rshelli [LU]  rshello [LU]  N          Ninitial   Nnosplit   Nnew       Mtheo [MU]    Msamp [MU]    massmax [MU]  softmax [LU]\n");
     if ((si->sp->beta > 3) && (si->rsi == gi->router)) {
@@ -512,8 +515,8 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"r1                  = "OFD3" LU\n",si->r1);
     fprintf(file,"r100                = "OFD3" LU\n",si->r100);
     temp = Menc_system(gi->router,gi,si);
-    fprintf(file,"Mtheo               = "OFD3" Mo = "OFD3" MU\n",temp*MU,temp);
-    fprintf(file,"Msamp               = "OFD3" Mo = "OFD3" MU\n",si->samp->Mp*MU,si->samp->Mp);
+    fprintf(file,"Mtheo               = "OFD3" MU = "OFD3" Mo\n",temp,temp*MU);
+    fprintf(file,"Msamp               = "OFD3" MU = "OFD3" Mo\n",si->samp->Mp,si->samp->Mp*MU);
     fprintf(file,"(Msamp-Mtheo)/Mtheo = "OFD3"\n",si->samp->Mp/temp-1.0);
     fprintf(file,"DF split factor     = "OFD3"\n\n",si->dfsf);
     }

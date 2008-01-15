@@ -17,7 +17,7 @@ void check_main_parameters_general(const GI *gi) {
 	usage();
 	}
     if ((gi->Ngridr-1) % (gi->Ngriddf-1) != 0) {
-	fprintf(stderr,"Bad choice of Ngridr and Ngriddf!\n");
+	fprintf(stderr,"Bad choice of Ngridr (= %d) and Ngriddf (= %d)!\n",gi->Ngridr,gi->Ngriddf);
 	fprintf(stderr,"These numbers have to fulfill the condition (Ngridr-1) mod (Ngriddf-1) == 0.\n");
 	usage();
 	}

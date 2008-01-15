@@ -443,28 +443,28 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	    gi->randomseed = atof(argv[i]);
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-factorrinner") == 0) {
+	else if (strcmp(argv[i],"-f_rinner") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    gi->factor_rinner = atof(argv[i]);
+	    gi->f_rinner = atof(argv[i]);
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-factorrouter") == 0) {
+	else if (strcmp(argv[i],"-f_router") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    gi->factor_router = atof(argv[i]);
+	    gi->f_router = atof(argv[i]);
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-factorcutoff") == 0) {
+	else if (strcmp(argv[i],"-f_cutoff") == 0) {
 	    i++;
 	    if (i >= argc) {
 		usage();
 		}
-	    gi->factor_cutoff = atof(argv[i]);
+	    gi->f_cutoff = atof(argv[i]);
 	    i++;
 	    }
 	/*
