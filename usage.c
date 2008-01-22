@@ -48,8 +48,8 @@ void usage() {
     fprintf(stderr,"General parameters:\n");
     fprintf(stderr,"\n");
     fprintf(stderr,"-name <value>        : name of the output file\n");
-    fprintf(stderr,"-Ngridr <value>      : number of grid points for grid in r (defaul: 2001)\n");
-    fprintf(stderr,"-Ngriddf <value>     : number of grid points for grid for distribution function for each system (defaul: 101)\n");
+    fprintf(stderr,"-Ngridr <value>      : number of grid points for grid in r (default: 2001)\n");
+    fprintf(stderr,"-Ngriddf <value>     : number of grid points for grid for distribution function for each system (default: 101)\n");
     fprintf(stderr,"-OmegaM0 <value>     : OmegaM0 (default: 0.3)\n");
     fprintf(stderr,"-OmegaK0 <value>     : OmegaK0 (default: 0.0)\n");
     fprintf(stderr,"-OmegaL0 <value>     : OmegaL0 (default: 0.7)\n");
