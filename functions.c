@@ -82,6 +82,71 @@ DOUBLE trapez(DOUBLE (*function)(DOUBLE, const SI(*)), DOUBLE a, DOUBLE b, INT n
 	}
     }
 
+DOUBLE integralsigma(DOUBLE a, DOUBLE b, const GI *gi, const SI *bulge, const SI *halo) {
+    
+    INT i;
+    DOUBLE T[3], SA, SB;
+
+    T[0] = trapezsigma(a,b,0,gi,bulge,halo);
+    T[1] = trapezsigma(a,b,1,gi,bulge,halo);
+    T[2] = trapezsigma(a,b,2,gi,bulge,halo);
+    SA = (4.0*T[1]-T[0])/3.0;
+    SB = (4.0*T[2]-T[1])/3.0;
+    for(i = 3; i < (NINTMAXSIGMA+1); i++) {
+	T[0] = T[1];
+	T[1] = T[2];
+	T[2] = trapezsigma(a,b,i,gi,bulge,halo);
+	SA = SB;
+	SB = (4.0*T[2]-T[1])/3.0;
+	if(i > NINTMINSIGMA) {
+	    if((fabs(SB-SA) < TOLSIGMA*fabs(SB)) || (SA == 0.0 && SB == 0.0)) {
+		return SB;
+		}
+	    }
+	}
+    fprintf(stderr,"Warning!\n");
+    fprintf(stderr,"Too many steps in function integralsigma!\n");
+    fprintf(stderr,"a = "OFD3"\n",a);
+    fprintf(stderr,"b = "OFD3"\n",b);
+    fprintf(stderr,"sum = "OFD3"\n",SB);
+    fprintf(stderr,"Sum not converged within tolerance of %e\n",TOLSIGMA);
+    fprintf(stderr,"Abort tolerance was %e\n",fabs((SA-SB)/SB));
+    return SB;
+    }
+
+DOUBLE trapezsigma(DOUBLE a, DOUBLE b, INT n, const GI *gi, const SI *bulge, const SI *halo) {
+
+    INT i, j, N[n+1];
+    DOUBLE Valuelower, Valueupper;
+    DOUBLE x, deltax, sum, sumN;
+    GRIDR *gridr;
+
+    gridr = gi->gridr;
+    if (n == 0) {
+	Valuelower = Menc_total(a,gi)*rho_total(a,gi)/(a*a);
+	Valueupper = Menc_total(b,gi)*rho_total(b,gi)/(b*b);
+	return (0.5*(b-a)*(Valuelower+Valueupper));
+	}
+    else {
+	for (i = 0; i < (n+1); i++) {
+	    N[i] = pow(2,i);
+	    }
+	Valuelower = Menc_total(a,gi)*rho_total(a,gi)/(a*a);
+	Valueupper = Menc_total(b,gi)*rho_total(b,gi)/(b*b);
+	sum = 0.5*(Valuelower+Valueupper);
+	for(i = 1; i < (n+1); i++) {
+	    deltax = (b-a)/N[i];
+	    sumN = 0;
+	    for (j = 1; j < (N[i-1]+1); j++) {
+		x = a+(2*j-1)*deltax;
+		sumN +=  Menc_total(x,gi)*rho_total(x,gi)/(x*x);
+		}
+	    sum = sum + sumN;
+	    }
+	return (sum*(b-a)/N[n]);
+	}
+    }
+
 DOUBLE integraldf(INT j, const GI *gi, const SI *si) {
     
     INT i;
@@ -490,6 +555,15 @@ DOUBLE Tdyn_total(DOUBLE r, const GI *gi) {
 DOUBLE Tdyn_system(DOUBLE r, const GI *gi, const SI *si) {
 
     return (2*M_PI*sqrt((r*r*r)/(G*Menc_system(r,gi,si))));
+    }
+
+/*
+** Function for calclating the total density at radius r
+*/
+
+DOUBLE rho_total(DOUBLE r, const GI *gi) {
+
+    return (exp(lininterpolate(gi->Ngridr,gi->gridr->logr,gi->gridr->logrho,log(r))));
     }
 
 /*

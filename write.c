@@ -28,11 +28,12 @@ void write_gridr_total(FILE *file, const GI *gi) {
 
     gridr = gi->gridr;
     for (i = 0; i < gi->Ngridr; i++) {
-	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
+	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
 		gridr->r[i],gridr->logr[i],
 		gridr->rho[i],gridr->logrho[i],
 		gridr->rhoenc[i],gridr->logrhoenc[i],
 		gridr->Menc[i],gridr->logMenc[i],
+		gridr->sigma[i],gridr->logsigma[i],
 		gridr->Pot[i],gridr->logPot[i]);
 	}
     }

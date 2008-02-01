@@ -5,9 +5,12 @@
 #define VERSION "1.1"
 #define NINTMIN 5
 #define NINTMAX 28
+#define NINTMINSIGMA 5
+#define NINTMAXSIGMA 28
 #define NINTMINDF 8
 #define NINTMAXDF 28
 #define TOL 1e-10
+#define TOLSIGMA 1e-10
 #define TOLDF 1e-3
 #define TOLLININT 1e-10
 #define DFFAILUREMAX 1e20
@@ -53,6 +56,9 @@ typedef struct gridr {
     DOUBLE *Pot;
     DOUBLE *logPot;
     DOUBLE *Potoutr;
+    DOUBLE *sigma;
+    DOUBLE *logsigma;
+    DOUBLE *sigmaintoutr;
     DOUBLE *eqrvcmax;
     DOUBLE *eqrvcmaxBulge;
     DOUBLE *eqrvcmaxHalo;

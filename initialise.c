@@ -183,6 +183,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
     DOUBLE rhor, rhoHalor, rhoBulger;
     DOUBLE rhoencr, rhoencHalor, rhoencBulger;
     DOUBLE Potr, Potoutr;
+    DOUBLE sigmar, sigmaintoutr;
     GRIDR *gridr;
     SP *bp, *hp;
 
@@ -359,13 +360,14 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	gridr->eqrvcmaxBulge[i] = MencBulger - 4*M_PI*rhoBulger*r3;
 	gridr->eqrvcmaxHalo[i] = MencHalor - 4*M_PI*rhoHalor*r3;
 	}
-    i = gi->Ngridr-1;
     /* 
     ** Analytic approximation for models without exponential cutoff.
     ** Analytic approximation for models with exponential cutoff
     ** would neet WhittakerM function. Hence, set Potoutr = 0.
     */
+    i = gi->Ngridr-1;
     Potoutr = 0;
+    sigmaintoutr = 0;
     if (gi->do_bulge == 1) {
 	if (bp->beta > 3) {
 	    Potoutr += 4*M_PI*G*rho(gi->router,bulge)*(gi->router*gi->router)/(2-bp->beta); /* minus cancel */
@@ -377,21 +379,31 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	    }
 	}
     Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
+    sigmar = sqrt(G*sigmaintoutr/rho_total(gridr->r[i],gi));
     gridr->Pot[i] = Potr;
     gridr->logPot[i] = log(-Potr);
     gridr->Potoutr[i] = Potoutr;
+    gridr->sigma[i] = sigmar;
+    gridr->logsigma[i] = log(sigmar);
+    gridr->sigmaintoutr[i] = sigmaintoutr;
     for (i = (gi->Ngridr-2); i >= 0; i--) {
 	Potoutr = gridr->Potoutr[i+1];
+	sigmaintoutr = gridr->sigmaintoutr[i+1];	
 	if (gi->do_bulge == 1) {
 	    Potoutr += integral(integrandPot,gridr->r[i],gridr->r[i+1],bulge);
 	    }
 	if (gi->do_halo == 1) {
 	    Potoutr += integral(integrandPot,gridr->r[i],gridr->r[i+1],halo);
 	    }
+	sigmaintoutr += integralsigma(gridr->r[i],gridr->r[i+1],gi,bulge,halo);
 	Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
+	sigmar = sqrt(G*sigmaintoutr/rho_total(gridr->r[i],gi));
 	gridr->Pot[i] = Potr;
 	gridr->logPot[i] = log(-Potr);
 	gridr->Potoutr[i] = Potoutr;
+	gridr->sigma[i] = sigmar;
+	gridr->logsigma[i] = log(sigmar);
+	gridr->sigmaintoutr[i] = sigmaintoutr;
 	}
     }
 

@@ -63,6 +63,12 @@ void allocate_general(GI *gi) {
     assert(gi->gridr->logPot != NULL);
     gi->gridr->Potoutr = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->Potoutr != NULL);
+    gi->gridr->sigma = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->sigma != NULL);
+    gi->gridr->logsigma = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->logsigma != NULL);
+    gi->gridr->sigmaintoutr = malloc(gi->Ngridr*sizeof(DOUBLE));
+    assert(gi->gridr->sigmaintoutr != NULL);
     gi->gridr->eqrvcmax = malloc(gi->Ngridr*sizeof(DOUBLE));
     assert(gi->gridr->eqrvcmax != NULL);
     gi->gridr->eqrvcmaxBulge = malloc(gi->Ngridr*sizeof(DOUBLE));

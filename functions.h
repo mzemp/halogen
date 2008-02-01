@@ -5,6 +5,8 @@
 DOUBLE Ecosmo(const GI (*));
 DOUBLE integral(DOUBLE (*)(DOUBLE, const SI(*)), DOUBLE, DOUBLE, const SI (*));
 DOUBLE trapez(DOUBLE (*)(DOUBLE, const SI(*)), DOUBLE, DOUBLE, INT, const SI (*));
+DOUBLE integralsigma(DOUBLE, DOUBLE, const GI (*), const SI (*), const SI (*));
+DOUBLE trapezsigma(DOUBLE, DOUBLE, INT, const GI (*), const SI (*), const SI (*));
 DOUBLE integraldf(INT, const GI (*), const SI (*));
 DOUBLE trapezdf(INT, INT, const GI (*), const SI (*));
 INT locate(INT, const DOUBLE (*), DOUBLE);
@@ -26,6 +28,7 @@ DOUBLE Menc_total(DOUBLE, const GI (*));
 DOUBLE Menc_system(DOUBLE, const GI (*), const SI (*));
 DOUBLE Tdyn_total(DOUBLE, const GI (*));
 DOUBLE Tdyn_system(DOUBLE, const GI (*), const SI (*));
+DOUBLE rho_total(DOUBLE, const GI (*));
 DOUBLE Pot(DOUBLE, const GI (*));
 DOUBLE vescape(DOUBLE, const GI (*));
 DOUBLE f1(DOUBLE, const GI (*), const SI (*));
