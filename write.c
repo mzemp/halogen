@@ -431,6 +431,7 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"alpha = "OFD1"\n",si->sp->alpha);
     fprintf(file,"beta  = "OFD1"\n",si->sp->beta);
     fprintf(file,"gamma = "OFD1"\n",si->sp->gamma);
+    fprintf(file,"delta = "OFD1"\n",si->sp->delta);
     fprintf(file,"rho0  = "OFD3" MU LU^-3 = "OFD3" Mo LU^-3\n",si->sp->rho0,si->sp->rho0*MU);
     fprintf(file,"cvir  = "OFD3"\n",si->sp->cvir);
     if (si->eqrvcmax[0] < 0) {
