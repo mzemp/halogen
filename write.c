@@ -502,6 +502,7 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"Nshell              = "OFI1"\n",si->Nshell);
     fprintf(file,"Ismor               = "OFI1"\n",si->Ismor);
     fprintf(file,"DRMmax              = "OFI1"\n",si->DRMmax);
+    fprintf(file,"kappa               = "OFD1"\n",si->Nshell*log(si->DRMmax)/log(si->rso/si->rsi));
     fprintf(file,"Ntot                = "OFD3" = "OFI1"\n",(DOUBLE)si->samp->Ntot,si->samp->Ntot);
     fprintf(file,"Neff                = "OFD3"\n",si->samp->Neff);
     if (si->sp->beta <= 3) {
