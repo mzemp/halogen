@@ -326,7 +326,7 @@ int main(int argc, char **argv) {
     ** Print some output in file
     */
 
-    sprintf(FILENAME,"%s.out",gi->outputname);
+    sprintf(FILENAME,"%s.info.dat",gi->outputname);
     file = fopen(FILENAME,"w");
     assert(file != NULL);
     write_general_output(file,argc,argv,gi,bh,bulge,halo);
