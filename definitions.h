@@ -153,6 +153,9 @@ typedef struct systeminfo {
     INT rmor_in_rs_units;
     INT rmor_in_rvir_units;
     INT rmor_in_rcutoff_units;
+    INT soft0_in_rs_units;
+    INT soft0_in_rvir_units;
+    INT soft0_in_rcutoff_units;
     INT Nshell;
     INT Ismor;
     INT N0;
@@ -184,7 +187,6 @@ typedef struct generalinfo {
     INT output_griddf;
     INT output_tipsy_standard;
     INT output_tipsy_standard_dpp;
-    INT output_gadget_binary;
     INT positionsonly;
     INT Ngridr;
     INT Ngriddf;

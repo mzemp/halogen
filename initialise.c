@@ -30,7 +30,6 @@ void initialise_general(GI *gi) {
     gi->output_griddf = 0;
     gi->output_tipsy_standard = 0;
     gi->output_tipsy_standard_dpp = 0;
-    gi->output_gadget_binary = 0;
     gi->positionsonly = 0;
     gi->Ngridr = 2001;
     gi->Ngriddf = 101;
@@ -92,6 +91,9 @@ void initialise_system(SI *si) {
     si->rmor_in_rs_units = 0;
     si->rmor_in_rvir_units = 0;
     si->rmor_in_rcutoff_units = 0;
+    si->soft0_in_rs_units = 0;
+    si->soft0_in_rvir_units = 0;
+    si->soft0_in_rcutoff_units = 0;
     si->Nshell = 0;
     si->Ismor = -1;
     si->N0 = -1;

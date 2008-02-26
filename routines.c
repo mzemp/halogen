@@ -211,6 +211,18 @@ void set_remaining_parameters(const GI *gi, SI *si) {
 	si->rmor = 0;
 	}
     /*
+    ** Ser soft0
+    */
+    if (si->soft0_in_rs_units == 1) {
+	si->soft0 *= si->sp->rs;
+	}
+    else if (si->soft0_in_rvir_units == 1) {
+	si->soft0 *= si->sp->rvir;
+	}
+    else if (si->soft0_in_rcutoff_units == 1) {
+	si->soft0 *= si->sp->rcutoff;
+	}
+    /*
     ** Set Ismor
     */
     if (si->Ismor == -1) {

@@ -129,8 +129,42 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	    if (i >= argc) {
 		usage();
 		}
-	    si->soft0 = atof(argv[i]);
+	    if (strcmp("LU",argv[i]) == 0) {
+		si->soft0 = 1;
+		}
+	    else if (strcmp("rs",argv[i]) == 0) {
+		si->soft0 = 1;
+		si->soft0_in_rs_units = 1;
+		}
+	    else if (strcmp("rvir",argv[i]) == 0) {
+		si->soft0 = 1;
+		si->soft0_in_rvir_units = 1;
+		}
+	    else if (strcmp("rcutoff",argv[i]) == 0) {
+		si->soft0 = 1;
+		si->soft0_in_rcutoff_units = 1;
+		}
+	    else {
+		si->soft0 = atof(argv[i]);
+		}
 	    i++;
+	    if (i < argc) {
+		if (strcmp("LU",argv[i]) == 0) {
+		    i++;
+		    }
+		else if (strcmp("rs",argv[i]) == 0) {
+		    si->soft0_in_rs_units = 1;
+		    i++;
+		    }
+		else if (strcmp("rvir",argv[i]) == 0) {
+		    si->soft0_in_rvir_units = 1;
+		    i++;
+		    }
+		else if (strcmp("rcutoff",argv[i]) == 0) {
+		    si->soft0_in_rcutoff_units = 1;
+		    i++;
+		    }
+		}
 	    }
 	/*
 	** Multi-mass parameters
@@ -381,10 +415,6 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	    }
 	else if (strcmp(argv[i],"-otsdpp") == 0) {
 	    gi->output_tipsy_standard_dpp = 1;
-	    i++;
-	    }
-	else if (strcmp(argv[i],"-ogb") == 0) {
-	    gi->output_gadget_binary = 1;
 	    i++;
 	    }
 	else if (strcmp(argv[i],"-po") == 0) {
