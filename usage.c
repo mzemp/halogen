@@ -32,6 +32,8 @@ void usage() {
     fprintf(stderr,"-cvir <value>         : virial concentration parameter\n");
     fprintf(stderr,"-N0 <value>           : number of particles within rsi\n");
     fprintf(stderr,"-soft0 <value> <unit> : softening of particles within rsi, <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
+    fprintf(stderr,"-rba <value>          : axis ratio b/a (default: 1)\n");
+    fprintf(stderr,"-rca <value>          : axis ratio c/a (default: 1)\n");
     fprintf(stderr,"-rsi <value> <unit>   : inner shell radius (default: rcutoff / router), <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
     fprintf(stderr,"-rso <value> <unit>   : outer shell radius (default: rcutoff / router), <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
     fprintf(stderr,"-Nshell <value>       : number of shells between rsi and rso (default: 0)\n");
@@ -60,6 +62,8 @@ void usage() {
     fprintf(stderr,"-ogdf                 : set this flag for outputting grid for distribution function for each system\n");
     fprintf(stderr,"-ots                  : set this flag for writing particles in tipsy standard binary format\n");
     fprintf(stderr,"-otsdpp               : set this flag for writing particles in tipsy standard binary format with double precision positions\n");
+    fprintf(stderr,"-spherical            : set this flag for initialising positions in spherical coordinates (default)\n");
+    fprintf(stderr,"-ellipsoidal          : set this flag for initialising positions in ellipsoidal coordinates\n");
     fprintf(stderr,"-po                   : set this flag for initialising positions only (velocities are 0)\n");
     fprintf(stderr,"-randomseed <value>   : value for a random seed (default: random value)\n");
     fprintf(stderr,"\n");

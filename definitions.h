@@ -91,6 +91,8 @@ typedef struct systemparameters {
     DOUBLE rhalf;
     DOUBLE rvcmax;
     DOUBLE vcmax;
+    DOUBLE rba;
+    DOUBLE rca;
     } SP;
     
 typedef struct particle {
@@ -187,6 +189,7 @@ typedef struct generalinfo {
     INT output_griddf;
     INT output_tipsy_standard;
     INT output_tipsy_standard_dpp;
+    INT coordinates;
     INT positionsonly;
     INT Ngridr;
     INT Ngriddf;

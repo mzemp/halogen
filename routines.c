@@ -23,9 +23,9 @@
 
 void calculate_parameters_general(GI *gi) {
 
-    gi->rhocritz = 3/(8*M_PI*G)*(pow((100*gi->h0*Ecosmo(gi)*VelConvertFac/1000),2));
+    gi->rhocritz = 3/(8*M_PI*G)*(pow((100*gi->h0*Ecosmo_halogen(gi)*VelConvertFac/1000),2));
     if (gi->Deltavirz == -1) {
-	gi->OmegaMz = gi->OmegaM0*pow((1+gi->z),3)/pow(Ecosmo(gi),2);
+	gi->OmegaMz = gi->OmegaM0*pow((1+gi->z),3)/pow(Ecosmo_halogen(gi),2);
 	if (gi->OmegaK0 == 0) {
 	    gi->Deltavirz = 178*(pow(gi->OmegaMz,0.45));
 	    }
@@ -239,8 +239,12 @@ void set_positions(const GI *gi, SI *si) {
     INT i, j, N;
     DOUBLE Mrand, logMrand, Mmin, Mmax;
     DOUBLE rrand, logrrand = 0;
+    DOUBLE rba, rca;
     DOUBLE costheta, sintheta, phi, cosphi, sinphi;
     PARTICLE *p;
+
+    rba = si->sp->rba;
+    rca = si->sp->rca;
 
     for (j = 0; j < (si->Nshell+2); j++) {
 	N = si->shell[j].N;
@@ -257,10 +261,27 @@ void set_positions(const GI *gi, SI *si) {
 	    phi = rand01()*2.0*M_PI;
 	    cosphi = cos(phi);
 	    sinphi = sin(phi);
-	    p[i].r[0] = rrand;
-	    p[i].r[1] = rrand*sintheta*cosphi;
-	    p[i].r[2] = rrand*sintheta*sinphi;
-	    p[i].r[3] = rrand*costheta;
+	    if (gi->coordinates == 0) {
+		/*
+		** Spherical systems
+		*/
+		p[i].r[0] = rrand;
+		p[i].r[1] = rrand*sintheta*cosphi;
+		p[i].r[2] = rrand*sintheta*sinphi;
+		p[i].r[3] = rrand*costheta;
+		}
+	    if (gi->coordinates == 1) {
+		/*
+		** Ellipsoidal systems
+		** Method from Simulation and the Monte Carlo Method
+		** by R. Y. Rubinstein & D. P. Kroese
+		** page 70, chapter 2.5.5
+		*/
+		p[i].r[0] = rrand;
+		p[i].r[1] = rrand*sintheta*cosphi;
+		p[i].r[2] = rrand*rba*sintheta*sinphi;
+		p[i].r[3] = rrand*rca*costheta;
+		}
 	    }
 	}
     }

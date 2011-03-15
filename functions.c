@@ -15,7 +15,7 @@
 ** Cosmic evolution function E(z)
 */
 
-DOUBLE Ecosmo(const GI *gi) {
+DOUBLE Ecosmo_halogen(const GI *gi) {
 
     return sqrt(gi->OmegaM0*pow((1+gi->z),3) + gi->OmegaK0*pow((1+gi->z),2) + gi->OmegaL0);
     }

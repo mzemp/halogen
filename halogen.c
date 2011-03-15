@@ -311,14 +311,14 @@ int main(int argc, char **argv) {
 	sprintf(FILENAME,"%s.tipsy.std",gi->outputname);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
-	write_tipsy_standard_halogen(file,gi,bh,bulge,halo);
+	write_tipsy_xdr_halogen(file,gi,bh,bulge,halo);
 	fclose(file);
 	}
     if (gi->output_tipsy_standard_dpp == 1) {
 	sprintf(FILENAME,"%s.tipsy.dpp.std",gi->outputname);
 	file = fopen(FILENAME,"w");
 	assert(file != NULL);
-	write_tipsy_standard_dpp_halogen(file,gi,bh,bulge,halo);
+	write_tipsy_xdr_dpp_halogen(file,gi,bh,bulge,halo);
 	fclose(file);
 	}
 

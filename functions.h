@@ -2,7 +2,7 @@
 ** functions.h
 */
 
-DOUBLE Ecosmo(const GI (*));
+DOUBLE Ecosmo_halogen(const GI (*));
 DOUBLE integral(DOUBLE (*)(DOUBLE, const SI(*)), DOUBLE, DOUBLE, const SI (*));
 DOUBLE trapez(DOUBLE (*)(DOUBLE, const SI(*)), DOUBLE, DOUBLE, INT, const SI (*));
 DOUBLE integralsigma(DOUBLE, DOUBLE, const GI (*), const SI (*), const SI (*));

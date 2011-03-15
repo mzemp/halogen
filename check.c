@@ -10,7 +10,7 @@
 #include "definitions.h"
 #include "usage.h"
 
-void check_main_parameters_general(const GI *gi) {
+void check_main_parameters_general(GI *gi) {
 
     if (strcmp(gi->outputname,"none") == 0) {
 	fprintf(stderr,"You have not set a name for the output model.\n");
@@ -20,6 +20,10 @@ void check_main_parameters_general(const GI *gi) {
 	fprintf(stderr,"Bad choice of Ngridr (= %d) and Ngriddf (= %d)!\n",gi->Ngridr,gi->Ngriddf);
 	fprintf(stderr,"These numbers have to fulfill the condition (Ngridr-1) mod (Ngriddf-1) == 0.\n");
 	usage();
+	}
+    if (gi->coordinates == 1 && gi->positionsonly == 0) {
+	gi->positionsonly = 1;
+	fprintf(stderr,"You use ellipsoidal coordinates. Only the initialisation of positions is supported so far. Reset positionsonly value to 1.\n");
 	}
     }
 
@@ -50,6 +54,21 @@ void check_main_parameters_system(const SI *si) {
     if (si->sp->M == -1) {	
 	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	fprintf(stderr,"You have not set a value for the mass M.\n");
+	usage();
+	}
+    if (si->sp->rba > 1) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rba > 1.\n");
+	usage();
+	}
+    if (si->sp->rca > 1) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rca > 1.\n");
+	usage();
+	}
+    if (si->sp->rca > si->sp->rba) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rca > rba.\n");
 	usage();
 	}
     if (si->N0 == -1) {

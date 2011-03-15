@@ -4,7 +4,7 @@
 
 BASE    = halogen
 VERSION = 1.1
-EXT     = 64
+EXT     = 
 EXE     = $(BASE)$(EXT)
 
 # Compiler stuff

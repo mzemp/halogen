@@ -82,12 +82,12 @@ void write_griddf_system(FILE *file, const GI *gi, const SI *si) {
 ** Routine for writing tipsy standard format memory efficient
 */
 
-void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
+void write_tipsy_xdr_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
 
     INT i, j, k, Ntotal, Ndark, Nstar;
     TIPSY_HEADER th;
-    DARK_PARTICLE dp;
-    STAR_PARTICLE sp;
+    TIPSY_DARK_PARTICLE dp;
+    TIPSY_STAR_PARTICLE sp;
     PARTICLE *p;
     XDR xdrs;
 
@@ -118,7 +118,7 @@ void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, co
     th.ngas = 0;
     th.ndark = Ndark;
     th.nstar = Nstar;
-    write_tipsy_standard_header(&xdrs,&th);
+    write_tipsy_xdr_header(&xdrs,&th);
     /*
     ** Write out dark matter particles
     */
@@ -130,7 +130,7 @@ void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, co
 	dp.mass = bh->mass;
 	dp.eps = bh->soft;
 	dp.phi = bh->Epot;
-	write_tipsy_standard_dark(&xdrs,&dp);
+	write_tipsy_xdr_dark(&xdrs,&dp);
 	}
     if (gi->do_halo == 1) {
 	for (j = 0; j < (halo->Nshell+2); j++) {
@@ -143,7 +143,7 @@ void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, co
 		dp.mass = p[i].mass;
 		dp.eps = p[i].soft;
 		dp.phi = p[i].Epot;
-		write_tipsy_standard_dark(&xdrs,&dp);
+		write_tipsy_xdr_dark(&xdrs,&dp);
 		}
 	    }
 	}
@@ -160,7 +160,7 @@ void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, co
 		sp.phi = p[i].Epot;
 		sp.metals = 0;
 		sp.tform = 0;
-		write_tipsy_standard_star(&xdrs,&sp);
+		write_tipsy_xdr_star(&xdrs,&sp);
 		}
 	    }
 	}
@@ -171,12 +171,12 @@ void write_tipsy_standard_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, co
 ** Routine for writing tipsy standard format with double precision positions memory efficient
 */
 
-void write_tipsy_standard_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
+void write_tipsy_xdr_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh, const SI *bulge, const SI *halo) {
 
     INT i, j, k, Ntotal, Ndark, Nstar;
     TIPSY_HEADER th;
-    DARK_PARTICLE_DPP dpdpp;
-    STAR_PARTICLE_DPP spdpp;
+    TIPSY_DARK_PARTICLE_DPP dpdpp;
+    TIPSY_STAR_PARTICLE_DPP spdpp;
     PARTICLE *p;
     XDR xdrs;
 
@@ -207,7 +207,7 @@ void write_tipsy_standard_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh
     th.ngas = 0;
     th.ndark = Ndark;
     th.nstar = Nstar;
-    write_tipsy_standard_header(&xdrs,&th);
+    write_tipsy_xdr_header(&xdrs,&th);
     /*
     ** Write out dark matter particles
     */
@@ -219,7 +219,7 @@ void write_tipsy_standard_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh
 	dpdpp.mass = bh->mass;
 	dpdpp.eps = bh->soft;
 	dpdpp.phi = bh->Epot;
-	write_tipsy_standard_dark_dpp(&xdrs,&dpdpp);
+	write_tipsy_xdr_dark_dpp(&xdrs,&dpdpp);
 	}
     if (gi->do_halo == 1) {
 	for (j = 0; j < (halo->Nshell+2); j++) {
@@ -232,7 +232,7 @@ void write_tipsy_standard_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh
 		dpdpp.mass = p[i].mass;
 		dpdpp.eps = p[i].soft;
 		dpdpp.phi = p[i].Epot;
-		write_tipsy_standard_dark_dpp(&xdrs,&dpdpp);
+		write_tipsy_xdr_dark_dpp(&xdrs,&dpdpp);
 		}
 	    }
 	}
@@ -249,7 +249,7 @@ void write_tipsy_standard_dpp_halogen(FILE *fp, const GI *gi, const PARTICLE *bh
 		spdpp.phi = p[i].Epot;
 		spdpp.metals = 0;
 		spdpp.tform = 0;
-		write_tipsy_standard_star_dpp(&xdrs,&spdpp);
+		write_tipsy_xdr_star_dpp(&xdrs,&spdpp);
 		}
 	    }
 	}
@@ -293,7 +293,7 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
 	}
     fprintf(file,"General properties\n\n");
     if (gi->gridr->eqrvcmax[0] < 0) {
-	temp = 2*pow(1000*gi->vcmax/(100*gi->h0*Ecosmo(gi)*gi->rvcmax*VelConvertFac),2);
+	temp = 2*pow(1000*gi->vcmax/(100*gi->h0*Ecosmo_halogen(gi)*gi->rvcmax*VelConvertFac),2);
 	fprintf(file,"cV     = "OFD3"\n",temp);
 	fprintf(file,"vcmax  = "OFD3" LU TU^-1\n",gi->vcmax);
 	fprintf(file,"rvcmax = "OFD3" LU\n\n",gi->rvcmax);
@@ -435,9 +435,13 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
     fprintf(file,"rho0  = "OFD3" MU LU^-3 = "OFD3" Mo LU^-3\n",si->sp->rho0,si->sp->rho0*MU);
     fprintf(file,"cvir  = "OFD3"\n",si->sp->cvir);
     if (si->eqrvcmax[0] < 0) {
-	temp = 2*pow(1000*si->sp->vcmax/(100*gi->h0*Ecosmo(gi)*si->sp->rvcmax*VelConvertFac),2);
+	temp = 2*pow(1000*si->sp->vcmax/(100*gi->h0*Ecosmo_halogen(gi)*si->sp->rvcmax*VelConvertFac),2);
 	fprintf(file,"cV    = "OFD3"\n",temp);
 	fprintf(file,"vcmax = "OFD3" LU TU^-1\n",si->sp->vcmax);
+	}
+    if (gi->coordinates == 1) {
+	fprintf(file,"rba   = "OFD3"\n",si->sp->rba);
+	fprintf(file,"rca   = "OFD3"\n",si->sp->rca);
 	}
     fprintf(file,"\n");
     fprintf(file,"rs      = "OFD3" LU\n",si->sp->rs);

@@ -30,6 +30,7 @@ void initialise_general(GI *gi) {
     gi->output_griddf = 0;
     gi->output_tipsy_standard = 0;
     gi->output_tipsy_standard_dpp = 0;
+    gi->coordinates = 0;
     gi->positionsonly = 0;
     gi->Ngridr = 2001;
     gi->Ngriddf = 101;
@@ -128,6 +129,8 @@ void initialise_system(SI *si) {
     si->sp->rhalf = -1;
     si->sp->rvcmax = -1;
     si->sp->vcmax = -1;
+    si->sp->rba = 1;
+    si->sp->rca = 1;
     /*
     ** Sampling info stuff
     */
@@ -365,7 +368,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
     /* 
     ** Analytic approximation for models without exponential cutoff.
     ** Analytic approximation for models with exponential cutoff
-    ** would neet WhittakerM function. Hence, set Potoutr = 0.
+    ** would need WhittakerM function. Hence, set Potoutr = 0.
     */
     i = gi->Ngridr-1;
     Potoutr = 0;
