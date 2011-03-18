@@ -129,8 +129,16 @@ void initialise_system(SI *si) {
     si->sp->rhalf = -1;
     si->sp->rvcmax = -1;
     si->sp->vcmax = -1;
-    si->sp->rba = 1;
-    si->sp->rca = 1;
+    si->sp->rba_r0 = 1;
+    si->sp->rba_at_r0 = 1;
+    si->sp->rba_slope = 0;
+    si->sp->rba_min = 0;
+    si->sp->rba_max = 1;
+    si->sp->rca_r0 = 1;
+    si->sp->rca_at_r0 = 1;
+    si->sp->rca_slope = 0;
+    si->sp->rca_min = 0;
+    si->sp->rca_max = 1;
     /*
     ** Sampling info stuff
     */

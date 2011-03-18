@@ -440,8 +440,17 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
 	fprintf(file,"vcmax = "OFD3" LU TU^-1\n",si->sp->vcmax);
 	}
     if (gi->coordinates == 1) {
-	fprintf(file,"rba   = "OFD3"\n",si->sp->rba);
-	fprintf(file,"rca   = "OFD3"\n",si->sp->rca);
+	fprintf(file,"\n");
+	fprintf(file,"rba_at_r0 = "OFD3"\n",si->sp->rba_at_r0);
+	fprintf(file,"rba_r0    = "OFD3"\n",si->sp->rba_r0);
+	fprintf(file,"rba_slope = "OFD3"\n",si->sp->rba_slope);
+	fprintf(file,"rba_min   = "OFD3"\n",si->sp->rba_min);
+	fprintf(file,"rba_max   = "OFD3"\n",si->sp->rba_max);
+	fprintf(file,"rca_at_r0 = "OFD3"\n",si->sp->rca_at_r0);
+	fprintf(file,"rca_r0    = "OFD3"\n",si->sp->rca_r0);
+	fprintf(file,"rca_slope = "OFD3"\n",si->sp->rca_slope);
+	fprintf(file,"rca_min   = "OFD3"\n",si->sp->rca_min);
+	fprintf(file,"rca_max   = "OFD3"\n",si->sp->rca_max);
 	}
     fprintf(file,"\n");
     fprintf(file,"rs      = "OFD3" LU\n",si->sp->rs);

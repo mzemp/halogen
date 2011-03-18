@@ -91,8 +91,16 @@ typedef struct systemparameters {
     DOUBLE rhalf;
     DOUBLE rvcmax;
     DOUBLE vcmax;
-    DOUBLE rba;
-    DOUBLE rca;
+    DOUBLE rba_r0;
+    DOUBLE rba_at_r0;
+    DOUBLE rba_slope;
+    DOUBLE rba_min;
+    DOUBLE rba_max;
+    DOUBLE rca_r0;
+    DOUBLE rca_at_r0;
+    DOUBLE rca_slope;
+    DOUBLE rca_min;
+    DOUBLE rca_max;
     } SP;
     
 typedef struct particle {

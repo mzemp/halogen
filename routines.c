@@ -234,6 +234,17 @@ void set_remaining_parameters(const GI *gi, SI *si) {
 ** Routine for setting position of particles
 */
 
+double fratio(double r, double r0, double ratio_r0, double slope, double ratio_min, double ratio_max) {
+
+    double ratio;
+
+    ratio = slope*(log10(r)-log10(r0)) + ratio_r0;
+    if (ratio < ratio_min) ratio = ratio_min;
+    if (ratio > ratio_max) ratio = ratio_max;
+
+    return ratio;
+    }
+
 void set_positions(const GI *gi, SI *si) {
     
     INT i, j, N;
@@ -242,9 +253,6 @@ void set_positions(const GI *gi, SI *si) {
     DOUBLE rba, rca;
     DOUBLE costheta, sintheta, phi, cosphi, sinphi;
     PARTICLE *p;
-
-    rba = si->sp->rba;
-    rca = si->sp->rca;
 
     for (j = 0; j < (si->Nshell+2); j++) {
 	N = si->shell[j].N;
@@ -277,6 +285,9 @@ void set_positions(const GI *gi, SI *si) {
 		** by R. Y. Rubinstein & D. P. Kroese
 		** page 70, chapter 2.5.5
 		*/
+		rba = fratio(rrand,si->sp->rba_r0,si->sp->rba_at_r0,si->sp->rba_slope,si->sp->rba_min,si->sp->rba_max);
+		rca = fratio(rrand,si->sp->rca_r0,si->sp->rca_at_r0,si->sp->rca_slope,si->sp->rca_min,si->sp->rca_max);
+		assert(rba >= rca);
 		p[i].r[0] = rrand;
 		p[i].r[1] = rrand*sintheta*cosphi;
 		p[i].r[2] = rrand*rba*sintheta*sinphi;

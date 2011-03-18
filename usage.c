@@ -32,8 +32,16 @@ void usage() {
     fprintf(stderr,"-cvir <value>         : virial concentration parameter\n");
     fprintf(stderr,"-N0 <value>           : number of particles within rsi\n");
     fprintf(stderr,"-soft0 <value> <unit> : softening of particles within rsi, <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
-    fprintf(stderr,"-rba <value>          : axis ratio b/a (default: 1)\n");
-    fprintf(stderr,"-rca <value>          : axis ratio c/a (default: 1)\n");
+    fprintf(stderr,"-rba_r0 <value>       : r0 for axis ratio b/a [LU] (default: 1 LU)\n");
+    fprintf(stderr,"-rba_at_r0 <value>    : axis ratio b/a at r0 (default: 1)\n");
+    fprintf(stderr,"-rba_slope <value>    : slope for axis ratio b/a (default: 0)\n");
+    fprintf(stderr,"-rba_min <value>      : minimum value for axis ratio b/a (default: 0)\n");
+    fprintf(stderr,"-rba_max <value>      : maximum value for axis ratio b/a (default: 1)\n");
+    fprintf(stderr,"-rca_r0 <value>       : r0 for axis ratio c/a [LU] (default: 1 LU)\n");
+    fprintf(stderr,"-rca_at_r0 <value>    : axis ratio c/a at r0 (default: 1)\n");
+    fprintf(stderr,"-rca_slope <value>    : slope for axis ratio c/a (default: 0)\n");
+    fprintf(stderr,"-rca_min <value>      : minimum value for axis ratio c/a (default: 0)\n");
+    fprintf(stderr,"-rca_max <value>      : maximum value for axis ratio c/a (default: 1)\n");
     fprintf(stderr,"-rsi <value> <unit>   : inner shell radius (default: rcutoff / router), <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
     fprintf(stderr,"-rso <value> <unit>   : outer shell radius (default: rcutoff / router), <unit>: LU, rs, rvir or rcutoff (optional - default: LU)\n");
     fprintf(stderr,"-Nshell <value>       : number of shells between rsi and rso (default: 0)\n");

@@ -148,16 +148,64 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 		    }
 		}
 	    }
-	else if (strcmp(argv[i],"-rba") == 0) {
+	else if (strcmp(argv[i],"-rba_at_r0") == 0) {
 	    i++;
 	    if (i >= argc) usage();
-	    si->sp->rba = atof(argv[i]);
+	    si->sp->rba_at_r0 = atof(argv[i]);
 	    i++;
 	    }
-	else if (strcmp(argv[i],"-rca") == 0) {
+	else if (strcmp(argv[i],"-rba_r0") == 0) {
 	    i++;
 	    if (i >= argc) usage();
-	    si->sp->rca = atof(argv[i]);
+	    si->sp->rba_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rba_slope") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rba_slope = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rba_min") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rba_min = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rba_max") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rba_max = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rca_at_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rca_at_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rca_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rca_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rca_slope") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rca_slope = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rca_min") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rca_min = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-rca_max") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->rca_max = atof(argv[i]);
 	    i++;
 	    }
 	/*

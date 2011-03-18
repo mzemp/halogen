@@ -56,17 +56,37 @@ void check_main_parameters_system(const SI *si) {
 	fprintf(stderr,"You have not set a value for the mass M.\n");
 	usage();
 	}
-    if (si->sp->rba > 1) {
+    if (si->sp->rba_at_r0 > 1) {
 	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	fprintf(stderr,"You have set rba > 1.\n");
 	usage();
 	}
-    if (si->sp->rca > 1) {
+    if (si->sp->rba_max > 1) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rba_max > 1.\n");
+	usage();
+	}
+    if (si->sp->rba_min < 0) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rba_min < 0.\n");
+	usage();
+	}
+    if (si->sp->rca_at_r0 > 1) {
 	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	fprintf(stderr,"You have set rca > 1.\n");
 	usage();
 	}
-    if (si->sp->rca > si->sp->rba) {
+    if (si->sp->rca_max > 1) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rca_max > 1.\n");
+	usage();
+	}
+    if (si->sp->rca_min < 0) {
+	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
+	fprintf(stderr,"You have set rca_min < 0.\n");
+	usage();
+	}
+    if (si->sp->rca_at_r0 > si->sp->rba_at_r0) {
 	fprintf(stderr,"Missing or bad parameter for the %s.\n",si->systemname);
 	fprintf(stderr,"You have set rca > rba.\n");
 	usage();
