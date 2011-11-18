@@ -234,15 +234,15 @@ void set_remaining_parameters(const GI *gi, SI *si) {
 ** Routine for setting position of particles
 */
 
-double fratio(double r, double r0, double ratio_r0, double slope, double ratio_min, double ratio_max) {
+double fx(double r, double r0, double x_r0, double slope, double x_min, double x_max) {
 
-    double ratio;
+    double x;
 
-    ratio = slope*(log10(r)-log10(r0)) + ratio_r0;
-    if (ratio < ratio_min) ratio = ratio_min;
-    if (ratio > ratio_max) ratio = ratio_max;
+    x = slope*(log10(r)-log10(r0)) + x_r0;
+    if (x < x_min) x = x_min;
+    if (x > x_max) x = x_max;
 
-    return ratio;
+    return x;
     }
 
 void set_positions(const GI *gi, SI *si) {
@@ -250,8 +250,11 @@ void set_positions(const GI *gi, SI *si) {
     INT i, j, N;
     DOUBLE Mrand, logMrand, Mmin, Mmax;
     DOUBLE rrand, logrrand = 0;
+    DOUBLE x, y, z;
     DOUBLE rba, rca;
+    DOUBLE alpha, beta, gamma;
     DOUBLE costheta, sintheta, phi, cosphi, sinphi;
+    DOUBLE cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma;
     PARTICLE *p;
 
     for (j = 0; j < (si->Nshell+2); j++) {
@@ -285,13 +288,34 @@ void set_positions(const GI *gi, SI *si) {
 		** by R. Y. Rubinstein & D. P. Kroese
 		** page 70, chapter 2.5.5
 		*/
-		rba = fratio(rrand,si->sp->rba_r0,si->sp->rba_at_r0,si->sp->rba_slope,si->sp->rba_min,si->sp->rba_max);
-		rca = fratio(rrand,si->sp->rca_r0,si->sp->rca_at_r0,si->sp->rca_slope,si->sp->rca_min,si->sp->rca_max);
+		rba = fx(rrand,si->sp->rba_r0,si->sp->rba_at_r0,si->sp->rba_slope,si->sp->rba_min,si->sp->rba_max);
+		rca = fx(rrand,si->sp->rca_r0,si->sp->rca_at_r0,si->sp->rca_slope,si->sp->rca_min,si->sp->rca_max);
 		assert(rba >= rca);
+		x = rrand*sintheta*cosphi;
+		y = rrand*rba*sintheta*sinphi;
+		z = rrand*rca*costheta;
+		/*
+		** Now make a z-x'-z'' rotation with alpha, beta and gamma as Euler angles
+		*/
+		alpha = fx(rrand,si->sp->alpha_r0,si->sp->alpha_at_r0,si->sp->alpha_slope,si->sp->alpha_min,si->sp->alpha_max);
+		beta = fx(rrand,si->sp->beta_r0,si->sp->beta_at_r0,si->sp->beta_slope,si->sp->beta_min,si->sp->beta_max);
+		gamma = fx(rrand,si->sp->gamma_r0,si->sp->gamma_at_r0,si->sp->gamma_slope,si->sp->gamma_min,si->sp->gamma_max);
+		cosalpha = cos(alpha*2*M_PI);
+		sinalpha = sin(alpha*2*M_PI);
+		cosbeta  = cos(beta*2*M_PI);
+		sinbeta  = sin(beta*2*M_PI);
+		cosgamma = cos(gamma*2*M_PI);
+		singamma = sin(gamma*2*M_PI);
 		p[i].r[0] = rrand;
-		p[i].r[1] = rrand*sintheta*cosphi;
-		p[i].r[2] = rrand*rba*sintheta*sinphi;
-		p[i].r[3] = rrand*rca*costheta;
+		p[i].r[1] = (cosalpha*cosgamma-sinalpha*cosbeta*singamma)*x;
+		p[i].r[1] += (-cosalpha*cosbeta*singamma-sinalpha*cosgamma)*y;
+		p[i].r[1] += sinbeta*singamma*z;
+		p[i].r[2] = (cosalpha*singamma+sinalpha*cosbeta*cosgamma)*x;
+		p[i].r[2] += (cosalpha*cosbeta*cosgamma-sinalpha*singamma)*y;
+		p[i].r[2] += -sinbeta*cosgamma*z;
+		p[i].r[3] = sinalpha*sinbeta*x;
+		p[i].r[3] += cosalpha*sinbeta*y;
+		p[i].r[3] += cosbeta*z;
 		}
 	    }
 	}

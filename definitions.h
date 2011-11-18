@@ -101,6 +101,21 @@ typedef struct systemparameters {
     DOUBLE rca_slope;
     DOUBLE rca_min;
     DOUBLE rca_max;
+    DOUBLE alpha_r0;
+    DOUBLE alpha_at_r0;
+    DOUBLE alpha_slope;
+    DOUBLE alpha_min;
+    DOUBLE alpha_max;
+    DOUBLE beta_r0;
+    DOUBLE beta_at_r0;
+    DOUBLE beta_slope;
+    DOUBLE beta_min;
+    DOUBLE beta_max;
+    DOUBLE gamma_r0;
+    DOUBLE gamma_at_r0;
+    DOUBLE gamma_slope;
+    DOUBLE gamma_min;
+    DOUBLE gamma_max;
     } SP;
     
 typedef struct particle {

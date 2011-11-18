@@ -441,16 +441,32 @@ void write_output_system(FILE *file, const GI *gi, const SI *si) {
 	}
     if (gi->coordinates == 1) {
 	fprintf(file,"\n");
-	fprintf(file,"rba_at_r0 = "OFD3"\n",si->sp->rba_at_r0);
-	fprintf(file,"rba_r0    = "OFD3"\n",si->sp->rba_r0);
-	fprintf(file,"rba_slope = "OFD3"\n",si->sp->rba_slope);
-	fprintf(file,"rba_min   = "OFD3"\n",si->sp->rba_min);
-	fprintf(file,"rba_max   = "OFD3"\n",si->sp->rba_max);
-	fprintf(file,"rca_at_r0 = "OFD3"\n",si->sp->rca_at_r0);
-	fprintf(file,"rca_r0    = "OFD3"\n",si->sp->rca_r0);
-	fprintf(file,"rca_slope = "OFD3"\n",si->sp->rca_slope);
-	fprintf(file,"rca_min   = "OFD3"\n",si->sp->rca_min);
-	fprintf(file,"rca_max   = "OFD3"\n",si->sp->rca_max);
+	fprintf(file,"rba_at_r0   = "OFD3"\n",si->sp->rba_at_r0);
+	fprintf(file,"rba_r0      = "OFD3" LU\n",si->sp->rba_r0);
+	fprintf(file,"rba_slope   = "OFD3" 1/dex\n",si->sp->rba_slope);
+	fprintf(file,"rba_min     = "OFD3"\n",si->sp->rba_min);
+	fprintf(file,"rba_max     = "OFD3"\n",si->sp->rba_max);
+	fprintf(file,"rca_at_r0   = "OFD3"\n",si->sp->rca_at_r0);
+	fprintf(file,"rca_r0      = "OFD3" LU\n",si->sp->rca_r0);
+	fprintf(file,"rca_slope   = "OFD3" 1/dex\n",si->sp->rca_slope);
+	fprintf(file,"rca_min     = "OFD3"\n",si->sp->rca_min);
+	fprintf(file,"rca_max     = "OFD3"\n",si->sp->rca_max);
+	fprintf(file,"\n");
+	fprintf(file,"alpha_at_r0 = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->alpha_at_r0,si->sp->alpha_at_r0*2*M_PI);
+	fprintf(file,"alpha_r0    = "OFD3" LU\n",si->sp->alpha_r0);
+	fprintf(file,"alpha_slope = "OFD3" 2*pi rad/dex = "OFD3" rad/dex\n",si->sp->alpha_slope,si->sp->alpha_slope*2*M_PI);
+	fprintf(file,"alpha_min   = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->alpha_min,si->sp->alpha_min*2*M_PI);
+	fprintf(file,"alpha_max   = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->alpha_max,si->sp->alpha_max*2*M_PI);
+	fprintf(file,"beta_at_r0  = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->beta_at_r0,si->sp->beta_at_r0*2*M_PI);
+	fprintf(file,"beta_r0     = "OFD3" LU\n",si->sp->beta_r0);
+	fprintf(file,"beta_slope  = "OFD3" 2*pi rad/dex = "OFD3" rad/dex\n",si->sp->beta_slope,si->sp->beta_slope*2*M_PI);
+	fprintf(file,"beta_min    = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->beta_min,si->sp->beta_min*2*M_PI);
+	fprintf(file,"beta_max    = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->beta_max,si->sp->beta_max*2*M_PI);
+	fprintf(file,"gamma_at_r0 = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->gamma_at_r0,si->sp->gamma_at_r0*2*M_PI);
+	fprintf(file,"gamma_r0    = "OFD3" LU\n",si->sp->gamma_r0);
+	fprintf(file,"gamma_slope = "OFD3" 2*pi rad/dex = "OFD3" rad/dex\n",si->sp->gamma_slope,si->sp->gamma_slope*2*M_PI);
+	fprintf(file,"gamma_min   = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->gamma_min,si->sp->gamma_min*2*M_PI);
+	fprintf(file,"gamma_max   = "OFD3" 2*pi rad = "OFD3" rad\n",si->sp->gamma_max,si->sp->gamma_max*2*M_PI);
 	}
     fprintf(file,"\n");
     fprintf(file,"rs      = "OFD3" LU\n",si->sp->rs);

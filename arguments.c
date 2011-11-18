@@ -208,6 +208,96 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	    si->sp->rca_max = atof(argv[i]);
 	    i++;
 	    }
+	else if (strcmp(argv[i],"-alpha_at_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->alpha_at_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-alpha_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->alpha_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-alpha_slope") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->alpha_slope = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-alpha_min") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->alpha_min = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-alpha_max") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->alpha_max = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-beta_at_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->beta_at_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-beta_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->beta_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-beta_slope") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->beta_slope = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-beta_min") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->beta_min = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-beta_max") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->beta_max = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-gamma_at_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->gamma_at_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-gamma_r0") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->gamma_r0 = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-gamma_slope") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->gamma_slope = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-gamma_min") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->gamma_min = atof(argv[i]);
+	    i++;
+	    }
+	else if (strcmp(argv[i],"-gamma_max") == 0) {
+	    i++;
+	    if (i >= argc) usage();
+	    si->sp->gamma_max = atof(argv[i]);
+	    i++;
+	    }
 	/*
 	** Multi-mass parameters
 	*/

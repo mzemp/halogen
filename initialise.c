@@ -139,6 +139,21 @@ void initialise_system(SI *si) {
     si->sp->rca_slope = 0;
     si->sp->rca_min = 0;
     si->sp->rca_max = 1;
+    si->sp->alpha_r0 = 1;
+    si->sp->alpha_at_r0 = 0;
+    si->sp->alpha_slope = 0;
+    si->sp->alpha_min = 0;
+    si->sp->alpha_max = 1;
+    si->sp->beta_r0 = 1;
+    si->sp->beta_at_r0 = 0;
+    si->sp->beta_slope = 0;
+    si->sp->beta_min = 0;
+    si->sp->beta_max = 1;
+    si->sp->gamma_r0 = 1;
+    si->sp->gamma_at_r0 = 0;
+    si->sp->gamma_slope = 0;
+    si->sp->gamma_min = 0;
+    si->sp->gamma_max = 1;
     /*
     ** Sampling info stuff
     */
