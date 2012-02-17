@@ -26,6 +26,7 @@ void write_gridr_total(FILE *file, const GI *gi) {
     INT i;
     GRIDR *gridr;
 
+    fprintf(file,"#r/1 ln(r)/2 rho/3 ln(rho)/4 rhoenc/5 ln(rhoenc)/6 Menc/7 ln(Menc)/8 sigma/9 ln(sigma)/10 Pot/11 ln(|Pot|)/12\n");
     gridr = gi->gridr;
     for (i = 0; i < gi->Ngridr; i++) {
 	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",
@@ -43,6 +44,7 @@ void write_gridr_system(FILE *file, const GI *gi, const SI *si) {
     INT i;
     GRIDR *gridr;
 
+    fprintf(file,"#r/1 ln(r)/2 rho/3 ln(rho)/4 rhoenc/5 ln(rhoenc)/6 Menc/7 ln(Menc)/8\n");
     gridr = gi->gridr;
     if (strcmp(si->systemname,"bulge") == 0) {
 	for (i = 0; i < gi->Ngridr; i++) {
@@ -69,6 +71,7 @@ void write_griddf_system(FILE *file, const GI *gi, const SI *si) {
     INT i;
     GRIDDF *griddf;
 
+    fprintf(file,"#r/1 ln(r)/2 E/3 ln(|E|)/4 f(E)/5 ln(f(E))/6\n");
     griddf = si->griddf;
     for (i = 0; i < gi->Ngriddf; i++) {
 	fprintf(file,OFD2" "OFD2" "OFD2" "OFD2" "OFD2" "OFD2"\n",

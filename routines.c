@@ -333,11 +333,9 @@ void set_velocities(const GI *gi, SI *si) {
     DOUBLE Compmax, Compsplit, Comprand;
     DOUBLE vesc, vsplit, vrand;
     DOUBLE costheta, sintheta, phi, cosphi, sinphi;
-    GRIDR *gridr;
     GRIDDF *griddf;
     PARTICLE *p;
 
-    gridr = gi->gridr;
     griddf = si->griddf;
     for (j = 0; j < (si->Nshell+2); j++) {
 	N = si->shell[j].N;
@@ -449,10 +447,8 @@ void set_attributes(const GI *gi, SI *si) {
     INT i, j, N;
     DOUBLE Ekin, Epot, Etot;
     DOUBLE mass, soft;
-    GRIDR *gridr;
     PARTICLE *p;
     
-    gridr = gi->gridr;
     for (j = 0; j < (si->Nshell+2); j++) {
 	N = si->shell[j].N;
 	p = si->shell[j].p;

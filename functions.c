@@ -119,9 +119,7 @@ DOUBLE trapezsigma(DOUBLE a, DOUBLE b, INT n, const GI *gi, const SI *bulge, con
     INT i, j, N[n+1];
     DOUBLE Valuelower, Valueupper;
     DOUBLE x, deltax, sum, sumN;
-    GRIDR *gridr;
 
-    gridr = gi->gridr;
     if (n == 0) {
 	Valuelower = Menc_total(a,gi)*rho_total(a,gi)/(a*a);
 	Valueupper = Menc_total(b,gi)*rho_total(b,gi)/(b*b);
@@ -401,9 +399,7 @@ DOUBLE d2rhodPhi2(DOUBLE r, const GI *gi, const SI *si) {
 
     DOUBLE Mencr;
     DOUBLE fac1, fac2;
-    SP *sp;
 
-    sp = si->sp;
     Mencr = Menc_total(r,gi);
     fac1 = r*r/(G*G*Mencr*Mencr);
     fac2 = 2*r-4*M_PI*r*r*r*r*rho(r,si)/Mencr;
@@ -508,10 +504,9 @@ DOUBLE integrandPot(DOUBLE r, const SI *si) {
 
 INT split(INT i, DOUBLE rperi, const SI *si) {
 
-    DOUBLE massfac, router, rinner, rsi, rmor;
+    DOUBLE massfac, router, rsi, rmor;
 
     massfac = si->shell[i].massfac;
-    rinner = si->shell[i].rinner;
     router = si->shell[i].router;
     rsi = si->rsi;
     rmor = si->rmor;

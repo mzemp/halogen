@@ -425,7 +425,7 @@ void initialise_gridr(GI *gi, PARTICLE *bh, SI *bulge, SI *halo) {
 	    }
 	sigmaintoutr += integralsigma(gridr->r[i],gridr->r[i+1],gi,bulge,halo);
 	Potr = (-1)*G*(gridr->Menc[i]/gridr->r[i]+Potoutr);
-	sigmar = sqrt(G*sigmaintoutr/rho_total(gridr->r[i],gi));
+	sigmar = sqrt(G*sigmaintoutr/rho_total(gridr->r[i],gi)); /* B&T 2008: 4.216 */
 	gridr->Pot[i] = Potr;
 	gridr->logPot[i] = log(-Potr);
 	gridr->Potoutr[i] = Potoutr;
