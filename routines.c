@@ -343,7 +343,14 @@ void set_velocities(const GI *gi, SI *si) {
 	for (i = 0; i < N; i++) {
 	    r = p[i].r[0];
 	    Potr = Pot(r,gi);
+	    /*
+	    ** The escape speed is the maximum speed that a particle can have.
+	    */
 	    vesc = vescape(r,gi);
+	    /*
+	    ** The distribution function is monotonically decreasing as a function of energy E
+	    ** => the maximum is reached when E = Pot(r) (i.e. v = 0).
+	    */
 	    fEmax = f2(r,gi,si);
 	    if (fEmax == 0) {
 		fprintf(stderr,"Got zero value for f_max(E)!\n");
@@ -367,6 +374,11 @@ void set_velocities(const GI *gi, SI *si) {
 	    Esplit = griddf->E[isplit];
 	    vsplit = sqrt(2*(Esplit-Potr));
 	    fEsplit = griddf->fE[isplit];
+	    /*
+	    ** By assuming f to be piecewise constant, we can construct a comparison function: f*v^3/3.
+	    ** Compsplit is the cumulative integral of the comparison function between 0 and vsplit (< vesc).
+	    ** Compmax is the cumulative integral of the comparison function up to vesc.
+	    */
 	    Compsplit = fEmax*vsplit*vsplit*vsplit/3.0;
 	    Compmax = Compsplit + (fEsplit/3.0)*(vesc*vesc*vesc-vsplit*vsplit*vsplit);
 	    vrand = 0;
