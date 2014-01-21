@@ -9,16 +9,16 @@ EXE     = $(BASE)$(EXT)
 
 # Compiler stuff
 
-CC	= gcc
+CC		= gcc
 CFLAGS	= -O3 -Wall -I$(LOCAL_LIB_PATH)/include
 LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 
 # Object definition
 
-OBJ	= $(BASE).o functions.o routines.o \
-	arguments.o allocate.o check.o initialise.o usage.o write.o
+OBJ		= $(BASE).o functions.o routines.o \
+		arguments.o allocate.o check.o initialise.o usage.o write.o
 INCL	= definitions.h functions.h routines.h \
-	arguments.h allocate.h check.h initialise.h usage.h write.h
+		arguments.h allocate.h check.h initialise.h usage.h write.h
 
 # Rules
 
@@ -42,5 +42,3 @@ check.o: $(INCL)
 initialise.o: $(INCL)
 usage.o: $(INCL)
 write.o: $(INCL)
-
-
