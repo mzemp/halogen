@@ -501,9 +501,11 @@ void refine(const GI *gi, SI *si) {
 	DOUBLE etheta1, etheta2, etheta3;
 	DOUBLE v1, v2, v3;
 	DOUBLE vrad, vtan;
-	DOUBLE rootfunc[gi->Ngridr];
+	DOUBLE *rootfunc;
 	GRIDR *gridr;
 	PARTICLE *p;
+
+	rootfunc = malloc(gi->Ngridr*sizeof(DOUBLE));
 
 	gridr = gi->gridr;
 	if((si->DRMmax > 1) && (si->rmor > 0)) {

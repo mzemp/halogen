@@ -59,8 +59,11 @@ DOUBLE integral(DOUBLE (*function)(DOUBLE,const SI (*)), DOUBLE a, DOUBLE b, con
 
 DOUBLE trapez(DOUBLE (*function)(DOUBLE, const SI(*)), DOUBLE a, DOUBLE b, INT n, const SI *si) {
 
-	INT i, j, N[n+1];
+	INT i, j;
+	INT *N;
 	DOUBLE deltax, sum, sumN;
+
+	N = malloc((n+1)*sizeof(INT));
 
 	if (n == 0) {
 		return (0.5*(b-a)*((*function)(a,si)+(*function)(b,si)));
@@ -116,9 +119,12 @@ DOUBLE integralsigma(DOUBLE a, DOUBLE b, const GI *gi, const SI *bulge, const SI
 
 DOUBLE trapezsigma(DOUBLE a, DOUBLE b, INT n, const GI *gi, const SI *bulge, const SI *halo) {
 
-	INT i, j, N[n+1];
+	INT i, j;
+	INT *N;
 	DOUBLE Valuelower, Valueupper;
 	DOUBLE x, deltax, sum, sumN;
+
+	N = malloc((n+1)*sizeof(INT));
 
 	if (n == 0) {
 		Valuelower = Menc_total(a,gi)*rho_total(a,gi)/(a*a);
@@ -185,12 +191,15 @@ DOUBLE integraldf(INT j, const GI *gi, const SI *si) {
 
 DOUBLE trapezdf(INT k, INT n, const GI *gi, const SI *si) {
 
-	INT i, j, N[n+1];
+	INT i, j;
+	INT *N;
 	DOUBLE deltax, sum, sumN;
 	DOUBLE x, xlower, xupper;
 	DOUBLE r, rlower, rupper;
 	DOUBLE Phi, Philower, Phiupper;
 	GRIDR *gridr;
+
+	N = malloc((n+1)*sizeof(INT));
 
 	gridr = gi->gridr;
 	Philower = gridr->Pot[gi->Ngridr-1];
