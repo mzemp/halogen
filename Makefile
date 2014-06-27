@@ -4,7 +4,7 @@ NAME	= halogen
 VERSION	= $(shell git describe --tags --long)
 
 CC		= gcc
-CFLAGS	= -O3 -mcmodel=medium -Wall -pedantic -I$(LOCAL_LIB_PATH)/include
+CFLAGS	= -O3 -mcmodel=medium -Wall -pedantic -I$(LOCAL_LIB_PATH)/include -DVERSION=\"${VERSION}\"
 LIBS	= -L$(LOCAL_LIB_PATH)/lib -lm -liof
 
 SRCS	= $(wildcard *.c)

@@ -2,7 +2,6 @@
 ** definitions.h
 */
 
-#define VERSION "1.1"
 #define NINTMIN 5
 #define NINTMAX 28
 #define NINTMINSIGMA 5

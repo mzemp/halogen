@@ -24,6 +24,19 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 	i = 1;
 	while (i < argc) {
 		/*
+		** Help
+		*/
+		if ((strcmp(argv[i],"-h") == 0) || (strcmp(argv[i],"-help") == 0)) {
+			usage();
+			}
+		/*
+		** Version
+		*/
+		if (strcmp(argv[i],"-version") == 0) {
+			fprintf(stderr,"HALOGEN (%s) by Marcel Zemp\n",VERSION);
+			exit(1);
+			}
+		/*
 		** Model parameters
 		*/
 		if (strcmp(argv[i],"-bulge") == 0) {
@@ -607,11 +620,8 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 			i++;
 			}
 		/*
-		** Help or failure
+		** Failure
 		*/
-		else if ((strcmp(argv[i],"-h") == 0) || (strcmp(argv[i],"-help") == 0)) {
-			usage();
-			}
 		else {
 			usage();
 			}

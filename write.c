@@ -268,7 +268,7 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
 	INT i;
 	DOUBLE temp;
 
-	fprintf(file,"HALOGEN "VERSION" by Marcel Zemp\n\n");
+	fprintf(file,"HALOGEN (%s) by Marcel Zemp\n\n",VERSION);
 	fprintf(file,"This version works in units where [G] = 1 LU^3 TU^-2 MU^-1.\n");
 	fprintf(file,"LU = kpc / TU = Gyr / VU = kpc Gyr^-1 / MU = %e Mo\n\n",MU);
 	fprintf(file,"Command line\n\n");
