@@ -595,12 +595,6 @@ void process_arguments(int argc, char **argv, GI *gi, PARTICLE *bh, SI *bulge, S
 		/*
 		** Special parameters
 		*/
-		else if (strcmp(argv[i],"-randomseed") == 0) {
-			i++;
-			if (i >= argc) usage();
-			gi->randomseed = atof(argv[i]);
-			i++;
-			}
 		else if (strcmp(argv[i],"-f_rinner") == 0) {
 			i++;
 			if (i >= argc) usage();

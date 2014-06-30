@@ -406,12 +406,13 @@ void write_general_output(FILE *file, int argc, char **argv, GI *gi, const PARTI
 	fprintf(file,"Nfemm       = "OFD3" TU^-1\n",gi->samp->Nfemm);
 	fprintf(file,"sth         = "OFD3"\n",gi->samp->Nfesm/gi->samp->Nfemm);
 	fprintf(file,"\n");
-	fprintf(file,"Random seed = "OFD3"\n",gi->randomseed);
 	fprintf(file,"Ngridr      = "OFI1"\n",gi->Ngridr);
 	fprintf(file,"Ngriddf     = "OFI1"\n",gi->Ngriddf);
 	fprintf(file,"rinner      = "OFD3" LU\n",gi->rinner);
-	fprintf(file,"router      = "OFD3" LU\n\n",gi->router);
-	fprintf(file,"Times for individual steps\n\n");
+	fprintf(file,"router      = "OFD3" LU\n",gi->router);
+	fprintf(file,"\n");
+	fprintf(file,"Times for individual steps\n");
+	fprintf(file,"\n");
 	fprintf(file,"Calculation of halo properties and initialisation of grid in r: "OFD1" seconds.\n",gi->t[1]-gi->t[0]);
 	fprintf(file,"Initialisation of grid for distribution function: "OFD1" seconds.\n",gi->t[2]-gi->t[1]);
 	fprintf(file,"Initialisation of shells: "OFD1" seconds.\n",gi->t[3]-gi->t[2]);

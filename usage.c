@@ -88,7 +88,6 @@ void usage() {
 	fprintf(stderr,"-spherical            : set this flag for initialising positions in spherical coordinates (default)\n");
 	fprintf(stderr,"-ellipsoidal          : set this flag for initialising positions in ellipsoidal coordinates\n");
 	fprintf(stderr,"-po                   : set this flag for initialising positions only (velocities are 0)\n");
-	fprintf(stderr,"-randomseed <value>   : value for a random seed (default: random value)\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"Other options:\n");
 	fprintf(stderr,"\n");
