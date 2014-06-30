@@ -1,0 +1,48 @@
+DESCRIPTION
+
+HALOGEN is a tool to generate spherically symmetric initial conditions for N-body simulations. A large family of radial density profiles is supported. The initial conditions are sampled from the full distribution function. The details of the method are given in Zemp et al., 2008, Monthly Notices of the Royal Astronomical Society, Volume 386, Issue 3, pp. 1543-1556 (ADS: http://adsabs.harvard.edu/abs/2008MNRAS.386.1543Z).
+
+
+AUTHOR
+
+Marcel Zemp <marcelzemp@gmail.com>
+
+
+OFFICIAL SOURCE
+
+GitHub: https://github.com/mzemp/halogen
+
+
+DEPENDENCIES
+
+math library (should already be installed by default)
+iof library (https://github.com/mzemp/iof)
+
+
+COMPILATION
+
+First, clone or download the code from GitHub. In order to compile the code, just type make in the halogen code directory:
+
+$> make
+
+This will generate an executable file called halogen.
+
+In order to clean up the code, type:
+
+$> make clean
+
+
+HELP & OPTIONS
+
+You can find help and a list of all command line options by calling:
+
+$> halogen -h
+
+
+EXAMPLE
+
+Below is a minimal working example that generates a Milky Way sized NFW halo:
+
+$> halogen -halo -a 1 -b 3 -c 1 -M 1e12 -rs 20 -rcutoff 300 -N0 1e5 -soft0 1 -ots -name nfw
+
+As a result, halogen will output two files: nfw.tipsy.std and nfw.info.dat. The nfw.tipsy.std contains the sampled halo in Tipsy standard (XDR) format and can be visualised with Tipsy (https://github.com/N-BodyShop/tipsy). The nfw.info.dat gives some more detailed output about the sampled structure.
