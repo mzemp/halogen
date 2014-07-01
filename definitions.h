@@ -2,6 +2,8 @@
 ** definitions.h
 */
 
+#include <iof.h>
+
 #define NINTMIN 5
 #define NINTMAX 28
 #define NINTMINSIGMA 5
@@ -14,9 +16,9 @@
 #define TOLLININT 1e-10
 #define DFFAILUREMAX 1e20
 #define SBI 1e100
-#define MU 2.2229621e5
+#define MU 1.0/PhysicalConstants.G_Newton_cosmology
 #define G 1
-#define VelConvertFac 1.0227122
+#define VelConvertFac ConversionFactors.km_per_s_2_kpc_per_Gyr
 #define STRINGSIZE 50
 #define INT int
 #define FLOAT float
