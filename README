@@ -25,13 +25,13 @@ First, make sure you have installed the iof library. The Makefile assumes that y
 
 export LOCAL_LIB_PATH=~/libraries
 
-Then, clone or download the code from GitHub. In order to compile the code, just type make in the halogen code directory:
+Then clone or download the code from GitHub. In order to compile the code just type make in the halogen code directory:
 
 $> make
 
 This will generate an executable file called halogen.
 
-In order to clean up the code, type:
+In order to clean up the code type:
 
 $> make clean
 
