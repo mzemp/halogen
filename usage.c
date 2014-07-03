@@ -91,8 +91,8 @@ void usage() {
 	fprintf(stderr,"\n");
 	fprintf(stderr,"Other options:\n");
 	fprintf(stderr,"\n");
-	fprintf(stderr,"-h or -help           : help output\n");
-	fprintf(stderr,"-version              : program version output\n");
+	fprintf(stderr,"-h or -help           : display this help and exit\n");
+	fprintf(stderr,"-version              : display version information and exit\n");
 	fprintf(stderr,"\n");
 	exit(1);
 	}
