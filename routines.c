@@ -326,7 +326,7 @@ void set_positions(const GI *gi, SI *si) {
 */
 
 void set_velocities(const GI *gi, SI *si) {
-	
+
 	INT i, j, N, isplit;
 	DOUBLE r, Potr, Esplit, Erand;
 	DOUBLE fEmax, fEsplit, fErand, fEcheck;
@@ -435,7 +435,7 @@ void set_velocities(const GI *gi, SI *si) {
 */
 
 void set_velocities_zero(SI *si) {
-	
+
 	INT i, j, k, N;
 	PARTICLE *p;
 

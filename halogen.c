@@ -3,7 +3,7 @@
 **
 ** Program written in order to generate multi-mass spherical structures
 **
-** written by Marcel Zemp
+** Written by Marcel Zemp
 */
 
 #include <stdio.h>
@@ -341,5 +341,3 @@ int main(int argc, char **argv) {
 
 	exit(0);
 	} /* end of main function */
-
-

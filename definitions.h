@@ -118,7 +118,7 @@ typedef struct systemparameters {
 	DOUBLE gamma_min;
 	DOUBLE gamma_max;
 	} SP;
-	
+
 typedef struct particle {
 
 	DOUBLE r[4];
